@@ -1,0 +1,25 @@
+<Window x:Class="overcloud.Views.DeleteAccountWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:converters="clr-namespace:overcloud.Converters"
+        Title="계정 삭제" Height="300" Width="350" WindowStartupLocation="CenterOwner">
+	
+	<Window.Resources>
+		<converters:EmptyStringToVisibilityConverter x:Key="EmptyStringToVisibilityConverter"/>
+	</Window.Resources>
+	
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <GroupBox Header="연결된 계정" Margin="10">
+            <ListBox x:Name="AccountListBox" DisplayMemberPath="ServiceName"/>
+        </GroupBox>
+
+        <Button Content="확인" Width="60" Height="30" Grid.Row="1" 
+                HorizontalAlignment="Right" Margin="0,10,10,10"
+                Click="ConfirmDelete_Click"/>
+    </Grid>
+</Window>
