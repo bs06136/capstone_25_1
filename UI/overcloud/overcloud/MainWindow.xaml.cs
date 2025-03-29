@@ -12,6 +12,7 @@ using overcloud.Views;
 using overcloud.Models;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows.Forms;
+using static overcloud.temp_class.TempClass;
 
 namespace overcloud
 {
@@ -39,7 +40,9 @@ namespace overcloud
         {
             var choice = System.Windows.MessageBox.Show(
                 "파일을 선택하려면 [예], 폴더를 선택하려면 [아니오]를 클릭하세요.",
-                "선택 방식", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                "선택 방식",
+                MessageBoxButton.YesNoCancel,
+                MessageBoxImage.Question);
 
             if (choice == MessageBoxResult.Yes)
             {
@@ -54,7 +57,13 @@ namespace overcloud
                 if (fileDialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     string filePath = fileDialog.FileName;
-                    System.Windows.MessageBox.Show($"파일 선택됨:\n{filePath}");
+
+                    // ⭐ temp_class.file_upload 호출
+                    bool result = file_upload(filePath);
+
+                    System.Windows.MessageBox.Show(result
+                        ? $"파일 업로드 성공\n경로: {filePath}"
+                        : "파일 업로드 실패");
                 }
             }
             else if (choice == MessageBoxResult.No)
@@ -68,64 +77,27 @@ namespace overcloud
                     if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                     {
                         string folderPath = folderDialog.SelectedPath;
-                        System.Windows.MessageBox.Show($"폴더 선택됨:\n{folderPath}");
+
+                        // ⭐ temp_class.file_upload 호출
+                        bool result = file_upload(folderPath);
+
+                        System.Windows.MessageBox.Show(result
+                            ? $"폴더 업로드 성공\n경로: {folderPath}"
+                            : "폴더 업로드 실패");
                     }
                 }
             }
         }
 
-        // 파일 업로드 버튼 클릭
-        private void UploadFile_Click(object sender, RoutedEventArgs e)
-        {
-            string fileName = "파일 경로를 여기에 입력"; // 실제로는 파일 선택 대화상자를 이용해야 함.
-            bool result = file_upload(fileName);
-            System.Windows.MessageBox.Show(result ? "업로드 성공" : "업로드 실패");
-        }
-
-
-
-        // 계정 추가 버튼 클릭
-        private void AddAccount_Click(object sender, RoutedEventArgs e)
-        {
-            string id = "계정ID 입력";
-            string password = "비밀번호 입력";
-            string cloudName = "클라우드 서비스 이름 입력";
-            bool result = ID_add(id, password, cloudName);
-            System.Windows.MessageBox.Show(result ? "계정 추가 성공" : "계정 추가 실패");
-        }
-
-        // 계정 삭제 버튼 클릭
-        private void DeleteAccount_Click(object sender, RoutedEventArgs e)
-        {
-            string id = "계정ID 입력";
-            string password = "비밀번호 입력";
-            string cloudName = "클라우드 서비스 이름 입력";
-            bool result = ID_del(id, password, cloudName);
-            System.Windows.MessageBox.Show(result ? "계정 삭제 성공" : "계정 삭제 실패");
-        }
-
-        // API 메서드 시그니처 (실제 구현은 프로그램과 연동)
-        public bool file_upload(string file_name)
-        {
-            // 프로그램과 연동해 업로드 처리 (예시)
-            return true;
-        }
-
-        public bool ID_add(string ID_name, string password, string cloud_name)
-        {
-            // 프로그램과 연동해 계정 추가 처리 (예시)
-            return true;
-        }
-
-        public bool ID_del(string ID_name, string password, string cloud_name)
-        {
-            System.Windows.MessageBox.Show($"삭제 요청:\nID: {ID_name}\nCloud: {cloud_name}");
-            return true; // 항상 성공 반환
-        }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            // 1) 원형 그래프 그리기 (사용 중인 로직)
             DrawDetailedPieChart();
+
+            // 2) 오른쪽 DataGrid에 리스트 바인딩
+            List<CloudAccountInfo> accountList = GetAllAccounts();
+            CloudListGrid.ItemsSource = accountList;
         }
 
         private void DrawDetailedPieChart()
@@ -134,10 +106,10 @@ namespace overcloud
             Canvas.SetLeft(PieCanvas, 0);
             Canvas.SetTop(PieCanvas, 0);
 
-            List<CloudStorageInfo> cloudList = GetAllCloudStatus();
+            List<CloudAccountInfo> cloudList = GetAllAccounts();
 
             PieCanvas.Children.Clear();
-            double radius = 150;
+            double radius = 130;
             System.Windows.Point center = new System.Windows.Point(radius + 20, radius + 20);
 
             double totalSize = 0;
@@ -158,7 +130,7 @@ namespace overcloud
                 PieCanvas.Children.Add(usedSlice);
 
                 AddLabel(center, radius, startAngle, usedAngle,
-                    $"{cloud.ServiceName}\nUsed:{cloud.UsedSize / 1e6:F1}MB", System.Windows.Media.Brushes.White);
+                    $"{cloud.CloudType}\nUsed:{cloud.UsedSize / 1e6:F1}MB", System.Windows.Media.Brushes.White);
 
                 startAngle += usedAngle;
 
@@ -170,7 +142,7 @@ namespace overcloud
                 PieCanvas.Children.Add(remainingSlice);
 
                 AddLabel(center, radius, startAngle, remainingAngle,
-                    $"{cloud.ServiceName}\nFree:{remainingSize / 1e6:F1}MB", System.Windows.Media.Brushes.Black);
+                    $"{cloud.CloudType}\nFree:{remainingSize / 1e6:F1}MB", System.Windows.Media.Brushes.Black);
 
                 startAngle += remainingAngle;
 
@@ -235,17 +207,6 @@ namespace overcloud
                                   (byte)Math.Min(color.R + 255 * factor, 255),
                                   (byte)Math.Min(color.G + 255 * factor, 255),
                                   (byte)Math.Min(color.B + 255 * factor, 255));
-        }
-
-        public List<CloudStorageInfo> GetAllCloudStatus()
-        {
-            // 클라우드 상태 정보 받아오는 처리 (예시 데이터)
-            return new List<CloudStorageInfo>
-            {
-                new CloudStorageInfo { ServiceName = "Google Drive", TotalSize = 15000000, UsedSize = 7500000 },
-                new CloudStorageInfo { ServiceName = "Dropbox", TotalSize = 10000000, UsedSize = 2500000 },
-                new CloudStorageInfo { ServiceName = "OneDrive", TotalSize = 20000000, UsedSize = 5000000 }
-            };
         }
     }
 }
