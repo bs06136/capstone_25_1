@@ -11,7 +11,7 @@ namespace OverCloud.Services
         private readonly IAccountRepository repo;
         // private readonly GoogleDriveService googleDriveService; //아직 구글드라이브 API연동 안해서 나중에 사용
 
-        AccountManager(IAccountRepository repo)
+        public AccountManager(IAccountRepository repo)
         {
             this.repo = repo;
             //           this.googleDriveService = driveService;
