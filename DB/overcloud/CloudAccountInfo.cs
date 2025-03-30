@@ -1,4 +1,4 @@
-namespace DB.overcloud.Models
+namespace OverCloud.Models
 {
     public class CloudAccountInfo
     {
@@ -6,10 +6,6 @@ namespace DB.overcloud.Models
         public string ID { get; set; }
         public string Password { get; set; }
         public string CloudType { get; set; }
-
-
-        public long TotalSize { get; set; }
-        public long UsedSize { get; set; }
     }
 }
 
