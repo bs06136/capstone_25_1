@@ -12,15 +12,25 @@ using overcloud.Views;
 using overcloud.Models;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows.Forms;
-using static overcloud.temp_class.TempClass;
+//using static overcloud.temp_class.TempClass;
+using OverCloud.Services;
+using DB.overcloud.Service;
 
 namespace overcloud
 {
     public partial class MainWindow : Window
     {
+        private AccountService _accountService;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            // 1) Repository 인스턴스(예: AccountRepository) 준비
+            IAccountRepository repo = new AccountRepository();
+
+            // 2) AccountService에 주입
+            _accountService = new AccountService(repo);
         }
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
@@ -59,7 +69,7 @@ namespace overcloud
                     string filePath = fileDialog.FileName;
 
                     // ⭐ temp_class.file_upload 호출
-                    bool result = file_upload(filePath);
+                    bool result = true;     //file_upload(filePath);
 
                     System.Windows.MessageBox.Show(result
                         ? $"파일 업로드 성공\n경로: {filePath}"
@@ -79,7 +89,7 @@ namespace overcloud
                         string folderPath = folderDialog.SelectedPath;
 
                         // ⭐ temp_class.file_upload 호출
-                        bool result = file_upload(folderPath);
+                        bool result = true;      //file_upload(folderPath);
 
                         System.Windows.MessageBox.Show(result
                             ? $"폴더 업로드 성공\n경로: {folderPath}"
@@ -96,7 +106,7 @@ namespace overcloud
             DrawDetailedPieChart();
 
             // 2) 오른쪽 DataGrid에 리스트 바인딩
-            List<CloudAccountInfo> accountList = GetAllAccounts();
+            List<CloudAccountInfo> accountList = _accountService.GetAllAccounts();
             CloudListGrid.ItemsSource = accountList;
         }
 
@@ -106,7 +116,7 @@ namespace overcloud
             Canvas.SetLeft(PieCanvas, 0);
             Canvas.SetTop(PieCanvas, 0);
 
-            List<CloudAccountInfo> cloudList = GetAllAccounts();
+            List<CloudAccountInfo> cloudList = _accountService.GetAllAccounts();
 
             PieCanvas.Children.Clear();
             double radius = 130;

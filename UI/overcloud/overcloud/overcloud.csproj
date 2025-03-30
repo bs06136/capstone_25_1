@@ -19,9 +19,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MySql.Data" Version="9.2.0" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
     <PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
     <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
   </ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\..\..\DB\overcloud\**\*.cs" Link="DB\%(RecursiveDir)%(Filename)%(Extension)" />
+
+		<Compile Include="..\..\..\OverCloud\Services\**\*.cs" Link="OverCloud\Services\%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
 
 </Project>
