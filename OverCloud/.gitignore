@@ -1,0 +1,11 @@
+# 모든 파일 무시
+*
+
+# 예외: 핵심 클래스만 올리기
+!Services/AccountService.cs
+!Services/AccountManager.cs
+!Services/CloudAccountMerger.cs
+
+# 예외: README, .gitignore
+!.gitignore
+!README.md
