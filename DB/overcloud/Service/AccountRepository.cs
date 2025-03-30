@@ -5,12 +5,12 @@ using System.Collections.Generic;
 
 namespace DB.overcloud.Service
 {
-    public class AccountService : IAccountService
+    public class AccountRepository : IAccountRepository
     {
         private readonly string connectionString;
         private readonly IStorageService cloudService;
 
-        public AccountService(string connStr)
+        public AccountRepository(string connStr)
         {
             connectionString = connStr;
             cloudService = new StorageService(connStr);

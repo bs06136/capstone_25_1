@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DB.overcloud.Service
 {
-    public interface IAccountService
+    public interface IAccountRepository
     {
         bool InsertAccount(CloudAccountInfo account);
         List<CloudAccountInfo> GetAllAccounts();
