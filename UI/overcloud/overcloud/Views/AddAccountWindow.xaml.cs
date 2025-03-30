@@ -1,16 +1,25 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using DB.overcloud.Service;
 using overcloud.Models;  // CloudAccountInfo 클래스 사용을 위해 추가
-using static overcloud.temp_class.TempClass;  // CloudAccountInfo 클래스 사용을 위해 추가
+//using static overcloud.temp_class.TempClass;  // CloudAccountInfo 클래스 사용을 위해 추가
+using OverCloud.Services;
 
 namespace overcloud.Views
 {
     public partial class AddAccountWindow : Window
     {
+        private AccountService _accountService;     //수정 필요
 
         public AddAccountWindow()
         {
+
             InitializeComponent();
+
+            string connStr = "server=localhost;database=overcloud;uid=admin;pwd=admin;"; ;  //
+            IAccountRepository repo = new AccountRepository(connStr);                       // 수정필요
+            _accountService = new AccountService(repo);                                     //
+
         }
 
         private void Confirm_Click(object sender, RoutedEventArgs e)
@@ -29,7 +38,7 @@ namespace overcloud.Views
             };
 
             // ⭐ 객체 생성 없이 정적 메서드 직접 호출
-            bool result = AddAccount(accountInfo);
+            bool result = _accountService.AddAccount(accountInfo);
             System.Windows.MessageBox.Show(result ? "계정 추가 성공" : "계정 추가 실패");
 
             this.Close();

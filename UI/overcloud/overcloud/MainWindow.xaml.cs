@@ -27,7 +27,8 @@ namespace overcloud
             InitializeComponent();
 
             // 1) Repository 인스턴스(예: AccountRepository) 준비
-            IAccountRepository repo = new AccountRepository();
+            string connStr = "server=localhost;database=overcloud;uid=admin;pwd=admin;"; ;
+            IAccountRepository repo = new AccountRepository(connStr);
 
             // 2) AccountService에 주입
             _accountService = new AccountService(repo);

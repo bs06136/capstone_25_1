@@ -31,4 +31,8 @@
 		<Compile Include="..\..\..\OverCloud\Services\**\*.cs" Link="OverCloud\Services\%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Compile Remove="..\..\..\DB\overcloud\Models\**" />
+	</ItemGroup>
+
 </Project>

@@ -1,15 +1,25 @@
 ﻿using System.Windows;
 using System.Collections.Generic;
 using overcloud.Models;
-using static overcloud.temp_class.TempClass;
+//using static overcloud.temp_class.TempClass;
+using OverCloud.Services;
+using DB.overcloud.Service;
+using System.Diagnostics;
 
 namespace overcloud.Views
 {
     public partial class DeleteAccountWindow : Window
     {
+        private AccountService _accountService;     //수정 필요
+
         public DeleteAccountWindow()
         {
             InitializeComponent();
+
+            string connStr = "server=localhost;database=overcloud;uid=admin;pwd=admin;"; ;  //
+            IAccountRepository repo = new AccountRepository(connStr);                       // 수정필요
+            _accountService = new AccountService(repo);                                     //
+
             LoadAccounts();
         }
 
@@ -20,8 +30,9 @@ namespace overcloud.Views
             {
                 // 기존: List<CloudStorageInfo> accounts = main.GetAllCloudStatus();
                 // 변경: List<CloudAccountInfo> accounts = main.GetAllAccounts();
-                List<CloudAccountInfo> accounts = GetAllAccounts();
+                List<CloudAccountInfo> accounts = _accountService.GetAllAccounts();
                 AccountListBox.ItemsSource = accounts;
+                Debug.WriteLine("list 출력");
             }
         }
 
@@ -38,7 +49,7 @@ namespace overcloud.Views
             int userNum = selectedAccount.UserNum;
 
             // temp_class의 RemoveAccount 호출
-            bool result = RemoveAccount(userNum);
+            bool result = _accountService.RemoveAccount(userNum);
 
             System.Windows.MessageBox.Show(result ? "계정 삭제 성공" : "계정 삭제 실패");
             this.Close();

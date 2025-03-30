@@ -1,7 +1,8 @@
-using DB.overcloud.Models;
+using overcloud.Models;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace DB.overcloud.Service
 {
@@ -53,6 +54,7 @@ namespace DB.overcloud.Service
                     UsedSize = Convert.ToInt64(reader["used_capacity"])
                 });
             }
+            Debug.WriteLine("DB 완료");
 
             return list;
         }
