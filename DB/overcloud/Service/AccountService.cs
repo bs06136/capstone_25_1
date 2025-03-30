@@ -3,7 +3,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 
-namespace DB.overcloud.Services
+namespace DB.overcloud.Service
 {
     public class AccountService : IAccountService
     {

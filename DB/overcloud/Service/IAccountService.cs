@@ -1,7 +1,7 @@
 using DB.overcloud.Models;
 using System.Collections.Generic;
 
-namespace DB.overcloud.Services
+namespace DB.overcloud.Service
 {
     public interface IAccountService
     {
