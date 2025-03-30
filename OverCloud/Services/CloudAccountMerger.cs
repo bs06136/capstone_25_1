@@ -10,7 +10,7 @@ namespace OverCloud.Services
     {
         private readonly List<CloudAccountInfo> accounts;
 
-        public CloudAccountMerger(List<CloudAccountInfo> accouns)
+        public CloudAccountMerger(List<CloudAccountInfo> accounts)
         {
             this.accounts = accounts;
         }

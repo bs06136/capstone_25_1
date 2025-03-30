@@ -8,29 +8,29 @@ namespace OverCloud.Services
 {
     public class AccountService //프론트 <-> 프로그램 함수 호출
     {
-        private readonly IAccountRepository accountRepo;
+        private readonly IAccountRepository repo;
 
-        AccountService(IAccountRepository repo)
+        public AccountService(IAccountRepository repo)
         {
-            accountRepo = repo;
+            this.repo = repo;
         }
 
         // 계정 추가 (UI에서 호출)
         public bool AddAccount(CloudAccountInfo account)
         {
-            return accountRepo.InsertAccount(account);
+            return repo.InsertAccount(account);
         }
 
         // 계정 삭제 (UI에서 호출)
         public bool RemoveAccount(int userNum)
         {
-            return accountRepo.DeleteAccountByUserNum(userNum);
+            return repo.DeleteAccountByUserNum(userNum);
         }
 
         // 모든 계정 정보 조회 (UI에서 호출)
         public List<CloudAccountInfo> GetAllAccounts()
         {
-            return accountRepo.GetAllAccounts();
+            return repo.GetAllAccounts();
         }
     }
 }

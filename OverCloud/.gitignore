@@ -2,6 +2,7 @@
 *
 
 # 예외: 핵심 클래스만 올리기
+!Services/
 !Services/AccountService.cs
 !Services/AccountManager.cs
 !Services/CloudAccountMerger.cs
