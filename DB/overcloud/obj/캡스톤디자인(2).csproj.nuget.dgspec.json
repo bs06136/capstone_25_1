@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/luis/Desktop/캡스톤디자인(2)/캡스톤디자인(2).csproj": {}
+    "/Users/luis/Desktop/캡스톤디자인(2)/DB/overcloud/캡스톤디자인(2).csproj": {}
   },
   "projects": {
-    "/Users/luis/Desktop/캡스톤디자인(2)/캡스톤디자인(2).csproj": {
+    "/Users/luis/Desktop/캡스톤디자인(2)/DB/overcloud/캡스톤디자인(2).csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/luis/Desktop/캡스톤디자인(2)/캡스톤디자인(2).csproj",
+        "projectUniqueName": "/Users/luis/Desktop/캡스톤디자인(2)/DB/overcloud/캡스톤디자인(2).csproj",
         "projectName": "캡스톤디자인(2)",
-        "projectPath": "/Users/luis/Desktop/캡스톤디자인(2)/캡스톤디자인(2).csproj",
+        "projectPath": "/Users/luis/Desktop/캡스톤디자인(2)/DB/overcloud/캡스톤디자인(2).csproj",
         "packagesPath": "/Users/luis/.nuget/packages/",
-        "outputPath": "/Users/luis/Desktop/캡스톤디자인(2)/obj/",
+        "outputPath": "/Users/luis/Desktop/캡스톤디자인(2)/DB/overcloud/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/luis/.nuget/NuGet/NuGet.Config"
