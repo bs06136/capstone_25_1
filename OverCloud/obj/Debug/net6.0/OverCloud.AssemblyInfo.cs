@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OverCloud")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d0dd8cddb29e62484d78608fcf96249ec6513cfa")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5ca9073bb5534f35d84db766e6c737572fcc069e")]
 [assembly: System.Reflection.AssemblyProductAttribute("OverCloud")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OverCloud")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

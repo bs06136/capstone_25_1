@@ -50,6 +50,18 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "Google.Apis": {
+              "target": "Package",
+              "version": "[1.69.0, )"
+            },
+            "Google.Apis.Auth": {
+              "target": "Package",
+              "version": "[1.69.0, )"
+            },
+            "Google.Apis.Drive.v3": {
+              "target": "Package",
+              "version": "[1.69.0.3703, )"
+            },
             "MySql.Data": {
               "target": "Package",
               "version": "[9.2.0, )"

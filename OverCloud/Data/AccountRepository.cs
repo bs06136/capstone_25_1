@@ -2,7 +2,7 @@
 using OverCloud.Data;
 using System.Collections.Generic;
 
-public class AccountRepository
+public class AccountRepository :IAccountRepositiory
 {
     private readonly DatabaseHelper dbHelper = new DatabaseHelper();
 
@@ -18,7 +18,7 @@ public class AccountRepository
             conn.Open();
             using (var cmd = new MySqlCommand(query, conn))
             {
-                cmd.Parameters.AddWithValue("@usernum", account.UserNum);
+//                cmd.Parameters.AddWithValue("@usernum", account.UserNum);
                 cmd.Parameters.AddWithValue("@id", account.ID);
                 cmd.Parameters.AddWithValue("@password", account.Password);
                 cmd.Parameters.AddWithValue("@cloudType", account.CloudType);
