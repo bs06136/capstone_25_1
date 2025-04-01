@@ -30,25 +30,26 @@ namespace DB.overcloud.Service
             return cmd.ExecuteNonQuery() > 0;
         }
 
-        public List<CloudAccountInfo> GetAllAccounts()
+        public List<CloudStorageInfo> GetAllCloudAccounts()
         {
-            var list = new List<CloudAccountInfo>();
+            var list = new List<CloudStorageInfo>();
 
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = "SELECT * FROM Account";
+            string query = "SELECT * FROM CloudStorageInfo";
             using var cmd = new MySqlCommand(query, conn);
             using var reader = cmd.ExecuteReader();
 
             while (reader.Read())
             {
-                list.Add(new CloudAccountInfo
+                list.Add(new CloudStorageInfo
                 {
+                    CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     UserNum = Convert.ToInt32(reader["user_num"]),
-                    Username = reader["username"].ToString(),
-                    ID = reader["ID"].ToString(),
-                    Password = reader["password"].ToString(),
+                    CloudType = reader["cloud_type"].ToString(),
+                    AccountId = reader["account_id"].ToString(),
+                    AccountPassword = reader["account_password"].ToString(),
                     TotalSize = Convert.ToUInt64(reader["total_size"]),
                     UsedSize = Convert.ToUInt64(reader["used_size"])
                 });
@@ -85,12 +86,6 @@ namespace DB.overcloud.Service
         {
             var clouds = cloudService.GetCloudsForUser(userId);
             ulong total = 0, used = 0;
-
-            foreach (var c in clouds)
-            {
-                total += c.TotalSize;
-                used += c.UsedSize;
-            }
 
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
