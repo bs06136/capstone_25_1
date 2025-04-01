@@ -7,7 +7,8 @@ using overcloud.Models;
 
 namespace OverCloud.Services
 {
-    public class CloudAccountMerger //병합 담당
+    //클라우드에 계정을 추가하면 총용량, 사용중인 용량들을 더하는 로직 클래스.
+    public class CloudAccountMerger 
     {
         private readonly List<CloudAccountInfo> accounts;
 
@@ -23,7 +24,7 @@ namespace OverCloud.Services
         public double UsagePercent =>
             TotalSize == 0 ? 0 : (double)UsedSize / TotalSize * 100;
 
-      //  public List<CloudAccountInfo> GetAccounts() => accounts;
+        public List<CloudAccountInfo> GetAccounts() => accounts;
     }
 
 }

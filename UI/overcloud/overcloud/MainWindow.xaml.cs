@@ -21,17 +21,23 @@ namespace overcloud
     public partial class MainWindow : Window
     {
         private AccountService _accountService;
+        private GoogleDriveService _googleDriveService;
+        private AccountManager _accountManager;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            // 1) Repository 인스턴스(예: AccountRepository) 준비
-            string connStr = "server=localhost;database=overcloud;uid=admin;pwd=admin;"; ;
+            // DB 연결용 Repository 생성
+            string connStr = "server=localhost;database=overcloud;uid=admin;pwd=admin;";
             IAccountRepository repo = new AccountRepository(connStr);
 
-            // 2) AccountService에 주입
+            // 서비스들 주입
             _accountService = new AccountService(repo);
+            _googleDriveService = new GoogleDriveService();
+            _accountManager = new AccountManager(repo, _googleDriveService);
+
+
         }
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
