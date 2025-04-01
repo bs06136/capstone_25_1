@@ -1,40 +1,47 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
+using DB.overcloud.Models;
 using DB.overcloud.Service;
-using overcloud.Models;  // CloudAccountInfo 클래스 사용을 위해 추가
-using OverCloud.Services;
 
 namespace overcloud.Views
 {
     public partial class AddAccountWindow : Window
     {
-        private readonly AccountService _accountService;
+        private readonly IAccountRepository _accountRepo;
 
-        public AddAccountWindow(AccountService service)
+        public AddAccountWindow(IAccountRepository accountRepo)
         {
             InitializeComponent();
-            _accountService = service;
+            _accountRepo = accountRepo;
         }
 
         private void Confirm_Click(object sender, RoutedEventArgs e)
         {
-            string id = txtID.Text;
-            string password = txtPassword.Password;
-            string cloudType = (cloudComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+            string username = txtUsername.Text.Trim();         // 사용자 이름
+            string id = txtID.Text.Trim();                     // 클라우드 계정 ID
+            string password = txtPassword.Password.Trim();     // 로그인 비밀번호
 
-            CloudAccountInfo accountInfo = new CloudAccountInfo
+            if (string.IsNullOrWhiteSpace(username) ||
+                string.IsNullOrWhiteSpace(id) ||
+                string.IsNullOrWhiteSpace(password))
             {
+                MessageBox.Show("모든 입력 값을 채워주세요.", "입력 오류", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var account = new CloudAccountInfo
+            {
+                Username = username,
                 ID = id,
                 Password = password,
-                CloudType = cloudType,
                 TotalSize = 0,
                 UsedSize = 0
             };
 
-            bool result = _accountService.AddAccount(accountInfo);
+            bool result = _accountRepo.InsertAccount(account);
             MessageBox.Show(result ? "계정 추가 성공" : "계정 추가 실패");
 
-            this.Close();
+            if (result)
+                this.Close();
         }
     }
 }
