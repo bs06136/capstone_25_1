@@ -1,51 +1,48 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using overcloud.Views;
-using overcloud.Models;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows.Forms;
 using static overcloud.temp_class.TempClass;
 using OverCloud.Services;
 using DB.overcloud.Service;
+using overcloud.Views;
 
 namespace overcloud
 {
     public partial class MainWindow : Window
     {
-        private AccountService _accountService;
+        private readonly IAccountRepository _accountRepo;
+        private readonly IStorageService _storageService;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            // 1) Repository 인스턴스(예: AccountRepository) 준비
-            string connStr = "server=localhost;database=overcloud;uid=admin;pwd=admin;"; ;
-            IAccountRepository repo = new AccountRepository(connStr);
-
-            // 2) AccountService에 주입
-            _accountService = new AccountService(repo);
+            _accountRepo = new AccountRepository(DbConfig.ConnectionString);
+            _storageService = new StorageService(DbConfig.ConnectionString);
         }
+
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
-            AddAccountWindow window = new AddAccountWindow();
-            window.ShowDialog();
+            var addWindow = new AddAccountWindow(_accountRepo);
+            addWindow.Owner = this;
+            addWindow.ShowDialog();
+
+            RefreshAccountListAndPieChart();
         }
 
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
-            DeleteAccountWindow window = new DeleteAccountWindow();
-            window.Owner = this;
-            window.ShowDialog();
-        }
+            var deleteWindow = new DeleteAccountWindow(_accountRepo);
+            deleteWindow.Owner = this;
+            deleteWindow.ShowDialog();
 
+            RefreshAccountListAndPieChart();
+        }
 
         private void Button_Save_Click(object sender, RoutedEventArgs e)
         {
@@ -57,8 +54,7 @@ namespace overcloud
 
             if (choice == MessageBoxResult.Yes)
             {
-                // 파일 선택
-                var fileDialog = new CommonOpenFileDialog()
+                var fileDialog = new CommonOpenFileDialog
                 {
                     IsFolderPicker = false,
                     Multiselect = false,
@@ -68,34 +64,21 @@ namespace overcloud
                 if (fileDialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     string filePath = fileDialog.FileName;
-
-                    // ⭐ temp_class.file_upload 호출
-                    bool result = true;     //file_upload(filePath);
-
-                    System.Windows.MessageBox.Show(result
-                        ? $"파일 업로드 성공\n경로: {filePath}"
-                        : "파일 업로드 실패");
+                    System.Windows.MessageBox.Show($"파일 선택됨: {filePath}");
                 }
             }
             else if (choice == MessageBoxResult.No)
             {
-                // 폴더 선택
-                using (var folderDialog = new FolderBrowserDialog())
+                using var folderDialog = new FolderBrowserDialog
                 {
-                    folderDialog.Description = "폴더 선택";
-                    folderDialog.RootFolder = System.Environment.SpecialFolder.MyComputer;
+                    Description = "폴더 선택",
+                    RootFolder = Environment.SpecialFolder.MyComputer
+                };
 
-                    if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    {
-                        string folderPath = folderDialog.SelectedPath;
-
-                        // ⭐ temp_class.file_upload 호출
-                        bool result = true;      //file_upload(folderPath);
-
-                        System.Windows.MessageBox.Show(result
-                            ? $"폴더 업로드 성공\n경로: {folderPath}"
-                            : "폴더 업로드 실패");
-                    }
+                if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    string folderPath = folderDialog.SelectedPath;
+                    System.Windows.MessageBox.Show($"폴더 선택됨: {folderPath}");
                 }
             }
         }

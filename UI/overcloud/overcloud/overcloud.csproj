@@ -19,6 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Apis" Version="1.69.0" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.69.0" />
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.69.0.3703" />
     <PackageReference Include="MySql.Data" Version="9.2.0" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
     <PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
@@ -33,6 +36,16 @@
 
 	<ItemGroup>
 	  <Compile Remove="..\..\..\DB\overcloud\Models\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="credentials.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="FileName.cs">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Compile>
 	</ItemGroup>
 
 </Project>
