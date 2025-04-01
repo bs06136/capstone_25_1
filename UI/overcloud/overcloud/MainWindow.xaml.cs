@@ -6,8 +6,8 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows.Forms;
-using static overcloud.temp_class.TempClass;
-using OverCloud.Services;
+
+using DB.overcloud.Models;
 using DB.overcloud.Service;
 using overcloud.Views;
 
@@ -83,18 +83,109 @@ namespace overcloud
             }
         }
 
-        private void Button_DetailDisk_Click(object sender, RoutedEventArgs e)
-        {
-            DiskDetailWindow detailWindow = new DiskDetailWindow(_accountService);
-            detailWindow.Owner = this;
-            detailWindow.ShowDialog();
-        }
-
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            List<string> directories = all_file_list(); // 또는 적절한 클래스에서 호출
-            FileListGrid.ItemsSource = directories;
+            RefreshAccountListAndPieChart();
+        }
+
+        private void RefreshAccountListAndPieChart()
+        {
+            var accounts = _accountRepo.GetAllAccounts();
+            CloudListGrid.ItemsSource = accounts;
+            DrawPieChart(accounts);
+        }
+
+        private void DrawPieChart(List<CloudAccountInfo> accounts)
+        {
+            PieCanvas.Children.Clear();
+            double radius = 130;
+            Point center = new Point(radius + 20, radius + 20);
+
+            double totalSize = 0;
+            foreach (var acc in accounts)
+                totalSize += acc.TotalSize;
+
+            if (totalSize == 0) return;
+
+            double startAngle = 0;
+            Color[] colors = { Colors.DodgerBlue, Colors.Orange, Colors.ForestGreen };
+            int colorIndex = 0;
+
+            foreach (var acc in accounts)
+            {
+                double usedAngle = (acc.UsedSize / totalSize) * 360;
+                var usedSlice = CreatePieSlice(center, radius, startAngle, usedAngle, colors[colorIndex]);
+                PieCanvas.Children.Add(usedSlice);
+
+                AddLabel(center, radius, startAngle, usedAngle,
+                    $"{acc.Username}\nUsed: {acc.UsedSize / 1e6:F1}MB", Brushes.White);
+                startAngle += usedAngle;
+
+                double remainingSize = acc.TotalSize - acc.UsedSize;
+                double remainingAngle = (remainingSize / totalSize) * 360;
+                var lighterColor = ChangeColorBrightness(colors[colorIndex], 0.5f);
+                var remainingSlice = CreatePieSlice(center, radius, startAngle, remainingAngle, lighterColor);
+                PieCanvas.Children.Add(remainingSlice);
+
+                AddLabel(center, radius, startAngle, remainingAngle,
+                    $"Free: {remainingSize / 1e6:F1}MB", Brushes.Black);
+                startAngle += remainingAngle;
+
+                colorIndex = (colorIndex + 1) % colors.Length;
+            }
+        }
+
+        private Path CreatePieSlice(Point center, double radius, double startAngle, double angle, Color color)
+        {
+            double radStart = startAngle * Math.PI / 180;
+            double radEnd = (startAngle + angle) * Math.PI / 180;
+
+            Point startPoint = new Point(center.X + radius * Math.Cos(radStart),
+                                         center.Y + radius * Math.Sin(radStart));
+
+            Point endPoint = new Point(center.X + radius * Math.Cos(radEnd),
+                                       center.Y + radius * Math.Sin(radEnd));
+
+            var figure = new PathFigure { StartPoint = center };
+            figure.Segments.Add(new LineSegment(startPoint, true));
+            figure.Segments.Add(new ArcSegment(endPoint, new Size(radius, radius), 0,
+                angle > 180, SweepDirection.Clockwise, true));
+            figure.Segments.Add(new LineSegment(center, true));
+
+            return new Path
+            {
+                Fill = new SolidColorBrush(color),
+                Stroke = Brushes.White,
+                StrokeThickness = 2,
+                Data = new PathGeometry(new[] { figure })
+            };
+        }
+
+        private void AddLabel(Point center, double radius, double startAngle, double angle, string text, Brush color)
+        {
+            double midAngle = startAngle + angle / 2;
+            double radian = midAngle * Math.PI / 180;
+            double labelRadius = radius * 0.7;
+
+            var label = new TextBlock
+            {
+                Text = text,
+                Foreground = color,
+                FontWeight = FontWeights.Bold,
+                TextAlignment = TextAlignment.Center
+            };
+
+            Canvas.SetLeft(label, center.X + labelRadius * Math.Cos(radian) - 40);
+            Canvas.SetTop(label, center.Y + labelRadius * Math.Sin(radian) - 20);
+            PieCanvas.Children.Add(label);
+        }
+
+        public Color ChangeColorBrightness(Color color, float factor)
+        {
+            return Color.FromArgb(color.A,
+                (byte)Math.Min(color.R + 255 * factor, 255),
+                (byte)Math.Min(color.G + 255 * factor, 255),
+                (byte)Math.Min(color.B + 255 * factor, 255));
         }
     }
 }
