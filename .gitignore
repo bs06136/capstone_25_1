@@ -402,3 +402,6 @@ FodyWeavers.xsd
 
 # ignore temp_class folder
 temp_class/
+
+# ignore json
+*.json
