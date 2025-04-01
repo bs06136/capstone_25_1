@@ -9,7 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using overcloud.Views;
-using overcloud.Models;
+using DB.overcloud.Models;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows.Forms;
 using static overcloud.temp_class.TempClass;
@@ -21,33 +21,37 @@ namespace overcloud
     public partial class MainWindow : Window
     {
         private AccountService _accountService;
+        private FileUploadManager _FileUploadManager;
+        private GoogleDriveService _GoogleDriveService;
 
         public MainWindow()
         {
             InitializeComponent();
 
             // 1) Repository 인스턴스(예: AccountRepository) 준비
-            string connStr = "server=localhost;database=overcloud;uid=admin;pwd=admin;"; ;
-            IAccountRepository repo = new AccountRepository(connStr);
+            IAccountRepository repo = new AccountRepository(DbConfig.ConnectionString);
+            IStorageService repo_2 = new StorageService(DbConfig.ConnectionString);
 
             // 2) AccountService에 주입
-            _accountService = new AccountService(repo);
+            _accountService = new AccountService(repo, repo_2);
+            _GoogleDriveService = new GoogleDriveService();
+            _FileUploadManager = new FileUploadManager(_accountService, _GoogleDriveService);
         }
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
-            AddAccountWindow window = new AddAccountWindow();
+            AddAccountWindow window = new AddAccountWindow(_accountService);
             window.ShowDialog();
         }
 
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
-            DeleteAccountWindow window = new DeleteAccountWindow();
+            DeleteAccountWindow window = new DeleteAccountWindow(_accountService);
             window.Owner = this;
             window.ShowDialog();
         }
 
 
-        private void Button_Save_Click(object sender, RoutedEventArgs e)
+        private async void Button_Save_Click(object sender, RoutedEventArgs e)
         {
             var choice = System.Windows.MessageBox.Show(
                 "파일을 선택하려면 [예], 폴더를 선택하려면 [아니오]를 클릭하세요.",
@@ -70,7 +74,7 @@ namespace overcloud
                     string filePath = fileDialog.FileName;
 
                     // ⭐ temp_class.file_upload 호출
-                    bool result = true;     //file_upload(filePath);
+                    bool result = await _FileUploadManager.file_upload(filePath);
 
                     System.Windows.MessageBox.Show(result
                         ? $"파일 업로드 성공\n경로: {filePath}"

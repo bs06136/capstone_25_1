@@ -40,8 +40,8 @@ namespace DB.overcloud.Service
                     CloudType = reader["cloud_type"].ToString(),
                     AccountId = reader["account_id"].ToString(),
                     AccountPassword = reader["account_password"].ToString(),
-                    TotalSize = Convert.ToUInt64(reader["total_size"]),
-                    UsedSize = Convert.ToUInt64(reader["used_size"])
+                    TotalSize = (int)Convert.ToUInt64(reader["total_size"]),
+                    UsedSize = (int)Convert.ToUInt64(reader["used_size"])
                 });
             }
 

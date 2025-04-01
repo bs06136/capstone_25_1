@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OverCloud.Models;
+using DB.overcloud.Models;
 
 namespace OverCloud.Services
 {
@@ -17,9 +17,9 @@ namespace OverCloud.Services
             this.accounts = accounts;
         }
 
-        public long TotalCapacity => accounts.Sum(a => a.TotalCapacity);
-        public long UsedCapacity => accounts.Sum(a => a.UsedCapacity);
-        public long Remaining => TotalCapacity - UsedCapacity;
+        public ulong TotalCapacity => (ulong)accounts.Sum(a => a.TotalSize);
+        public ulong UsedCapacity => (ulong)accounts.Sum(a => a.UsedSize);
+        public ulong Remaining => TotalCapacity - UsedCapacity;
         public double UsagePercent => TotalCapacity == 0 ? 0 : (double)UsedCapacity / TotalCapacity * 100;
     }
 
