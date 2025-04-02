@@ -40,7 +40,7 @@ namespace overcloud.Views
 
         private void DiskDetailWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var accountList = _accountService.GetAllAccounts();
+            var accountList = _accountService.GetCloudsForUser();
 
             var displayList = accountList.Select((acc, idx) =>
             {
