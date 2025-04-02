@@ -5,8 +5,13 @@
 !Services/
 !Services/AccountService.cs
 !Services/CloudStorageMerger.cs
+!Services/FIleDownloadManager.cs
+!Services/FileService.cs
 !Services/FileUploadManager.cs
 !Services/GoogleDriveService.cs
+!Services/ICloudFileService.cs
+!Services/StorageUpdater.cs
+
 
 # ¿¹¿Ü: README, .gitignore
 !.gitignore

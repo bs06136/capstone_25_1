@@ -20,13 +20,13 @@ namespace OverCloud.Services
             this.repo_2 = repo_2;
         }
 
-        // 계정 추가 (UI에서 호출)
+        // 오버클라우드 계정에 새로운 계정 추가 (UI에서 호출)
         public bool AddAccount(CloudStorageInfo account)
         {
             return repo_2.AddCloudStorage(account);
         }
 
-        // 계정 삭제 (UI에서 호출)
+        // 오버클라우드 계정에 있던 클라우드 하나 삭제 (UI에서 호출)
         public bool RemoveAccount(int userNum)
         {
             return repo.DeleteAccountByUserNum(userNum);
