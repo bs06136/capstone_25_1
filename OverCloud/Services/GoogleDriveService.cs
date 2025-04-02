@@ -11,7 +11,7 @@ namespace OverCloud.Services
     public class GoogleDriveService :ICloudFileService
     {
         private const string TokenRootPath = "Tokens";
-        private const string CredentialFile = "C:\\Users\\bszxc\\source\\repos\\bs06136\\capstone_25_1\\UI\\overcloud\\overcloud\\bae.json";
+        private const string CredentialFile = "C:\\key\\bae.json";
 
         public async Task<UserCredential> AuthenticateAsync(string userId)
         {
@@ -85,6 +85,7 @@ namespace OverCloud.Services
         }
 
         //모든 파일정보
+        /*
         public async Task<List<CloudFileInfo>> ListAllFilesAsync(string userId, int cloudStorageNum)
         {
             var credential = await AuthenticateAsync(userId);
@@ -121,7 +122,7 @@ namespace OverCloud.Services
         }
 
         return result;
-        }
+        }*/
 
     }
 }

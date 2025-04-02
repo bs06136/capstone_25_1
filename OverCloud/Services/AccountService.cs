@@ -23,6 +23,7 @@ namespace OverCloud.Services
         // 오버클라우드 계정에 새로운 계정 추가 (UI에서 호출)
         public bool AddCloudStorage(CloudStorageInfo account)
         {
+
             return repo_2.AddCloudStorage(account);
         }
 
@@ -35,7 +36,7 @@ namespace OverCloud.Services
         // 모든 계정 정보 조회 (UI에서 호출)
         public List<CloudStorageInfo> GetCloudsForUser()
         {
-            return repo.GetAllCloudAccounts();
+            return repo.GetAllAccounts();
         }
     }
 }

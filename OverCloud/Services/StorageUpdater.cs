@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
-using OverCloud.Models;
+using DB.overcloud.Models;
+using DB.overcloud.Service;
 
 namespace OverCloud.Services
 {
@@ -14,7 +15,7 @@ namespace OverCloud.Services
             this.storageService = storageService;
         }
 
-        public async Task<bool> SaveDriveQuotaToDB(string userEmail, int userNum)
+        public async Task<bool> SaveDriveQuotaToDB(string userEmail, int CloudStorageNum)
         {
             // 1. 구글 API로부터 용량 정보 받아오기
             var (total, used) = await googleDriveService.GetDriveQuotaAsync(userEmail);
@@ -22,9 +23,9 @@ namespace OverCloud.Services
             // 2. 객체 생성
             CloudStorageInfo cloud = new CloudStorageInfo
             {
-                AccountUserNum = userNum,
-                TotalCapacity = total,
-                UsedCapacity = used
+                CloudStorageNum = CloudStorageNum,
+                TotalSize = (int)(total/1048576),
+                UsedSize = (int)(used/ 1048576)
             };
 
             // 3. 저장
