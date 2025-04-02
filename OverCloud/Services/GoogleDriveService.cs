@@ -25,6 +25,7 @@ namespace OverCloud.Services
             );
         }
 
+        //파일 업로드
         public async Task<bool> UploadFileAsync(string userId, string filePath)
         {
             var credential = await AuthenticateAsync(userId);
@@ -46,6 +47,8 @@ namespace OverCloud.Services
             return result.Status == Google.Apis.Upload.UploadStatus.Completed;
         }
 
+
+        //용량정보를 받아오기 위해 호출하는 함수
         public async Task<(long, long)> GetDriveQuotaAsync(string userId)
         {
             var credential = await AuthenticateAsync(userId);
@@ -81,12 +84,13 @@ namespace OverCloud.Services
             return true;
         }
 
+        //모든 파일정보
         public async Task<List<CloudFileInfo>> ListAllFilesAsync(string userId, int cloudStorageNum)
         {
             var credential = await AuthenticateAsync(userId);
 
             var service = new DriveService(new BaseClientService.Initializer
-            {
+           
                 HttpClientInitializer = credential,
             ApplicationName = "OverCloud"
             });
