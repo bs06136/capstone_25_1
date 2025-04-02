@@ -24,7 +24,7 @@ namespace OverCloud.Services
         {
             return await googleDriveService.UploadFileAsync("ojw73366@gamil.com", file_name);
 
-            var accounts = accountService.GetAllAccounts();
+            var accounts = accountService.GetCloudsForUser();
             var googleAccount = accounts.FirstOrDefault(a => a.CloudType == "GoogleDrive");
 
             if (googleAccount == null)
