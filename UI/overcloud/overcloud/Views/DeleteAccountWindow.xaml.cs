@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Collections.Generic;
-using overcloud.Models;
+using DB.overcloud.Models;
 //using static overcloud.temp_class.TempClass;
 using OverCloud.Services;
 using DB.overcloud.Service;
@@ -12,13 +12,15 @@ namespace overcloud.Views
     {
         private AccountService _accountService;     //수정 필요
 
-        public DeleteAccountWindow()
+        public DeleteAccountWindow(AccountService accountService)
         {
             InitializeComponent();
 
-            string connStr = "server=localhost;database=overcloud;uid=admin;pwd=admin;"; ;  //
-            IAccountRepository repo = new AccountRepository(connStr);                       // 수정필요
-            _accountService = new AccountService(repo);                                     //
+
+
+            //string connStr = "server=localhost;database=overcloud;uid=admin;pwd=admin;"; ;  //
+            //IAccountRepository repo = new AccountRepository(connStr);                       // 수정필요
+            _accountService = accountService;                                    //
 
             LoadAccounts();
         }
@@ -30,7 +32,7 @@ namespace overcloud.Views
             {
                 // 기존: List<CloudStorageInfo> accounts = main.GetAllCloudStatus();
                 // 변경: List<CloudAccountInfo> accounts = main.GetAllAccounts();
-                List<CloudAccountInfo> accounts = _accountService.GetAllAccounts();
+                List<CloudStorageInfo> accounts = _accountService.GetAllAccounts();
                 AccountListBox.ItemsSource = accounts;
                 Debug.WriteLine("list 출력");
             }
