@@ -80,5 +80,23 @@ namespace DB.overcloud.Service
 
             return cmd.ExecuteNonQuery() > 0;
         }
+
+        public bool account_save(CloudStorageInfo one_cloud)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"UPDATE CloudStorageInfo SET 
+                                total_size = @total,
+                                used_size = @used
+                            WHERE cloud_storage_num = @cloudNum";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@total", one_cloud.TotalSize);
+            cmd.Parameters.AddWithValue("@used", one_cloud.UsedSize);
+            cmd.Parameters.AddWithValue("@cloudNum", one_cloud.CloudStorageNum);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
     }
 }

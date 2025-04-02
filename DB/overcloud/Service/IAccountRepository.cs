@@ -1,13 +1,13 @@
+using DB.overcloud.Models;
+using System.Collections.Generic;
+
 namespace DB.overcloud.Service
 {
-    using DB.overcloud.Models;
-    using System.Collections.Generic;
-
     public interface IAccountRepository
     {
         bool InsertAccount(CloudAccountInfo account);
         List<CloudStorageInfo> GetAllCloudAccounts();
         bool DeleteAccountByUserNum(int userNum);
-        void UpdateTotalStorageForUser(string userId);
+        bool UpdateAccountUsage(int userNum, ulong totalSize, ulong usedSize)
     }
 }
