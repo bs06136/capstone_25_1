@@ -63,15 +63,15 @@ namespace DB.overcloud.Service
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string getIdQuery = "SELECT ID FROM Account WHERE user_num = @num";
+            string getIdQuery = "SELECT ID FROM Account WHERE user_num = @user_num";
             using var getIdCmd = new MySqlCommand(getIdQuery, conn);
-            getIdCmd.Parameters.AddWithValue("@num", userNum);
+            getIdCmd.Parameters.AddWithValue("@user_num", userNum);
             var id = getIdCmd.ExecuteScalar()?.ToString();
             if (id == null) return false;
 
-            string deleteQuery = "DELETE FROM Account WHERE user_num = @num";
+            string deleteQuery = "DELETE FROM Account WHERE user_num = @user_num";
             using var deleteCmd = new MySqlCommand(deleteQuery, conn);
-            deleteCmd.Parameters.AddWithValue("@num", userNum);
+            deleteCmd.Parameters.AddWithValue("@user_num", userNum);
             bool result = deleteCmd.ExecuteNonQuery() > 0;
 
             if (result)
@@ -82,21 +82,19 @@ namespace DB.overcloud.Service
             return result;
         }
 
-        public void UpdateTotalStorageForUser(string userId)
+        public bool UpdateAccountUsage(int userNum, ulong totalSize, ulong usedSize)
         {
-            var clouds = cloudService.GetCloudsForUser(userId);
-            ulong total = 0, used = 0;
-
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = "UPDATE Account SET total_size = @t, used_size = @u WHERE ID = @id";
-            using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@t", total);
-            cmd.Parameters.AddWithValue("@u", used);
-            cmd.Parameters.AddWithValue("@id", userId);
+            string query = "UPDATE Account SET total_size = @total_size, used_size = @used_size WHERE user_num = @user_num";
 
-            cmd.ExecuteNonQuery();
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@total_size", totalSize);
+            cmd.Parameters.AddWithValue("@used_size", usedSize);
+            cmd.Parameters.AddWithValue("@user_num", userNum);
+
+            return cmd.ExecuteNonQuery() > 0;
         }
     }
 }

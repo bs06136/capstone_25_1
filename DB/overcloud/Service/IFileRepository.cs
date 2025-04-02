@@ -8,5 +8,6 @@ namespace DB.overcloud.Service
         List<CloudFileInfo> GetAllFileInfo();
         bool AddFile(CloudFileInfo file);
         bool DeleteFile(int fileId);
+        CloudFileInfo GetFileById(int fileId);
     }
 }

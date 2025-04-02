@@ -8,6 +8,6 @@ namespace DB.overcloud.Service
         bool InsertAccount(CloudAccountInfo account);
         List<CloudStorageInfo> GetAllCloudAccounts();
         bool DeleteAccountByUserNum(int userNum);
-        void UpdateTotalStorageForUser(string userId);
+        bool UpdateAccountUsage(int userNum, ulong totalSize, ulong usedSize)
     }
 }

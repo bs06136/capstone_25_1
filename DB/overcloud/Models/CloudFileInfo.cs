@@ -13,5 +13,6 @@ namespace DB.overcloud.Models
         public int? ParentFolderId { get; set; }            // 부모 폴더의 ID (자기참조)
 
         public bool IsFolder { get; set; }                  // 폴더 여부
+        //public string GoogleFileId { get; set; }            // Google Drive 연동용 식별자
     }
 }

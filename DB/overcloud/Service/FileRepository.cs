@@ -78,5 +78,35 @@ namespace DB.overcloud.Service
 
             return cmd.ExecuteNonQuery() > 0;
         }
+
+        public CloudFileInfo GetFileById(int fileId)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "SELECT * FROM CloudFileInfo WHERE file_id = @id";
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@id", fileId);
+
+            using var reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                return new CloudFileInfo
+                {
+                    FileId = Convert.ToInt32(reader["file_id"]),
+                    FileName = reader["file_name"].ToString(),
+                    FilePath = reader["file_path"]?.ToString(),
+                    FileSize = Convert.ToUInt64(reader["file_size"]),
+                    UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
+                    CloudType = reader["cloud_type"]?.ToString(),
+                    CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
+                    IsFolder = Convert.ToBoolean(reader["is_folder"])
+                    //GoogleFileId = reader["google_file_id"]?.ToString()
+                };
+            }
+
+            return null;
+        }
     }
 }
