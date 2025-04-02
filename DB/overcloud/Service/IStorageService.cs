@@ -8,5 +8,6 @@ namespace DB.overcloud.Service
         List<CloudStorageInfo> GetCloudsForUser(string userId);
         bool AddCloudStorage(CloudStorageInfo info);
         bool DeleteCloudStorage(int cloudStorageNum);
+        bool account_save(CloudStorageInfo one_cloud);
     }
 }
