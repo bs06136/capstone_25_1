@@ -39,7 +39,7 @@ namespace overcloud.Views
             };
 
             // ⭐ 객체 생성 없이 정적 메서드 직접 호출
-            bool result = _accountService.AddAccount(accountInfo);
+            bool result = _accountService.AddCloudStorage(accountInfo);
             System.Windows.MessageBox.Show(result ? "계정 추가 성공" : "계정 추가 실패");
 
             this.Close();
