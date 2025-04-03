@@ -1,4 +1,4 @@
-using overcloud.Models;
+using DB.overcloud.Models;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -14,23 +14,6 @@ namespace DB.overcloud.Service
             connectionString = connStr;
         }
 
-        public bool AddCloudInfo(CloudStorageInfo info)
-        {
-            using var conn = new MySqlConnection(connectionString);
-            conn.Open();
-
-            string query = @"
-                INSERT INTO CloudStorageInfo (account_user_num, total_capacity, used_capacity)
-                VALUES (@userNum, @total, @used)";
-
-            using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@userNum", info.AccountUserNum);
-            cmd.Parameters.AddWithValue("@total", info.TotalCapacity);
-            cmd.Parameters.AddWithValue("@used", info.UsedCapacity);
-
-            return cmd.ExecuteNonQuery() > 0;
-        }
-
         public List<CloudStorageInfo> GetCloudsForUser(string userId)
         {
             var list = new List<CloudStorageInfo>();
@@ -38,51 +21,80 @@ namespace DB.overcloud.Service
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            // 먼저 user_num 조회
-            string getUserNumQuery = "SELECT user_num FROM Account WHERE ID = @id LIMIT 1";
-            using var getUserCmd = new MySqlCommand(getUserNumQuery, conn);
-            getUserCmd.Parameters.AddWithValue("@id", userId);
-            object result = getUserCmd.ExecuteScalar();
-            if (result == null) return list;
+            string query = @"
+                SELECT cs.* 
+                FROM CloudStorageInfo cs
+                JOIN Account a ON cs.user_num = a.user_num
+                WHERE a.ID = @id";
 
-            int userNum = Convert.ToInt32(result);
-
-            string query = "SELECT * FROM CloudStorageInfo WHERE account_user_num = @userNum";
             using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@userNum", userNum);
-
+            cmd.Parameters.AddWithValue("@id", userId);
             using var reader = cmd.ExecuteReader();
+
             while (reader.Read())
             {
                 list.Add(new CloudStorageInfo
                 {
-                    Id = Convert.ToInt32(reader["id"]),
-                    AccountUserNum = Convert.ToInt32(reader["account_user_num"]),
-                    TotalCapacity = Convert.ToInt64(reader["total_capacity"]),
-                    UsedCapacity = Convert.ToInt64(reader["used_capacity"])
+                    CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    UserNum = Convert.ToInt32(reader["user_num"]),
+                    CloudType = reader["cloud_type"].ToString(),
+                    AccountId = reader["account_id"].ToString(),
+                    AccountPassword = reader["account_password"].ToString(),
+                    TotalSize = (int)Convert.ToUInt64(reader["total_size"]),
+                    UsedSize = (int)Convert.ToUInt64(reader["used_size"])
                 });
             }
 
             return list;
         }
 
-        public bool DeleteAllCloudsForAccount(string userId)
+        public bool AddCloudStorage(CloudStorageInfo info)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            // 먼저 user_num 조회
-            string getUserNumQuery = "SELECT user_num FROM Account WHERE ID = @id LIMIT 1";
-            using var getUserCmd = new MySqlCommand(getUserNumQuery, conn);
-            getUserCmd.Parameters.AddWithValue("@id", userId);
-            object result = getUserCmd.ExecuteScalar();
-            if (result == null) return false;
+            string query = @"INSERT INTO CloudStorageInfo 
+                (user_num, cloud_type, account_id, account_password, total_size, used_size) 
+                VALUES 
+                (@user_num, @type, @id, @pw, @total, @used)";
 
-            int userNum = Convert.ToInt32(result);
-
-            string query = "DELETE FROM CloudStorageInfo WHERE account_user_num = @userNum";
             using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@userNum", userNum);
+            cmd.Parameters.AddWithValue("@user_num", info.UserNum);
+            cmd.Parameters.AddWithValue("@type", info.CloudType);
+            cmd.Parameters.AddWithValue("@id", info.AccountId);
+            cmd.Parameters.AddWithValue("@pw", info.AccountPassword);
+            cmd.Parameters.AddWithValue("@total", info.TotalSize);
+            cmd.Parameters.AddWithValue("@used", info.UsedSize);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool DeleteCloudStorage(int cloudStorageNum)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "DELETE FROM CloudStorageInfo WHERE cloud_storage_num = @num";
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@num", cloudStorageNum);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool account_save(CloudStorageInfo one_cloud)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"UPDATE CloudStorageInfo SET 
+                                total_size = @total,
+                                used_size = @used
+                            WHERE cloud_storage_num = @cloudNum";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@total", one_cloud.TotalSize);
+            cmd.Parameters.AddWithValue("@used", one_cloud.UsedSize);
+            cmd.Parameters.AddWithValue("@cloudNum", one_cloud.CloudStorageNum);
 
             return cmd.ExecuteNonQuery() > 0;
         }

@@ -1,12 +1,13 @@
-using overcloud.Models;
+using DB.overcloud.Models;
 using System.Collections.Generic;
 
 namespace DB.overcloud.Service
 {
-    public interface IStorageService
+    public interface IStorageService // 오버클라우드 계정을 관리하는 인터페이스 레파지토리
     {
-        bool AddCloudInfo(CloudStorageInfo info);
-        List<CloudStorageInfo> GetCloudsForUser(string userId);
-        bool DeleteAllCloudsForAccount(string userId);
+        List<CloudStorageInfo> GetCloudsForUser(string userId); 
+        bool AddCloudStorage(CloudStorageInfo info);
+        bool DeleteCloudStorage(int cloudStorageNum);
+        bool account_save(CloudStorageInfo one_cloud);
     }
 }

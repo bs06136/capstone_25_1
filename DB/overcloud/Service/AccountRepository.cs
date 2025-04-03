@@ -1,8 +1,7 @@
-using overcloud.Models;
+using DB.overcloud.Models;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace DB.overcloud.Service
 {
@@ -22,39 +21,39 @@ namespace DB.overcloud.Service
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = "INSERT INTO Account (ID, password, cloud_type, total_capacity, used_capacity) VALUES (@id, @pw, @type, 0, 0)";
+            string query = "INSERT INTO Account (username, ID, password, total_size, used_size) VALUES (@username, @id, @pw, 0, 0)";
             using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@username", account.Username);
             cmd.Parameters.AddWithValue("@id", account.ID);
             cmd.Parameters.AddWithValue("@pw", account.Password);
-            cmd.Parameters.AddWithValue("@type", account.CloudType);
 
             return cmd.ExecuteNonQuery() > 0;
         }
 
-        public List<CloudAccountInfo> GetAllAccounts()
+        public List<CloudStorageInfo> GetAllAccounts()
         {
-            var list = new List<CloudAccountInfo>();
+            var list = new List<CloudStorageInfo>();
 
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = "SELECT * FROM Account";
+            string query = "SELECT * FROM CloudStorageInfo";
             using var cmd = new MySqlCommand(query, conn);
             using var reader = cmd.ExecuteReader();
 
             while (reader.Read())
             {
-                list.Add(new CloudAccountInfo
+                list.Add(new CloudStorageInfo
                 {
+                    CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     UserNum = Convert.ToInt32(reader["user_num"]),
-                    ID = reader["ID"].ToString(),
-                    Password = reader["password"].ToString(),
                     CloudType = reader["cloud_type"].ToString(),
-                    TotalSize = Convert.ToInt64(reader["total_capacity"]),
-                    UsedSize = Convert.ToInt64(reader["used_capacity"])
+                    AccountId = reader["account_id"].ToString(),
+                    AccountPassword = reader["account_password"].ToString(),
+                    TotalSize = (int)Convert.ToUInt64(reader["total_size"]),
+                    UsedSize = (int)Convert.ToUInt64(reader["used_size"])
                 });
             }
-            Debug.WriteLine("DB 완료");
 
             return list;
         }
@@ -64,49 +63,38 @@ namespace DB.overcloud.Service
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            // ID 조회 먼저
-            string getIdQuery = "SELECT ID FROM Account WHERE user_num = @num";
+            string getIdQuery = "SELECT ID FROM Account WHERE user_num = @user_num";
             using var getIdCmd = new MySqlCommand(getIdQuery, conn);
-            getIdCmd.Parameters.AddWithValue("@num", userNum);
+            getIdCmd.Parameters.AddWithValue("@user_num", userNum);
             var id = getIdCmd.ExecuteScalar()?.ToString();
             if (id == null) return false;
 
-            // Account 삭제
-            string deleteQuery = "DELETE FROM Account WHERE user_num = @num";
+            string deleteQuery = "DELETE FROM Account WHERE user_num = @user_num";
             using var deleteCmd = new MySqlCommand(deleteQuery, conn);
-            deleteCmd.Parameters.AddWithValue("@num", userNum);
+            deleteCmd.Parameters.AddWithValue("@user_num", userNum);
             bool result = deleteCmd.ExecuteNonQuery() > 0;
 
             if (result)
             {
-                // 연결된 클라우드 정보도 삭제
-                cloudService.DeleteAllCloudsForAccount(id);
+                //cloudService.DeleteAllCloudsForAccount(id);
             }
 
             return result;
         }
 
-        public void UpdateTotalStorageForUser(string userId)
+        public bool UpdateAccountUsage(int userNum, ulong totalSize, ulong usedSize)
         {
-            var clouds = cloudService.GetCloudsForUser(userId);
-            long total = 0, used = 0;
-
-            foreach (var c in clouds)
-            {
-                total += c.TotalCapacity;
-                used += c.UsedCapacity;
-            }
-
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = "UPDATE Account SET total_capacity = @t, used_capacity = @u WHERE ID = @id";
-            using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@t", total);
-            cmd.Parameters.AddWithValue("@u", used);
-            cmd.Parameters.AddWithValue("@id", userId);
+            string query = "UPDATE Account SET total_size = @total_size, used_size = @used_size WHERE user_num = @user_num";
 
-            cmd.ExecuteNonQuery();
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@total_size", totalSize);
+            cmd.Parameters.AddWithValue("@used_size", usedSize);
+            cmd.Parameters.AddWithValue("@user_num", userNum);
+
+            return cmd.ExecuteNonQuery() > 0;
         }
     }
 }

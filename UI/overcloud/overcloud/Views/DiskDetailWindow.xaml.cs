@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using OverCloud.Services;
-using overcloud.Models;
+using DB.overcloud.Models;
 
 namespace overcloud.Views
 {
@@ -40,7 +40,7 @@ namespace overcloud.Views
 
         private void DiskDetailWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var accountList = _accountService.GetAllAccounts();
+            var accountList = _accountService.GetCloudsForUser();
 
             var displayList = accountList.Select((acc, idx) =>
             {
@@ -48,7 +48,7 @@ namespace overcloud.Views
                 return new CloudDisplayModel
                 {
                     CloudType = acc.CloudType,
-                    CloudId = acc.ID,
+                    CloudId = acc.AccountId,
                     UsedSize = acc.UsedSize,
                     TotalSize = acc.TotalSize,
                     ColorBrush = new SolidColorBrush(ChangeColorBrightness(baseColor, 0.5f)), // Used (그래프용)

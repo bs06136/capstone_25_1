@@ -9,7 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using overcloud.Views;
-using overcloud.Models;
+using DB.overcloud.Models;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows.Forms;
 using static overcloud.temp_class.TempClass;
@@ -21,33 +21,52 @@ namespace overcloud
     public partial class MainWindow : Window
     {
         private AccountService _accountService;
+        private FileUploadManager _FileUploadManager;
+        private GoogleDriveService _GoogleDriveService;
+        private IAccountRepository repo = new AccountRepository(DbConfig.ConnectionString);
+        private IStorageService repo_2 = new StorageService(DbConfig.ConnectionString);
+        private StorageUpdater _storageUpdater;
+        private FileDownloadManager _fileDownloadManager;
 
         public MainWindow()
         {
             InitializeComponent();
 
             // 1) Repository 인스턴스(예: AccountRepository) 준비
-            string connStr = "server=localhost;database=overcloud;uid=admin;pwd=admin;"; ;
-            IAccountRepository repo = new AccountRepository(connStr);
+            //IAccountRepository repo = new AccountRepository(DbConfig.ConnectionString);
+            //IStorageService repo_2 = new StorageService(DbConfig.ConnectionString);
 
             // 2) AccountService에 주입
-            _accountService = new AccountService(repo);
+            _accountService = new AccountService(repo, repo_2);
+            _GoogleDriveService = new GoogleDriveService();
+            _FileUploadManager = new FileUploadManager(_accountService, _GoogleDriveService);
+
+            _storageUpdater = new StorageUpdater(_GoogleDriveService, repo_2);  // 수정 필요
+            SaveDriveQuotaToDBAsync();  // 수정 필요
+
+            _fileDownloadManager = new FileDownloadManager(_GoogleDriveService);
         }
+
+        private async void SaveDriveQuotaToDBAsync()
+        {
+            await _storageUpdater.SaveDriveQuotaToDB("bszxcvbn@gmail.com", 1);
+        }
+
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
-            AddAccountWindow window = new AddAccountWindow();
+            AddAccountWindow window = new AddAccountWindow(_accountService);
             window.ShowDialog();
         }
 
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
-            DeleteAccountWindow window = new DeleteAccountWindow();
+            DeleteAccountWindow window = new DeleteAccountWindow(_accountService);
             window.Owner = this;
             window.ShowDialog();
         }
 
 
-        private void Button_Save_Click(object sender, RoutedEventArgs e)
+        private async void Button_Save_Click(object sender, RoutedEventArgs e)
         {
             var choice = System.Windows.MessageBox.Show(
                 "파일을 선택하려면 [예], 폴더를 선택하려면 [아니오]를 클릭하세요.",
@@ -70,7 +89,7 @@ namespace overcloud
                     string filePath = fileDialog.FileName;
 
                     // ⭐ temp_class.file_upload 호출
-                    bool result = true;     //file_upload(filePath);
+                    bool result = await _FileUploadManager.file_upload(filePath);
 
                     System.Windows.MessageBox.Show(result
                         ? $"파일 업로드 성공\n경로: {filePath}"
@@ -112,6 +131,11 @@ namespace overcloud
         {
             List<string> directories = all_file_list(); // 또는 적절한 클래스에서 호출
             FileListGrid.ItemsSource = directories;
+        }
+
+        private async void Button_Down_Click(object sender, RoutedEventArgs e)
+        {
+            await _fileDownloadManager.DownloadFile("cloudType", "userId", "fileId", "savePath");
         }
     }
 }
