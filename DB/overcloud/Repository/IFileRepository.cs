@@ -6,7 +6,8 @@ namespace DB.overcloud.Repository
     public interface IFileRepository
     {
         List<CloudFileInfo> GetAllFileInfo();
-        bool AddFile(CloudFileInfo file);
+        bool addfile(CloudFileInfo file_info);
+        bool change_file(CloudFileInfo file_info);
         bool DeleteFile(int fileId);
         CloudFileInfo GetFileById(int fileId);
         List<CloudFileInfo> all_file_list(int fileId);

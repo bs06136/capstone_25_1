@@ -43,7 +43,7 @@ namespace DB.overcloud.Repository
             return list;
         }
 
-        public bool AddFile(CloudFileInfo file)
+        public bool addfile(CloudFileInfo file_info)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
@@ -54,13 +54,32 @@ namespace DB.overcloud.Repository
                 (@name, @size, @time, @storage, @parent, @folder, @count)";
 
             using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@name", file.FileName);
-            cmd.Parameters.AddWithValue("@size", file.FileSize);
-            cmd.Parameters.AddWithValue("@time", file.UploadedAt);
-            cmd.Parameters.AddWithValue("@storage", file.CloudStorageNum);
-            cmd.Parameters.AddWithValue("@parent", file.ParentFolderId.HasValue ? file.ParentFolderId.Value : (object)DBNull.Value);
-            cmd.Parameters.AddWithValue("@folder", file.IsFolder);
+            cmd.Parameters.AddWithValue("@name", file_info.FileName);
+            cmd.Parameters.AddWithValue("@size", file_info.FileSize);
+            cmd.Parameters.AddWithValue("@time", file_info.UploadedAt);
+            cmd.Parameters.AddWithValue("@storage", file_info.CloudStorageNum);
+            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId.HasValue ? file.ParentFolderId.Value : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@folder", file_info.IsFolder);
             cmd.Parameters.AddWithValue("@count", 0);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool change_file(CloudFileInfo file_info)
+        {
+            if (file_info.Count < 2)
+                return false; // 다운로드 횟수가 부족하므로 이동하지 않음
+
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"UPDATE CloudFileInfo 
+                            SET cloud_storage_num = @newStorage 
+                            WHERE file_id = @id";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@newStorage", 2); // cloud_storage_num = 2 인 클라우드로 이동
+            cmd.Parameters.AddWithValue("@id", file_info.FileId);
 
             return cmd.ExecuteNonQuery() > 0;
         }
