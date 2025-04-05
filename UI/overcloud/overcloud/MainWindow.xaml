@@ -8,11 +8,7 @@
     <Grid>
         <!-- 왼쪽 UI 영역 -->
         <Grid Grid.Column="0" Margin="0,0,0,0">
-            <DataGrid x:Name="FileListGrid" AutoGenerateColumns="False" Margin="50">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="디렉토리 경로" Binding="{Binding}" />
-                </DataGrid.Columns>
-            </DataGrid>
+            <TreeView x:Name="FileExplorerTree" Margin="50" />
 
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Left"
@@ -21,7 +17,7 @@
                 <Button Content="추가" Width="60" Height="30" Click="Button_Add_Click"/>
                 <Button Content="삭제" Width="60" Height="30" Click="Button_Delete_Click"/>
                 <Button Content="저장" Width="60" Height="30" Click="Button_Save_Click"/>
-                <Button Content="다운" Width="60" Height="30" Click="Button_Down_Click"/>
+                <Button Content="선택 다운로드" Click="Button_Down_Click" />
                 <Button Content="디스크 상세정보" Width="150" Height="30" Click="Button_DetailDisk_Click" />
             </StackPanel>
         </Grid>
