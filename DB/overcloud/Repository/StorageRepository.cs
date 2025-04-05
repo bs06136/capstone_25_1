@@ -3,13 +3,13 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 
-namespace DB.overcloud.Service
+namespace DB.overcloud.Repository
 {
-    public class StorageService : IStorageService
+    public class StorageRepository : IStorageRepository
     {
         private readonly string connectionString;
 
-        public StorageService(string connStr)
+        public StorageRepository(string connStr)
         {
             connectionString = connStr;
         }

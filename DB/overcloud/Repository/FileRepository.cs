@@ -3,7 +3,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 
-namespace DB.overcloud.Service
+namespace DB.overcloud.Repository
 {
     public class FileRepository : IFileRepository
     {

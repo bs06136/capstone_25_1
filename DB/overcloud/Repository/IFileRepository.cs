@@ -1,7 +1,7 @@
 using DB.overcloud.Models;
 using System.Collections.Generic;
 
-namespace DB.overcloud.Service
+namespace DB.overcloud.Repository
 {
     public interface IFileRepository
     {
