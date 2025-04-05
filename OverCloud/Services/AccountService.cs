@@ -11,8 +11,8 @@ namespace OverCloud.Services
 {
     public class AccountService //프론트 <-> 프로그램 함수 호출
     {
-        private readonly IAccountRepository repo;
-        private readonly IStorageService repo_2;
+        private readonly IAccountRepository repo; //OverClour의 계정 정보 
+        private readonly IStorageService repo_2; // OverCloud계정 하나 안에 또 다른 계정들의 정보
 
         public AccountService(IAccountRepository repo, IStorageService repo_2)
         {
@@ -33,7 +33,7 @@ namespace OverCloud.Services
             return repo.DeleteAccountByUserNum(userNum);
         }
 
-        // 모든 계정 정보 조회 (UI에서 호출)
+        // 오버클라우드 계정 안의 모든 계정 정보 조회 (UI에서 호출)
         public List<CloudStorageInfo> GetCloudsForUser()
         {
             return repo.GetAllAccounts();
