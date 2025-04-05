@@ -105,5 +105,115 @@ namespace DB.overcloud.Service
             return null;
         }
 
+        public List<CloudFileInfo> all_file_list(int fileId)
+        {
+            var list = new List<CloudFileInfo>();
+
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "SELECT * FROM CloudFileInfo WHERE parent_folder_id = @parent";
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@parent", fileId);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(new CloudFileInfo
+                {
+                    FileId = Convert.ToInt32(reader["file_id"]),
+                    FileName = reader["file_name"].ToString(),
+                    FileSize = Convert.ToUInt64(reader["file_size"]),
+                    UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
+                    CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
+                    IsFolder = Convert.ToBoolean(reader["is_folder"]),
+                    Count = Convert.ToInt32(reader["count"])
+                });
+            }
+
+            return list;
+        }
+
+        public CloudFileInfo specific_file_info(int fileId)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "SELECT * FROM CloudFileInfo WHERE file_id = @id";
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@id", fileId);
+
+            using var reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                return new CloudFileInfo
+                {
+                    FileId = Convert.ToInt32(reader["file_id"]),
+                    FileName = reader["file_name"].ToString(),
+                    FileSize = Convert.ToUInt64(reader["file_size"]),
+                    UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
+                    CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
+                    IsFolder = Convert.ToBoolean(reader["is_folder"]),
+                    Count = Convert.ToInt32(reader["count"])
+                };
+            }
+
+            return null; // 찾는 파일이 없는 경우
+        }
+
+        public List<CloudFileInfo> GetAllFileInfo(string file_direc)
+        {
+            var result = new List<CloudFileInfo>();
+
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            // 1. 폴더 이름으로 해당 폴더의 file_id 찾기
+            string folderQuery = "SELECT file_id FROM CloudFileInfo WHERE file_name = @name AND is_folder = true LIMIT 1";
+            using var folderCmd = new MySqlCommand(folderQuery, conn);
+            folderCmd.Parameters.AddWithValue("@name", file_direc);
+
+            object folderIdObj = folderCmd.ExecuteScalar();
+            if (folderIdObj == null) return result; // 폴더가 존재하지 않음
+
+            int parentId = Convert.ToInt32(folderIdObj);
+
+            // 2. 해당 폴더에 포함된 모든 파일/폴더 조회
+            string childQuery = "SELECT * FROM CloudFileInfo WHERE parent_folder_id = @parent";
+            using var childCmd = new MySqlCommand(childQuery, conn);
+            childCmd.Parameters.AddWithValue("@parent", parentId);
+
+            using var reader = childCmd.ExecuteReader();
+            while (reader.Read())
+            {
+                result.Add(new CloudFileInfo
+                {
+                    FileId = Convert.ToInt32(reader["file_id"]),
+                    FileName = reader["file_name"].ToString(),
+                    FileSize = Convert.ToUInt64(reader["file_size"]),
+                    UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
+                    CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
+                    IsFolder = Convert.ToBoolean(reader["is_folder"]),
+                    Count = Convert.ToInt32(reader["count"])
+                });
+            }
+
+            return result;
+        }
+
+        public bool IncrementDownloadCount(int fileId)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "UPDATE CloudFileInfo SET count = count + 1 WHERE file_id = @id";
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@id", fileId);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
     }
 }
