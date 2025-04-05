@@ -29,6 +29,12 @@ namespace overcloud
         private StorageUpdater _storageUpdater;
         private FileDownloadManager _fileDownloadManager;
 
+        private int currentFolderId = -1; // 현재 폴더 위치
+        private Stack<int> folderHistory = new(); // 이전 폴더 기억용
+        private Dictionary<int, bool> selectedMap = new();  // 2번째 탐색기에서 체크박스 상태 기억용
+
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -169,15 +175,20 @@ namespace overcloud
 
         private List<CloudFileInfo> GetCheckedFiles()
         {
-            var result = new List<CloudFileInfo>();
-
-            foreach (var item in FileExplorerTree.Items)
+            if (FileExplorerTree.Visibility == Visibility.Visible)
             {
-                if (item is FileTreeNode node)
-                    FindCheckedFilesRecursive(node, result, false); // 🔁 parentChecked 초기값 false
+                var result = new List<CloudFileInfo>();
+                foreach (var item in FileExplorerTree.Items)
+                {
+                    if (item is FileTreeNode node)
+                        FindCheckedFilesRecursive(node, result, false);
+                }
+                return result;
             }
-
-            return result;
+            else
+            {
+                return GetCheckedFiles_NewExplorer();  // ⭐ 이거 추가!
+            }
         }
 
         private void FindCheckedFilesRecursive(FileTreeNode node, List<CloudFileInfo> result, bool parentChecked = false)
@@ -280,6 +291,106 @@ namespace overcloud
             Traverse(-1);
             return result;
         }
+
+
+
+
+
+        private void Button_SwitchExplorer_Click(object sender, RoutedEventArgs e)
+        {
+            bool isTreeVisible = FileExplorerTree.Visibility == Visibility.Visible;
+
+            FileExplorerTree.Visibility = isTreeVisible ? Visibility.Collapsed : Visibility.Visible;
+            Panel_FolderExplorer.Visibility = isTreeVisible ? Visibility.Visible : Visibility.Collapsed;
+
+            if (!isTreeVisible) return;
+
+            currentFolderId = -1;
+            LoadFolderContents(currentFolderId);
+        }
+
+        private void FolderItem_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is TextBlock tb && tb.DataContext is CloudFileInfo info && info.IsFolder)
+            {
+                folderHistory.Push(currentFolderId);
+                currentFolderId = info.FileId;
+                LoadFolderContents(currentFolderId);
+            }
+        }
+
+
+        private void LoadFolderContents(int folderId)
+        {
+            var contents = all_file_list(folderId).ToList();
+
+            // 현재 폴더의 부모를 알아내서 "상위 폴더로" 항목 삽입
+            if (folderId != -1)
+            {
+                var all = GetAllFilesRecursively();
+                if (all.TryGetValue(folderId, out var current) && current.ParentFolderId.HasValue)
+                {
+                    contents.Insert(0, new CloudFileInfo
+                    {
+                        FileName = "📁 상위 폴더로",
+                        IsFolder = true,
+                        FileId = current.ParentFolderId.Value
+                    });
+                }
+            }
+
+            FolderContentPanel.ItemsSource = contents;
+        }
+
+
+        private string GetCloudPathString(int folderId)
+        {
+            if (folderId == -1) return "Root";
+
+            Dictionary<int, CloudFileInfo> allMap = GetAllFilesRecursively();  // 전체 트리
+
+            List<string> parts = new();
+            int? current = folderId;
+
+            while (current.HasValue && allMap.ContainsKey(current.Value))
+            {
+                parts.Insert(0, allMap[current.Value].FileName);
+                current = allMap[current.Value].ParentFolderId;
+            }
+
+            return "Root > " + string.Join(" > ", parts);
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.CheckBox cb && cb.Tag is int id)
+                selectedMap[id] = true;
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.CheckBox cb && cb.Tag is int id)
+                selectedMap[id] = false;
+        }
+
+
+        private List<CloudFileInfo> GetCheckedFiles_NewExplorer()
+        {
+            if (FolderContentPanel.ItemsSource is IEnumerable<CloudFileInfo> list)
+            {
+                return list
+                    .Where(f => selectedMap.TryGetValue(f.FileId, out var isChecked)
+                                && isChecked
+                                && f.FileName != "📁 상위 폴더로")
+                    .ToList();
+            }
+
+            return new List<CloudFileInfo>();
+        }
+
+
+
+
 
     }
 }
