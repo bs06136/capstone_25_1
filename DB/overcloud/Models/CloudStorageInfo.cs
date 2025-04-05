@@ -12,6 +12,6 @@ namespace DB.overcloud.Models
         public int TotalCapacity { get; set; }             // 계정 한 개의 전체 용량
         public int UsedCapacity { get; set; }              // 계정 한 개의 사용 중인 용량
 
-        public string accessToken { get; set; }         // Google Drive API 접근 토큰 
+        public string AccessToken { get; set; }         // Google Drive API 접근 토큰
     }
 }

@@ -38,6 +38,7 @@ namespace DB.overcloud.Service
             conn.Open();
 
             string query = "SELECT * FROM CloudStorageInfo";
+
             using var cmd = new MySqlCommand(query, conn);
             using var reader = cmd.ExecuteReader();
 
@@ -50,8 +51,9 @@ namespace DB.overcloud.Service
                     CloudType = reader["cloud_type"].ToString(),
                     AccountId = reader["account_id"].ToString(),
                     AccountPassword = reader["account_password"].ToString(),
-                    TotalSize = (int)Convert.ToUInt64(reader["total_size"]),
-                    UsedSize = (int)Convert.ToUInt64(reader["used_size"])
+                    TotalCapacity = Convert.ToInt32(reader["total_capacity"]),
+                    UsedCapacity = Convert.ToInt32(reader["used_capacity"]),
+                    AccessToken = reader["access_token"]?.ToString()
                 });
             }
 

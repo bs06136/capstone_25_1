@@ -31,13 +31,12 @@ namespace DB.overcloud.Service
                 {
                     FileId = Convert.ToInt32(reader["file_id"]),
                     FileName = reader["file_name"].ToString(),
-                    FilePath = reader["file_path"]?.ToString(),
                     FileSize = Convert.ToUInt64(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
-                    CloudType = reader["cloud_type"].ToString(),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
-                    IsFolder = Convert.ToBoolean(reader["is_folder"])
+                    IsFolder = Convert.ToBoolean(reader["is_folder"]),
+                    Count = Convert.ToInt32(reader["count"])
                 });
             }
 
@@ -50,19 +49,18 @@ namespace DB.overcloud.Service
             conn.Open();
 
             string query = @"INSERT INTO CloudFileInfo 
-                (file_name, file_path, file_size, uploaded_at, cloud_type, cloud_storage_num, parent_folder_id, is_folder)
+                (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, count)
                 VALUES 
-                (@name, @path, @size, @time, @type, @storage, @parent, @folder)";
+                (@name, @size, @time, @storage, @parent, @folder, @count)";
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@name", file.FileName);
-            cmd.Parameters.AddWithValue("@path", file.FilePath ?? "");
             cmd.Parameters.AddWithValue("@size", file.FileSize);
             cmd.Parameters.AddWithValue("@time", file.UploadedAt);
-            cmd.Parameters.AddWithValue("@type", file.CloudType);
             cmd.Parameters.AddWithValue("@storage", file.CloudStorageNum);
             cmd.Parameters.AddWithValue("@parent", file.ParentFolderId.HasValue ? file.ParentFolderId.Value : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@folder", file.IsFolder);
+            cmd.Parameters.AddWithValue("@count", 0);
 
             return cmd.ExecuteNonQuery() > 0;
         }
@@ -95,18 +93,17 @@ namespace DB.overcloud.Service
                 {
                     FileId = Convert.ToInt32(reader["file_id"]),
                     FileName = reader["file_name"].ToString(),
-                    FilePath = reader["file_path"]?.ToString(),
                     FileSize = Convert.ToUInt64(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
-                    CloudType = reader["cloud_type"]?.ToString(),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
-                    IsFolder = Convert.ToBoolean(reader["is_folder"])
-                    //GoogleFileId = reader["google_file_id"]?.ToString()
+                    IsFolder = Convert.ToBoolean(reader["is_folder"]),
+                    Count = Convert.ToInt32(reader["count"])
                 };
             }
 
             return null;
         }
+
     }
 }

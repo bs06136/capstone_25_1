@@ -12,6 +12,6 @@ namespace DB.overcloud.Models
 
         public bool IsFolder { get; set; }                  // 폴더 여부
 
-        public int count { get; set; }                      // 파일 다운로드 횟수
+        public int Count { get; set; }                      // 파일 다운로드 횟수
     }
 }
