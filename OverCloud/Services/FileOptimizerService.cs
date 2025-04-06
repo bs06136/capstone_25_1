@@ -35,9 +35,11 @@ namespace OverCloud.Services
 
                 if (best != null)
                 {
-                    //           fileRepo.UpdateStorage(file.FileId, best.CloudStorageNum);
+                    file.CloudStorageNum = best.CloudStorageNum; // 메모리 상 변경
+                    fileRepo.change_file(file); // DB에 반영
                     Console.WriteLine($"📦 파일 {file.FileName} → 클라우드 {best.CloudStorageNum}로 이전됨");
                 }
+
             }
         }
     }
