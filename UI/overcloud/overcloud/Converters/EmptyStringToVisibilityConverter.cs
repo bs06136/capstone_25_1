@@ -18,4 +18,17 @@ namespace overcloud.Converters
             throw new NotImplementedException();
         }
     }
+
+    public class BoolToBoldConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (value is bool b && b) ? FontWeights.Bold : FontWeights.Normal;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return System.Windows.Data.Binding.DoNothing;
+        }
+    }
 }
