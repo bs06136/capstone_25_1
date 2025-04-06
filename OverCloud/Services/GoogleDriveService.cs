@@ -45,7 +45,12 @@ namespace OverCloud.Services
             var request = service.Files.Create(fileMetadata, stream, "application/octet-stream");
             var result = await request.UploadAsync();
 
-            return result.Status == Google.Apis.Upload.UploadStatus.Completed;
+            if (result.Status == Google.Apis.Upload.UploadStatus.Completed)
+            {
+                return request.ResponseBody.Id; // Google Drive 파일 ID 반환
+            }
+
+            return null;
         }
 
 
