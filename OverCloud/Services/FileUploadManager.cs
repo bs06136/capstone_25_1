@@ -23,12 +23,11 @@ namespace OverCloud.Services
         {
             accountService = new AccountService();
             googleDriveService = new GoogleDriveService();
-
+          
             repo_file = new FileRepository(DbConfig.ConnectionString);
             fileService = new FileService(repo_file);
 
         }
-        
         public async Task<bool> file_upload(string file_name)
         {
             //return await googleDriveService.UploadFileAsync("ojw73366@gamil.com", file_name);
@@ -44,8 +43,9 @@ namespace OverCloud.Services
             }
 
             // 1. 업로드 수행
-            bool result = await googleDriveService.UploadFileAsync(googleAccount.AccountId + "@gmail.com", file_name);
-            if (!result) return false;
+            var googleFileId = await googleDriveService.UploadFileAsync(googleAccount.AccountId, file_name);
+            if (string.IsNullOrEmpty(googleFileId)) return false;
+
 
             // 2. 파일 정보 추출
             var fileInfo = new FileInfo(file_name);
@@ -58,11 +58,13 @@ namespace OverCloud.Services
                 CloudStorageNum = googleAccount.CloudStorageNum,
                 ParentFolderId = null, // 최상위 업로드라면 null
                 IsFolder = false,
-                Count = 0
+                Count = 0,
+                GoogleFileId =googleFileId
             };
 
             // 3. DB 저장
-            return fileService.SaveFile(file);
+            fileService.SaveFile(file);
+            return true;
         }
     }
 }
