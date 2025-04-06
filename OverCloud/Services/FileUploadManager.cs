@@ -12,6 +12,7 @@ namespace OverCloud.Services
     {
         private readonly AccountService accountService;
         private readonly GoogleDriveService googleDriveService;
+        private readonly FileService fileService;
 
         public FileUploadManager()
         {
@@ -19,6 +20,7 @@ namespace OverCloud.Services
             googleDriveService = new GoogleDriveService();
         }
 
+        
         public async Task<bool> file_upload(string file_name)
         {
             //return await googleDriveService.UploadFileAsync("ojw73366@gamil.com", file_name);
@@ -33,6 +35,8 @@ namespace OverCloud.Services
                 return false;
             }
 
+            var file = fileService.GetFile(fileId);
+            fileService.SaveFile(file);
             return await googleDriveService.UploadFileAsync(googleAccount.AccountId + "@gmail.com", file_name);
         }
     }
