@@ -8,11 +8,12 @@ using System.IO;
 namespace OverCloud.Services
 {
 
-    public class GoogleDriveService :ICloudFileService
+    public class GoogleDriveService : ICloudFileService
     {
         private const string TokenRootPath = "Tokens";
-        private const string CredentialFile = "C:\\key\\bae.json";
+        private const string CredentialFile = "\"C:\\Users\\ADMIN\\Desktop\\oh\\credential.json\"";
 
+        //사용자 별 토큰을 발급받고, 이후 모든 google drive api사용시에 호출 시 인증에 사용하는 usercredential 생성
         public async Task<UserCredential> AuthenticateAsync(string userId)
         {
             using var stream = new FileStream(CredentialFile, FileMode.Open, FileAccess.Read);
@@ -65,9 +66,9 @@ namespace OverCloud.Services
             return (long.Parse(result.StorageQuota.Limit.ToString()), long.Parse(result.StorageQuota.Usage.ToString()));
         }
 
-        
+
         //파일 다운로드 함수 : fileId는 구글 드라이브 내부의 실제 ID값이다.
-        public async Task<bool> DownloadFileAsync(string userId, string fileId, string savePath)
+        public async Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath)
         {
             var credential = await AuthenticateAsync(userId); // 실제 로그인된 계정 Id 사용
             var service = new DriveService(new BaseClientService.Initializer
@@ -76,7 +77,7 @@ namespace OverCloud.Services
                 ApplicationName = "OverCloud"
             });
 
-            var request = service.Files.Get(fileId);
+            var request = service.Files.Get(cloudFileId);
 
             using var stream = new FileStream(savePath, FileMode.Create, FileAccess.Write);
             await request.DownloadAsync(stream);
@@ -84,45 +85,50 @@ namespace OverCloud.Services
             return true;
         }
 
-        //모든 파일정보
-        /*
-        public async Task<List<CloudFileInfo>> ListAllFilesAsync(string userId, int cloudStorageNum)
-        {
-            var credential = await AuthenticateAsync(userId);
+        //public async Task<List<CloudFileInfo>> ListAllFilesAsync(string userId, int cloudStorageNum)
+        //{
+        //    // 1. 사용자 인증
+        //    var credential = await AuthenticateAsync(userId);
 
-            var service = new DriveService(new BaseClientService.Initializer
-           
-                HttpClientInitializer = credential,
-            ApplicationName = "OverCloud"
-            });
+        //    // 2. DriveService 초기화
+        //    var service = new DriveService(new BaseClientService.Initializer
+        //    {
+        //        HttpClientInitializer = credential,
+        //        ApplicationName = "OverCloud"
+        //    });
 
-            var request = service.Files.List();
-            request.Q = "trashed = false";  // 휴지통 제외
-            request.Fields = "files(id, name, mimeType, size, createdTime, parents)";
-            request.PageSize = 100;
+        //    // 3. 파일 리스트 요청 설정
+        //    var request = service.Files.List();
+        //    request.Q = "trashed = false";  // 휴지통 제외
+        //    request.Fields = "files(id, name, mimeType, size, createdTime, parents)";
+        //    request.PageSize = 100;
 
-            var response = await request.ExecuteAsync();
+        //    // 4. 요청 실행 및 결과 파싱
+        //    var response = await request.ExecuteAsync();
 
-            List<CloudFileInfo> result = new();
+        //    List<CloudFileInfo> result = new();
 
-            foreach (var file in response.Files)
-            {
-                result.Add(new CloudFileInfo
-            {
-                FileId = 0, // DB에 저장될 때 자동 증가 예정
-                FileName = file.Name,
-                FilePath = null, // Google Drive는 별도의 경로가 없으므로 후처리 필요
-                FileSize = file.Size.HasValue ? (ulong)file.Size.Value : 0,
-                UploadedAt = file.CreatedTime ?? DateTime.Now,
-                CloudType = "GoogleDrive",
-                CloudStorageNum = cloudStorageNum,
-                ParentFolderId = null, // 나중에 트리 구현 시 연결할 수 있음
-                IsFolder = file.MimeType == "application/vnd.google-apps.folder"
-            });
-        }
+        //    foreach (var file in response.Files)
+        //    {
+        //        result.Add(new CloudFileInfo
+        //        {
+        //            FileId = 0, // DB 자동 증가 예정
+        //            FileName = file.Name,
+        //            FilePath = null, // 필요 시 재구성
+        //            FileSize = file.Size.HasValue ? (ulong)file.Size.Value : 0,
+        //            UploadedAt = file.CreatedTime ?? DateTime.Now,
+        //            CloudType = "GoogleDrive",
+        //            CloudStorageNum = cloudStorageNum,
+        //            ParentFolderId = null, // 후속 구현 시 부모 관계 연결
+        //            IsFolder = file.MimeType == "application/vnd.google-apps.folder",
+        //            CloudFileId = file.Id,  // ✅ 구글 드라이브 실제 ID 저장
+        //            Count = 0
+        //        });
+        //    }
 
-        return result;
-        }*/
+        //    return result;
+        //}
+
 
     }
 }
