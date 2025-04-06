@@ -7,7 +7,7 @@ namespace DB.overcloud.Repository
     {
         List<CloudFileInfo> GetAllFileInfo();
         bool addfile(CloudFileInfo file_info);
-        bool change_file(CloudFileInfo file_info);
+        bool change_file(CloudFileInfo file_info, string newGoogleFileId);
         bool DeleteFile(int fileId);
         CloudFileInfo GetFileById(int fileId);
         List<CloudFileInfo> all_file_list(int fileId);

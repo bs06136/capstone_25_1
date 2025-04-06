@@ -13,6 +13,5 @@ namespace DB.overcloud.Models
         public bool IsFolder { get; set; }                  // 폴더 여부
         public int Count { get; set; }                      // 파일 다운로드 횟수
         public string GoogleFileId { get; set; }            // 실제 구글 드라이브 파일 ID
-
     }
 }
