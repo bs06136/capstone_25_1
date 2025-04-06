@@ -28,7 +28,7 @@ namespace OverCloud.Services
             };
         }
 
-        public async Task<bool> DownloadFile(string userId, string cloudType, string cloudFileId, int fileId, string savePath)
+        public async Task <bool> DownloadFile(string userId, string cloudFileId, int fileId, string savePath)
         {
             if (!serviceMap.ContainsKey(cloudType))
             {
