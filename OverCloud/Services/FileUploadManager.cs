@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-//using System.Windows.MessageBox;
 
 
 namespace OverCloud.Services
@@ -27,15 +26,16 @@ namespace OverCloud.Services
             //return await googleDriveService.UploadFileAsync("ojw73366@gamil.com", file_name);
 
             var accounts = accountService.GetCloudsForUser();
-            var googleAccount = accounts.FirstOrDefault(a => a.CloudType == "GoogleDrive");
+            var googleAccount = accounts.FirstOrDefault(a => a.CloudType == "Google Drive");
 
             if (googleAccount == null)
             {
 
-                //   System.MessageBox.Show("Google Drive 계정이 없습니다.");
+                System.Windows.MessageBox.Show("Google Drive 계정이 없습니다.");
                 return false;
             }
 
+<<<<<<< HEAD
             // 1. 업로드 수행
             bool result = await googleDriveService.UploadFileAsync(googleAccount.AccountId, file_name);
             if (!result) return false;
@@ -56,6 +56,11 @@ namespace OverCloud.Services
 
             // 3. DB 저장
             return fileService.SaveFile(file);
+=======
+            var file = fileService.GetFile(fileId);
+            fileService.SaveFile(file);
+            return await googleDriveService.UploadFileAsync(googleAccount.AccountId + "@gmail.com", file_name);
+>>>>>>> 7c94848e34286c149ea3e294c0dc94405b0d234d
         }
     }
 }
