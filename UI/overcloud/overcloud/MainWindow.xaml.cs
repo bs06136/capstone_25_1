@@ -14,7 +14,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows.Forms;
 using static overcloud.temp_class.TempClass;
 using OverCloud.Services;
-using DB.overcloud.Service;
+using DB.overcloud.Repository;
 using overcloud.Converters;
 
 namespace overcloud
@@ -23,9 +23,6 @@ namespace overcloud
     {
         private AccountService _accountService;
         private FileUploadManager _FileUploadManager;
-        private GoogleDriveService _GoogleDriveService;
-        private IAccountRepository repo = new AccountRepository(DbConfig.ConnectionString);
-        private IStorageService repo_2 = new StorageService(DbConfig.ConnectionString);
         private StorageUpdater _storageUpdater;
         private FileDownloadManager _fileDownloadManager;
 
@@ -39,19 +36,13 @@ namespace overcloud
         {
             InitializeComponent();
 
-            // 1) Repository 인스턴스(예: AccountRepository) 준비
-            //IAccountRepository repo = new AccountRepository(DbConfig.ConnectionString);
-            //IStorageService repo_2 = new StorageService(DbConfig.ConnectionString);
+            _accountService = new AccountService();
+            _FileUploadManager = new FileUploadManager();
 
-            // 2) AccountService에 주입
-            _accountService = new AccountService(repo, repo_2);
-            _GoogleDriveService = new GoogleDriveService();
-            _FileUploadManager = new FileUploadManager(_accountService, _GoogleDriveService);
-
-            _storageUpdater = new StorageUpdater(_GoogleDriveService, repo_2);  // 수정 필요
+            _storageUpdater = new StorageUpdater();  // 수정 필요
             SaveDriveQuotaToDBAsync();  // 수정 필요
 
-            _fileDownloadManager = new FileDownloadManager(_GoogleDriveService);
+            _fileDownloadManager = new FileDownloadManager();
         }
 
         private async void SaveDriveQuotaToDBAsync()
@@ -215,7 +206,7 @@ namespace overcloud
             }
         }
 
-        /*
+        
         private async void Button_Down_Click(object sender, RoutedEventArgs e)
         {
             var selectedFiles = GetCheckedFiles();
@@ -241,12 +232,14 @@ namespace overcloud
                 if (!string.IsNullOrEmpty(dir)) System.IO.Directory.CreateDirectory(dir);
 
                 // 실제 다운로드 (예: 구글드라이브에서 파일 가져오기)
-                await _fileDownloadManager.DownloadFile(file.CloudStorageNum, file.CloudType, file.FileId, localPath);
+                await _fileDownloadManager.DownloadFile("1",  file.CloudStorageNum, file.FileId, localPath);
             }
 
             System.Windows.MessageBox.Show("다운로드 완료");
-        }*/
+        }
 
+
+        /*
         private void Button_Down_Click(object sender, RoutedEventArgs e)    //testcode
         {
             var selectedFiles = GetCheckedFiles();
@@ -259,7 +252,7 @@ namespace overcloud
 
             string message = "선택된 파일:\n" + string.Join("\n", selectedFiles.Select(f => f.FileName));
             System.Windows.MessageBox.Show(message, "파일 선택 결과");
-        }
+        }*/
 
         private string GetCloudPath(CloudFileInfo file, Dictionary<int, CloudFileInfo> allMap)
         {

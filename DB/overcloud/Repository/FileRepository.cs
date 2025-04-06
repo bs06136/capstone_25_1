@@ -58,7 +58,7 @@ namespace DB.overcloud.Repository
             cmd.Parameters.AddWithValue("@size", file_info.FileSize);
             cmd.Parameters.AddWithValue("@time", file_info.UploadedAt);
             cmd.Parameters.AddWithValue("@storage", file_info.CloudStorageNum);
-            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId.HasValue ? file.ParentFolderId.Value : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId.HasValue ? file_info.ParentFolderId.Value : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@folder", file_info.IsFolder);
             cmd.Parameters.AddWithValue("@count", 0);
 

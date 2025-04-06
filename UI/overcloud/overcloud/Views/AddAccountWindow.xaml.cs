@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using DB.overcloud.Service;
+using DB.overcloud.Repository;
 using DB.overcloud.Models;  // CloudAccountInfo 클래스 사용을 위해 추가
 //using static overcloud.temp_class.TempClass;  // CloudAccountInfo 클래스 사용을 위해 추가
 using OverCloud.Services;
@@ -33,8 +33,8 @@ namespace overcloud.Views
                 AccountId = id,
                 AccountPassword = password,
                 CloudType = cloudType,
-                TotalSize = 0,
-                UsedSize = 0,
+				TotalCapacity = 0,
+				UsedCapacity = 0,
                 UserNum = 1
             };
 

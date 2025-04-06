@@ -49,8 +49,8 @@ namespace overcloud.Views
                 {
                     CloudType = acc.CloudType,
                     CloudId = acc.AccountId,
-                    UsedSize = acc.UsedSize,
-                    TotalSize = acc.TotalSize,
+                    UsedSize = acc.UsedCapacity,
+                    TotalSize = acc.TotalCapacity,
                     ColorBrush = new SolidColorBrush(ChangeColorBrightness(baseColor, 0.5f)), // Used (그래프용)
                     UsedBrush = new SolidColorBrush(baseColor) // Free (표시용)
                 };

@@ -8,12 +8,12 @@ namespace DB.overcloud.Repository
     public class AccountRepository : IAccountRepository
     {
         private readonly string connectionString;
-        private readonly IStorageService cloudService;
+        private readonly IStorageRepository cloudService;
 
         public AccountRepository(string connStr)
         {
             connectionString = connStr;
-            cloudService = new StorageService(connStr);
+            cloudService = new StorageRepository(connStr);
         }
 
         public bool InsertAccount(CloudAccountInfo account)

@@ -11,7 +11,7 @@ namespace OverCloud.Services
     public class GoogleDriveService : ICloudFileService
     {
         private const string TokenRootPath = "Tokens";
-        private const string CredentialFile = "\"C:\\Users\\ADMIN\\Desktop\\oh\\credential.json\"";
+        private const string CredentialFile = "C:\\key\\credential.json";
 
         //사용자 별 토큰을 발급받고, 이후 모든 google drive api사용시에 호출 시 인증에 사용하는 usercredential 생성
         public async Task<UserCredential> AuthenticateAsync(string userId)

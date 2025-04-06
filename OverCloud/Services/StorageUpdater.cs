@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using DB.overcloud.Models;
-using DB.overcloud.Service;
+using DB.overcloud.Repository;
+using overcloud;
 
 namespace OverCloud.Services
 {
@@ -8,12 +9,12 @@ namespace OverCloud.Services
     public class StorageUpdater
     {
         private readonly GoogleDriveService googleDriveService;
-        private readonly IStorageService storageService;
+        private readonly IStorageRepository storageService;
 
-        public StorageUpdater(GoogleDriveService googleDriveService, IStorageService storageService)
+        public StorageUpdater()
         {
-            this.googleDriveService = googleDriveService;
-            this.storageService = storageService;
+            googleDriveService = new GoogleDriveService();
+            storageService = new StorageRepository(DbConfig.ConnectionString);
         }
 
         //일단은 구글 드라이브 한정 DB에 업데이트.

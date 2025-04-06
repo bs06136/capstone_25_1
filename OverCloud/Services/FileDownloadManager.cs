@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using DB.overcloud.Models;
-using DB.overcloud.Service;
+using DB.overcloud.Repository;
+using overcloud;
 
 namespace OverCloud.Services
 {
@@ -12,11 +13,13 @@ namespace OverCloud.Services
         private readonly Dictionary<string, ICloudFileService> serviceMap;
         private readonly FileService fileService;
         private readonly FileOptimizerService optimizer;
+        private readonly IFileRepository fileRepo;
 
-        public FileDownloadManager(FileService fileService, FileOptimizerService optimizer)
+        public FileDownloadManager()
         {
-            this.fileService = fileService;
-            this.optimizer = optimizer;
+            fileRepo = new FileRepository(DbConfig.ConnectionString);
+            fileService = new FileService(fileRepo);
+            optimizer = new FileOptimizerService();
 
             serviceMap = new Dictionary<string, ICloudFileService>
             {
@@ -39,6 +42,7 @@ namespace OverCloud.Services
             {
                 var file = fileService.GetFile(fileId);
                 optimizer.OptimizeFileAfterDownload(file);
+                fileService.SaveFile(file);
             }
 
             return result;

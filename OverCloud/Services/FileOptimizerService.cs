@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using DB.overcloud.Models;
-using DB.overcloud.Service;
 using DB.overcloud.Repository;
+using overcloud;
 
 namespace OverCloud.Services
 {
@@ -13,10 +13,10 @@ namespace OverCloud.Services
         private readonly IFileRepository fileRepo;
         private readonly IAccountRepository accountRepo;
 
-        public FileOptimizerService(IFileRepository fileRepo, IAccountRepository accountRepo)
+        public FileOptimizerService()
         {
-            this.fileRepo = fileRepo;
-            this.accountRepo = accountRepo;
+            fileRepo = new FileRepository(DbConfig.ConnectionString);
+            accountRepo = new AccountRepository(DbConfig.ConnectionString);
         }
 
         public void OptimizeFileAfterDownload(CloudFileInfo file)

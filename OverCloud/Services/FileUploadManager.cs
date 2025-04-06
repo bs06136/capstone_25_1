@@ -14,10 +14,10 @@ namespace OverCloud.Services
         private readonly AccountService accountService;
         private readonly GoogleDriveService googleDriveService;
 
-        public FileUploadManager(AccountService accountService, GoogleDriveService googleDriveService)
+        public FileUploadManager()
         {
-            this.accountService = accountService;
-            this.googleDriveService = googleDriveService;
+            accountService = new AccountService();
+            googleDriveService = new GoogleDriveService();
         }
 
         public async Task<bool> file_upload(string file_name)
