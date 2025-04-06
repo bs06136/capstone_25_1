@@ -36,7 +36,8 @@ namespace DB.overcloud.Repository
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    Count = Convert.ToInt32(reader["count"])
+                    Count = Convert.ToInt32(reader["count"]),
+                    GoogleFileId = reader["google_file_id"]?.ToString()
                 });
             }
 
@@ -49,9 +50,9 @@ namespace DB.overcloud.Repository
             conn.Open();
 
             string query = @"INSERT INTO CloudFileInfo 
-                (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, count)
+                (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, count, google_file_id)
                 VALUES 
-                (@name, @size, @time, @storage, @parent, @folder, @count)";
+                (@name, @size, @time, @storage, @parent, @folder, @count, @google)";
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@name", file_info.FileName);
@@ -61,24 +62,26 @@ namespace DB.overcloud.Repository
             cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId.HasValue ? file_info.ParentFolderId.Value : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@folder", file_info.IsFolder);
             cmd.Parameters.AddWithValue("@count", 0);
+            cmd.Parameters.AddWithValue("@google", file.GoogleFileId ?? "");
 
             return cmd.ExecuteNonQuery() > 0;
         }
 
-        public bool change_file(CloudFileInfo file_info)
+        public bool change_file(CloudFileInfo file_info, string newGoogleFileId)
         {
             if (file_info.Count < 2)
-                return false; // 다운로드 횟수가 부족하므로 이동하지 않음
+                return false; // 다운로드 횟수가 기준 미달
 
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
             string query = @"UPDATE CloudFileInfo 
-                            SET cloud_storage_num = @newStorage 
+                            SET cloud_storage_num = @newStorage, google_file_id = @google 
                             WHERE file_id = @id";
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@newStorage", 2); // cloud_storage_num = 2 인 클라우드로 이동
+            cmd.Parameters.AddWithValue("@google", newGoogleFileId); // 새로 배정받은 google_file_id
             cmd.Parameters.AddWithValue("@id", file_info.FileId);
 
             return cmd.ExecuteNonQuery() > 0;
@@ -117,7 +120,8 @@ namespace DB.overcloud.Repository
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    Count = Convert.ToInt32(reader["count"])
+                    Count = Convert.ToInt32(reader["count"]),
+                    GoogleFileId = reader["google_file_id"]?.ToString()
                 };
             }
 
@@ -147,7 +151,8 @@ namespace DB.overcloud.Repository
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    Count = Convert.ToInt32(reader["count"])
+                    Count = Convert.ToInt32(reader["count"]),
+                    GoogleFileId = reader["google_file_id"]?.ToString()
                 });
             }
 
@@ -175,7 +180,8 @@ namespace DB.overcloud.Repository
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    Count = Convert.ToInt32(reader["count"])
+                    Count = Convert.ToInt32(reader["count"]),
+                    GoogleFileId = reader["google_file_id"]?.ToString()
                 };
             }
 
@@ -216,7 +222,8 @@ namespace DB.overcloud.Repository
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    Count = Convert.ToInt32(reader["count"])
+                    Count = Convert.ToInt32(reader["count"]),
+                    GoogleFileId = reader["google_file_id"]?.ToString()
                 });
             }
 
