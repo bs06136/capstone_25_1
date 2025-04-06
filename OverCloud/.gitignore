@@ -6,6 +6,7 @@
 !Services/AccountService.cs
 !Services/CloudStorageMerger.cs
 !Services/FIleDownloadManager.cs
+!Services/FileOptimizerService.cs
 !Services/FileService.cs
 !Services/FileUploadManager.cs
 !Services/GoogleDriveService.cs
