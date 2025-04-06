@@ -3,38 +3,51 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using DB.overcloud.Models;
-using DB.overcloud.Service;
+using DB.overcloud.Repository;
+using overcloud;
 
 namespace OverCloud.Services
 {
     public class FileDownloadManager
     {
         private readonly Dictionary<string, ICloudFileService> serviceMap;
-        private AccountService _accountService;
-        private GoogleDriveService _GoogleDriveService;
+        private readonly FileService fileService;
+        private readonly FileOptimizerService optimizer;
+        private readonly IFileRepository fileRepo;
 
-        public FileDownloadManager(GoogleDriveService GoogleDriveService)
+        public FileDownloadManager()
         {
-            _GoogleDriveService = GoogleDriveService;
+            fileRepo = new FileRepository(DbConfig.ConnectionString);
+            fileService = new FileService(fileRepo);
+            optimizer = new FileOptimizerService();
+
             serviceMap = new Dictionary<string, ICloudFileService>
             {
                 { "GoogleDrive", new GoogleDriveService() }
-                // 앞으로 Dropbox, OneDrive 추가 가능
+                // Dropbox, OneDrive도 추가 가능
             };
         }
 
-        public async Task<bool> DownloadFile(string cloudType, string userId, string fileId, string savePath)
+        public async Task<bool> DownloadFile(string userId, string cloudType, string cloudFileId, int fileId, string savePath)
         {
             if (!serviceMap.ContainsKey(cloudType))
             {
-                Console.WriteLine($"❌ 지원되지 않는 클라우드 타입: {cloudType}");
+                Console.WriteLine($"❌ 지원되지 않는 클라우드: {cloudType}");
                 return false;
             }
 
-            //return await serviceMap[cloudType].DownloadFileAsync(userId, fileId, savePath);
-            return await _GoogleDriveService.DownloadFileAsync(userId, fileId, savePath);
+            bool result = await serviceMap[cloudType].DownloadFileAsync(userId, cloudFileId, savePath);
+
+            if (result)
+            {
+                var file = fileService.GetFile(fileId);
+                optimizer.OptimizeFileAfterDownload(file);
+                fileService.SaveFile(file);
+            }
+
+            return result;
         }
+
+
     }
-
-
 }
