@@ -28,20 +28,20 @@ namespace OverCloud.Services
             };
         }
 
-        public async Task<bool> DownloadFile(string userId, string cloudType, string cloudFileId, int fileId, string savePath)
+        public async Task <bool> DownloadFile(string userId, string cloudFileId, int fileId, string savePath)
         {
-            if (!serviceMap.ContainsKey(cloudType))
+            if (!serviceMap.ContainsKey("GoogleDrive"))
             {
-                Console.WriteLine($"❌ 지원되지 않는 클라우드: {cloudType}");
+                Console.WriteLine($"❌ 지원되지 않는 클라우드: {"GoogleDrive"}");
                 return false;
             }
 
-            bool result = await serviceMap[cloudType].DownloadFileAsync(userId, cloudFileId, savePath);
+            bool result = await serviceMap["GoogleDrive"].DownloadFileAsync(userId, cloudFileId, savePath);
 
             if (result)
             {
                 var file = fileService.GetFile(fileId);
-                optimizer.OptimizeFileAfterDownload(file);
+                optimizer.OptimizeFileAfterDownload(file, cloudFileId);
                 fileService.SaveFile(file);
             }
 

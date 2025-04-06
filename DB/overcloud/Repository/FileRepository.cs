@@ -62,7 +62,7 @@ namespace DB.overcloud.Repository
             cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId.HasValue ? file_info.ParentFolderId.Value : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@folder", file_info.IsFolder);
             cmd.Parameters.AddWithValue("@count", 0);
-            cmd.Parameters.AddWithValue("@google", file.GoogleFileId ?? "");
+            cmd.Parameters.AddWithValue("@google", file_info.GoogleFileId ?? "");
 
             return cmd.ExecuteNonQuery() > 0;
         }
@@ -128,16 +128,21 @@ namespace DB.overcloud.Repository
             return null;
         }
 
-        public List<CloudFileInfo> all_file_list(int fileId)
+        public List<CloudFileInfo> all_file_list(int? fileId)
         {
             var list = new List<CloudFileInfo>();
 
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = "SELECT * FROM CloudFileInfo WHERE parent_folder_id = @parent";
+            string query = fileId.HasValue
+                ? "SELECT * FROM CloudFileInfo WHERE parent_folder_id = @parent"
+                : "SELECT * FROM CloudFileInfo WHERE parent_folder_id IS NULL";
+
             using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@parent", fileId);
+
+            if (fileId.HasValue)
+                cmd.Parameters.AddWithValue("@parent", fileId.Value);
 
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
