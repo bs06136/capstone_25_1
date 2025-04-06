@@ -23,12 +23,11 @@ namespace OverCloud.Services
         {
             accountService = new AccountService();
             googleDriveService = new GoogleDriveService();
-
+          
             repo_file = new FileRepository(DbConfig.ConnectionString);
             fileService = new FileService(repo_file);
 
         }
-
         public async Task<bool> file_upload(string file_name)
         {
             //return await googleDriveService.UploadFileAsync("ojw73366@gamil.com", file_name);
@@ -46,6 +45,7 @@ namespace OverCloud.Services
             // 1. 업로드 수행
             var googleFileId = await googleDriveService.UploadFileAsync(googleAccount.AccountId, file_name);
             if (string.IsNullOrEmpty(googleFileId)) return false;
+
 
             // 2. 파일 정보 추출
             var fileInfo = new FileInfo(file_name);
