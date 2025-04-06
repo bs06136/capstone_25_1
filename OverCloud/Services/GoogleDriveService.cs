@@ -27,7 +27,7 @@ namespace OverCloud.Services
         }
 
         //파일 업로드
-        public async Task<bool> UploadFileAsync(string userId, string filePath)
+        public async Task<string> UploadFileAsync(string userId, string filePath)
         {
             var credential = await AuthenticateAsync(userId);
             var service = new DriveService(new BaseClientService.Initializer()
