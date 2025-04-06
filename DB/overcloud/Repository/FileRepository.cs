@@ -36,7 +36,8 @@ namespace DB.overcloud.Repository
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    Count = Convert.ToInt32(reader["count"])
+                    Count = Convert.ToInt32(reader["count"]),
+                    GoogleFileId = reader["google_file_id"]?.ToString()
                 });
             }
 
@@ -49,18 +50,19 @@ namespace DB.overcloud.Repository
             conn.Open();
 
             string query = @"INSERT INTO CloudFileInfo 
-                (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, count)
+                (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, count, google_file_id)
                 VALUES 
-                (@name, @size, @time, @storage, @parent, @folder, @count)";
+                (@name, @size, @time, @storage, @parent, @folder, @count, @google)";
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@name", file_info.FileName);
             cmd.Parameters.AddWithValue("@size", file_info.FileSize);
             cmd.Parameters.AddWithValue("@time", file_info.UploadedAt);
             cmd.Parameters.AddWithValue("@storage", file_info.CloudStorageNum);
-            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId.HasValue ? file.ParentFolderId.Value : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId.HasValue ? file_info.ParentFolderId.Value : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@folder", file_info.IsFolder);
             cmd.Parameters.AddWithValue("@count", 0);
+            cmd.Parameters.AddWithValue("@google", file.GoogleFileId ?? "");
 
             return cmd.ExecuteNonQuery() > 0;
         }
