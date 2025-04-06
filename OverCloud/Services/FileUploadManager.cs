@@ -36,10 +36,26 @@ namespace OverCloud.Services
                 return false;
             }
 
-            var file = fileService.GetFile(fileId);
-            fileService.SaveFile(file);
+            // 1. 업로드 수행
+            bool result = await googleDriveService.UploadFileAsync(googleAccount.AccountId, file_name);
+            if (!result) return false;
 
-            return await googleDriveService.UploadFileAsync(googleAccount.AccountId, file_name);
+            // 2. 파일 정보 추출
+            var fileInfo = new FileInfo(file_name);
+
+            CloudFileInfo file = new CloudFileInfo
+            {
+                FileName = fileInfo.Name,
+                FileSize = (ulong)fileInfo.Length,
+                UploadedAt = DateTime.Now,
+                CloudStorageNum = googleAccount.CloudStorageNum,
+                ParentFolderId = null, // 최상위 업로드라면 null
+                IsFolder = false,
+                Count = 0
+            };
+
+            // 3. DB 저장
+            return fileService.SaveFile(file);
         }
     }
 }
