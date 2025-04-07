@@ -14,24 +14,23 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows.Forms;
 using static overcloud.temp_class.TempClass;
 using OverCloud.Services;
-using DB.overcloud.Service;
+using DB.overcloud.Repository;
 using overcloud.Converters;
 
 namespace overcloud
 {
     public partial class MainWindow : Window
     {
+
         private AccountService _accountService;
         private FileUploadManager _FileUploadManager;
-        private GoogleDriveService _GoogleDriveService;
-        private IAccountRepository repo = new AccountRepository(DbConfig.ConnectionString);
-        private IStorageService repo_2 = new StorageService(DbConfig.ConnectionString);
         private StorageUpdater _storageUpdater;
         private FileDownloadManager _fileDownloadManager;
 
         private int currentFolderId = -1; // 현재 폴더 위치
-        private Stack<int> folderHistory = new(); // 이전 폴더 기억용
-        private Dictionary<int, bool> selectedMap = new();  // 2번째 탐색기에서 체크박스 상태 기억용
+        private Stack<int> folderHistory ; // 이전 폴더 기억용
+        private Dictionary<int, bool> selectedMap;  // 2번째 탐색기에서 체크박스 상태 기억용
+        private IFileRepository FileRepository; // 전체 파일 목록   
 
 
 
@@ -39,19 +38,14 @@ namespace overcloud
         {
             InitializeComponent();
 
-            // 1) Repository 인스턴스(예: AccountRepository) 준비
-            //IAccountRepository repo = new AccountRepository(DbConfig.ConnectionString);
-            //IStorageService repo_2 = new StorageService(DbConfig.ConnectionString);
+            _accountService = new AccountService();
+            _FileUploadManager = new FileUploadManager();
 
-            // 2) AccountService에 주입
-            _accountService = new AccountService(repo, repo_2);
-            _GoogleDriveService = new GoogleDriveService();
-            _FileUploadManager = new FileUploadManager(_accountService, _GoogleDriveService);
-
-            _storageUpdater = new StorageUpdater(_GoogleDriveService, repo_2);  // 수정 필요
+            _storageUpdater = new StorageUpdater();  // 수정 필요
             SaveDriveQuotaToDBAsync();  // 수정 필요
 
-            _fileDownloadManager = new FileDownloadManager(_GoogleDriveService);
+            _fileDownloadManager = new FileDownloadManager();
+            FileRepository = new FileRepository(DbConfig.ConnectionString);
         }
 
         private async void SaveDriveQuotaToDBAsync()
@@ -141,7 +135,8 @@ namespace overcloud
 
         private void LoadRootFolders()
         {
-            var rootItems = all_file_list(-1); // ParentFolderId == null 처리
+            //var rootItems = all_file_list(-1); // ParentFolderId == null 처리
+            var rootItems = FileRepository.all_file_list(null);
             foreach (var item in rootItems)
             {
                 var node = new FileTreeNode(item);
@@ -154,7 +149,7 @@ namespace overcloud
         {
             if (sender is FileTreeNode node && node.FileInfo.IsFolder && !node.IsLoaded)
             {
-                var children = all_file_list(node.FileInfo.FileId);
+                var children = FileRepository.all_file_list(node.FileInfo.FileId);
                 node.LoadChildren(children);
 
                 // 자식에도 이벤트 달기
@@ -166,12 +161,6 @@ namespace overcloud
             }
         }
 
-        /*
-        private async void Button_Down_Click(object sender, RoutedEventArgs e)
-        {
-            await _fileDownloadManager.DownloadFile("cloudType", "userId", "fileId", "savePath");
-        }
-        */
 
         private List<CloudFileInfo> GetCheckedFiles()
         {
@@ -199,7 +188,7 @@ namespace overcloud
             {
                 if (!node.IsLoaded)
                 {
-                    var children = all_file_list(node.FileInfo.FileId);
+                    var children = FileRepository.all_file_list(node.FileInfo.FileId);
                     node.LoadChildren(children);
                 }
 
@@ -215,7 +204,7 @@ namespace overcloud
             }
         }
 
-        /*
+        
         private async void Button_Down_Click(object sender, RoutedEventArgs e)
         {
             var selectedFiles = GetCheckedFiles();
@@ -229,7 +218,7 @@ namespace overcloud
             Dictionary<int, CloudFileInfo> allFileMap = GetAllFilesRecursively();
 
             // 기본 저장 루트 (예시)
-            string localBase = @"C:\Users\bszxc\Downloads";
+            string localBase = @"C:\down";
 
             foreach (var file in selectedFiles)
             {
@@ -241,12 +230,14 @@ namespace overcloud
                 if (!string.IsNullOrEmpty(dir)) System.IO.Directory.CreateDirectory(dir);
 
                 // 실제 다운로드 (예: 구글드라이브에서 파일 가져오기)
-                await _fileDownloadManager.DownloadFile(file.CloudStorageNum, file.CloudType, file.FileId, localPath);
+                await _fileDownloadManager.DownloadFile("1",  file.GoogleFileId,  file.FileId, localPath);
             }
 
             System.Windows.MessageBox.Show("다운로드 완료");
-        }*/
+        }
 
+
+        /*
         private void Button_Down_Click(object sender, RoutedEventArgs e)    //testcode
         {
             var selectedFiles = GetCheckedFiles();
@@ -259,7 +250,7 @@ namespace overcloud
 
             string message = "선택된 파일:\n" + string.Join("\n", selectedFiles.Select(f => f.FileName));
             System.Windows.MessageBox.Show(message, "파일 선택 결과");
-        }
+        }*/
 
         private string GetCloudPath(CloudFileInfo file, Dictionary<int, CloudFileInfo> allMap)
         {
@@ -281,7 +272,7 @@ namespace overcloud
             var result = new Dictionary<int, CloudFileInfo>();
             void Traverse(int fileId)
             {
-                var children = all_file_list(fileId);
+                var children = FileRepository.all_file_list(fileId);
                 foreach (var item in children)
                 {
                     result[item.FileId] = item;
@@ -322,7 +313,7 @@ namespace overcloud
 
         private void LoadFolderContents(int folderId)
         {
-            var contents = all_file_list(folderId).ToList();
+            var contents = FileRepository.all_file_list(folderId).ToList();
 
             // 현재 폴더의 부모를 알아내서 "상위 폴더로" 항목 삽입
             if (folderId != -1)

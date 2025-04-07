@@ -11,7 +11,7 @@ namespace OverCloud.Services
     public class GoogleDriveService : ICloudFileService
     {
         private const string TokenRootPath = "Tokens";
-        private const string CredentialFile = "\"C:\\Users\\ADMIN\\Desktop\\oh\\credential.json\"";
+        private const string CredentialFile = "C:\\key\\credential.json";
 
         //사용자 별 토큰을 발급받고, 이후 모든 google drive api사용시에 호출 시 인증에 사용하는 usercredential 생성
         public async Task<UserCredential> AuthenticateAsync(string userId)
@@ -27,7 +27,7 @@ namespace OverCloud.Services
         }
 
         //파일 업로드
-        public async Task<bool> UploadFileAsync(string userId, string filePath)
+        public async Task<string> UploadFileAsync(string userId, string filePath)
         {
             var credential = await AuthenticateAsync(userId);
             var service = new DriveService(new BaseClientService.Initializer()
@@ -45,7 +45,12 @@ namespace OverCloud.Services
             var request = service.Files.Create(fileMetadata, stream, "application/octet-stream");
             var result = await request.UploadAsync();
 
-            return result.Status == Google.Apis.Upload.UploadStatus.Completed;
+            if (result.Status == Google.Apis.Upload.UploadStatus.Completed)
+            {
+                return request.ResponseBody.Id; // Google Drive 파일 ID 반환
+            }
+
+            return null;
         }
 
 

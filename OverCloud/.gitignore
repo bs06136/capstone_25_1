@@ -5,6 +5,7 @@
 !Services/
 !Services/AccountService.cs
 !Services/CloudStorageMerger.cs
+!Services/FileDeleteManager.cs
 !Services/FIleDownloadManager.cs
 !Services/FileOptimizerService.cs
 !Services/FileService.cs
