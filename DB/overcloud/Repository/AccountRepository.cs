@@ -53,7 +53,7 @@ namespace DB.overcloud.Repository
                     AccountPassword = reader["account_password"].ToString(),
                     TotalCapacity = Convert.ToInt32(reader["total_capacity"]),
                     UsedCapacity = Convert.ToInt32(reader["used_capacity"]),
-                    AccessToken = reader["access_token"]?.ToString()
+                    RefreshToken = reader["refresh_token"]?.ToString()
                 });
             }
 

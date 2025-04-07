@@ -9,5 +9,6 @@ namespace DB.overcloud.Repository
         bool AddCloudStorage(CloudStorageInfo info);
         bool DeleteCloudStorage(int cloudStorageNum);
         bool account_save(CloudStorageInfo one_cloud);
+        bool UpdateRefreshToken(int cloudStorageNum, string refreshToken);
     }
 }
