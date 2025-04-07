@@ -37,10 +37,11 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Bottom"
                     Margin="20">
-            <Button Content="추가" Width="60" Height="30" Click="Button_Add_Click"/>
-            <Button Content="삭제" Width="60" Height="30" Click="Button_Delete_Click"/>
-            <Button Content="저장" Width="60" Height="30" Click="Button_Save_Click"/>
+            <Button Content="클라우드 추가" Width="100" Height="30" Click="Button_Add_Click"/>
+            <Button Content="클라우드 삭제" Width="100" Height="30" Click="Button_Delete_Click"/>
+            <Button Content="파일 저장" Width="60" Height="30" Click="Button_Save_Click"/>
             <Button Content="선택 다운로드" Click="Button_Down_Click" />
+            <Button Content="선택 삭제" Click="Button_DeleteSelected_Click" />
             <Button Content="디스크 상세정보" Width="150" Height="30" Click="Button_DetailDisk_Click" />
             <Button Content="탐색기 전환" Click="Button_SwitchExplorer_Click" />
         </StackPanel>

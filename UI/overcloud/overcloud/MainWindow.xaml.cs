@@ -31,6 +31,7 @@ namespace overcloud
         private Stack<int> folderHistory ; // 이전 폴더 기억용
         private Dictionary<int, bool> selectedMap;  // 2번째 탐색기에서 체크박스 상태 기억용
         private IFileRepository FileRepository; // 전체 파일 목록   
+        private List<AccessToken> tokenList = new();
 
 
 
@@ -57,6 +58,7 @@ namespace overcloud
         {
             AddAccountWindow window = new AddAccountWindow(_accountService);
             window.ShowDialog();
+            RefreshExplorer();
         }
 
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
@@ -64,6 +66,7 @@ namespace overcloud
             DeleteAccountWindow window = new DeleteAccountWindow(_accountService);
             window.Owner = this;
             window.ShowDialog();
+            RefreshExplorer();
         }
 
 
@@ -118,6 +121,7 @@ namespace overcloud
                     }
                 }
             }
+            RefreshExplorer();
         }
 
         private void Button_DetailDisk_Click(object sender, RoutedEventArgs e)
@@ -125,12 +129,14 @@ namespace overcloud
             DiskDetailWindow detailWindow = new DiskDetailWindow(_accountService);
             detailWindow.Owner = this;
             detailWindow.ShowDialog();
+            RefreshExplorer();
         }
 
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             LoadRootFolders();
+            RefreshExplorer();
         }
 
         private void LoadRootFolders()
@@ -381,7 +387,72 @@ namespace overcloud
 
 
 
+        private async void Button_DeleteSelected_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedFiles = GetCheckedFiles();
+            if (selectedFiles.Count == 0)
+            {
+                System.Windows.MessageBox.Show("삭제할 파일이 선택되지 않았습니다.");
+                return;
+            }
+
+            var confirm = System.Windows.MessageBox.Show(
+                $"총 {selectedFiles.Count}개의 항목을 삭제하시겠습니까?",
+                "삭제 확인", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+            if (confirm != MessageBoxResult.Yes) return;
+
+            foreach (var file in selectedFiles)
+            {
+                var access = tokenList.FirstOrDefault(a => a.StorageId == file.CloudStorageNum);
+                if (access == null)
+                {
+                    System.Windows.MessageBox.Show($"StorageId {file.CloudStorageNum}에 대한 토큰이 없습니다.");
+                    continue;
+                }
+
+                bool deleted = await DeleteFile("admin", file.GoogleFileId, file.FileId, tokenList);
+                if (!deleted)
+                    System.Windows.MessageBox.Show($"[{file.FileName}] 삭제 실패");
+            }
+
+            System.Windows.MessageBox.Show("삭제 완료!");
+            RefreshExplorer();  // 트리 또는 새 탐색기 갱신
+        }
 
 
+        private void RefreshExplorer()
+        {
+            if (FileExplorerTree.Visibility == Visibility.Visible)
+            {
+                FileExplorerTree.Items.Clear();
+                LoadRootFolders();
+            }
+            else
+            {
+                LoadFolderContents(currentFolderId);
+            }
+        }
+
+        public class AccessToken //임시
+        {
+            public int StorageId { get; set; }
+            public string Token { get; set; }
+        }
+
+        public async Task<bool> DeleteFile(string userId, string cloudFileId, int fileId, List<AccessToken> tokens)
+        {
+            await Task.Delay(300); // 비동기 흉내
+            Console.WriteLine($"[삭제 요청] userId: {userId}, cloudFileId: {cloudFileId}, fileId: {fileId}");
+
+            // 접근 토큰 확인 로그
+            foreach (var token in tokens)
+            {
+                Console.WriteLine($"  - Token for StorageId {token.StorageId}: {token.Token.Substring(0, 10)}...");
+            }
+
+            // 항상 삭제 성공으로 처리
+            return true;
+        }
     }
 }
