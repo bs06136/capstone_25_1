@@ -42,7 +42,9 @@ namespace DB.overcloud.Repository
                     AccountPassword = reader["account_password"].ToString(),
                     TotalCapacity = Convert.ToInt32(reader["total_capacity"]),
                     UsedCapacity = Convert.ToInt32(reader["used_capacity"]),
-                    RefreshToken = reader["refresh_token"]?.ToString()
+                    RefreshToken = reader["refresh_token"]?.ToString(),
+                    ClientId = reader["client_id"]?.ToString(),
+                    ClientSecret = reader["client_secret"]?.ToString()
                 });
             }
 
@@ -55,9 +57,9 @@ namespace DB.overcloud.Repository
             conn.Open();
 
             string query = @"INSERT INTO CloudStorageInfo 
-                (user_num, cloud_type, account_id, account_password, total_capacity, used_capacity, refresh_token)
+                (user_num, cloud_type, account_id, account_password, total_capacity, used_capacity, refresh_token, client_id, client_secret)
                 VALUES 
-                (@user, @type, @id, @pw, @total, @used, @token)";
+                (@user, @type, @id, @pw, @total, @used, @token, @clientId, @clientSecret)";
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@user", info.UserNum);
@@ -66,7 +68,9 @@ namespace DB.overcloud.Repository
             cmd.Parameters.AddWithValue("@pw", info.AccountPassword);
             cmd.Parameters.AddWithValue("@total", info.TotalCapacity);
             cmd.Parameters.AddWithValue("@used", info.UsedCapacity);
-            cmd.Parameters.AddWithValue("@token", info.RefreshToken ?? "");
+            cmd.Parameters.AddWithValue("@refresh", info.RefreshToken ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@clientId", info.ClientId ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@clientSecret", info.ClientSecret ?? (object)DBNull.Value);
 
             return cmd.ExecuteNonQuery() > 0;
         }
