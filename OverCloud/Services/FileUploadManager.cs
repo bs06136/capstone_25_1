@@ -18,11 +18,14 @@ namespace OverCloud.Services
         private readonly GoogleDriveService googleDriveService;
         private readonly FileService fileService;
         private readonly IFileRepository repo_file;
+        private readonly TokenProviderFactory tokenFactory;
+        private readonly IStorageRepository storageRepository;
 
         public FileUploadManager()
         {
             accountService = new AccountService();
-            googleDriveService = new GoogleDriveService();
+            googleDriveService = new GoogleDriveService(new GoogleTokenProvider(), new StorageRepository(DbConfig.ConnectionString));
+            tokenFactory = new TokenProviderFactory();
 
             repo_file = new FileRepository(DbConfig.ConnectionString);
             fileService = new FileService(repo_file);
@@ -44,8 +47,10 @@ namespace OverCloud.Services
             }
 
             // 1. 업로드 수행
+            // 1. 파일 업로드 후 Google Drive 내부 파일 ID 반환
             var googleFileId = await googleDriveService.UploadFileAsync(googleAccount.AccountId, file_name);
             if (string.IsNullOrEmpty(googleFileId)) return false;
+
 
             // 2. 파일 정보 추출
             var fileInfo = new FileInfo(file_name);
@@ -59,12 +64,13 @@ namespace OverCloud.Services
                 ParentFolderId = null, // 최상위 업로드라면 null
                 IsFolder = false,
                 Count = 0,
-                GoogleFileId =googleFileId
+                GoogleFileId = googleFileId
             };
 
             // 3. DB 저장
             fileService.SaveFile(file);
             return true;
         }
+
     }
 }

@@ -14,16 +14,23 @@ namespace OverCloud.Services
         private readonly FileService fileService;
         private readonly FileOptimizerService optimizer;
         private readonly IFileRepository fileRepo;
+        private readonly GoogleTokenProvider googleTokenProvider;
+        private readonly IStorageRepository storageRepository;
 
+//        new GoogleDriveService(new GoogleTokenProvider() , new StorageRepository(DbConfig.ConnectionString) )
         public FileDownloadManager()
         {
             fileRepo = new FileRepository(DbConfig.ConnectionString);
             fileService = new FileService(fileRepo);
             optimizer = new FileOptimizerService();
 
+            // 현재는 GoogleDrive만 등록
+            var googleTokenProvider = new GoogleTokenProvider();
+            var googleService = new GoogleDriveService(googleTokenProvider, storageRepository);
+
             serviceMap = new Dictionary<string, ICloudFileService>
             {
-                { "GoogleDrive", new GoogleDriveService() }
+                { "GoogleDrive",googleService }
                 // Dropbox, OneDrive도 추가 가능
             };
         }
@@ -36,13 +43,19 @@ namespace OverCloud.Services
                 return false;
             }
 
+
+
             bool result = await serviceMap["GoogleDrive"].DownloadFileAsync(userId, cloudFileId, savePath);
 
             if (result)
             {
                 var file = fileService.GetFile(fileId);
-                optimizer.OptimizeFileAfterDownload(file, cloudFileId);
-                fileService.SaveFile(file);
+                if(file != null)
+                {
+                    optimizer.OptimizeFileAfterDownload(file, cloudFileId);
+                    fileService.SaveFile(file);
+
+                }
             }
 
             return result;
