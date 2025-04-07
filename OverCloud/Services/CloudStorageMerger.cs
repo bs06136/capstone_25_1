@@ -10,6 +10,8 @@ namespace OverCloud.Services
 {
     // CloudStorageMerger: 통합 용량 계산
     //실제 DB에 영향을 주진 않지만 , UI에 통합 용량 표시 보여주기용 클래스임
+
+    //호출 방법 예시
     //CloudStorageMerger cl = new CloudStorageMerger(repo);
     //ulong total = cl.TotalCapacity;
     public class CloudStorageMerger

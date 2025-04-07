@@ -19,7 +19,7 @@ namespace OverCloud.Services
         }
 
         // 파일 ID를 기반으로 삭제
-        public bool DeleteFileById(int fileId)
+        public bool DeleteFile(string userId, string cloudFileId, int fileId)
         {
             var file = fileService.GetFile(fileId);
             if (file == null)

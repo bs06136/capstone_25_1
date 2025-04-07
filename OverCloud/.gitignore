@@ -10,9 +10,13 @@
 !Services/FileOptimizerService.cs
 !Services/FileService.cs
 !Services/FileUploadManager.cs
+!Services/GoogleAuthHelper.cs
 !Services/GoogleDriveService.cs
+!Services/GoogleTokenProvider.cs
 !Services/ICloudFileService.cs
 !Services/StorageUpdater.cs
+!Services/TokenManager.cs
+!Services/TokenProviderFactory.cs
 
 
 # ¿¹¿Ü: README, .gitignore

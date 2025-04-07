@@ -10,10 +10,12 @@ namespace OverCloud.Services
     {
         private readonly GoogleDriveService googleDriveService;
         private readonly IStorageRepository storageService;
+        private readonly GoogleTokenProvider googleTokenProvider;
+
 
         public StorageUpdater()
         {
-            googleDriveService = new GoogleDriveService();
+            googleDriveService = new GoogleDriveService(new GoogleTokenProvider(), new StorageRepository(DbConfig.ConnectionString));
             storageService = new StorageRepository(DbConfig.ConnectionString);
         }
 

@@ -84,7 +84,7 @@ namespace DB.overcloud.Repository
             }
 
             return result;
-        }
+            }
 
         public bool UpdateAccountUsage(int userNum, ulong totalSize, ulong usedSize)
         {
