@@ -28,12 +28,14 @@ namespace OverCloud.Services
            // var account = await GoogleAuthHelper.AuthorizeAsync();
            if (account.CloudType =="GoogleDrive")
             {
-                var (email, refreshToken, clientId, clientSecret) = await GoogleAuthHelper.AuthorizeAsync();
+                var (email, refreshToken, clientId, clientSecret) = await GoogleAuthHelper.AuthorizeAsync(account.AccountId);
 
                 account.AccountId = email;
                 account.RefreshToken = refreshToken;
                 account.ClientId = clientId;
                 account.ClientSecret = clientSecret;
+                account.UserNum = 1;                //자동으로 넣는 로직 필요함
+                Console.WriteLine("구글 계정 추가중...");
 
             }
             return repo_storage.AddCloudStorage(account);

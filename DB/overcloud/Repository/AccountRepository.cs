@@ -58,7 +58,8 @@ namespace DB.overcloud.Repository
                     ClientSecret = reader["client_secret"]?.ToString()
                 });
             }
-
+            System.Diagnostics.Debug.WriteLine(list);
+            System.Diagnostics.Debug.WriteLine("hello");
             return list;
         }
 

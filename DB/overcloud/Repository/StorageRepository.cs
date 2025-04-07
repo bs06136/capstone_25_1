@@ -25,7 +25,7 @@ namespace DB.overcloud.Repository
                 SELECT cs.* 
                 FROM CloudStorageInfo cs
                 JOIN Account a ON cs.user_num = a.user_num
-                WHERE a.ID = @id";
+                WHERE a.ID = @id";          //수정요구
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@id", userId);
@@ -59,7 +59,7 @@ namespace DB.overcloud.Repository
             string query = @"INSERT INTO CloudStorageInfo 
                 (user_num, cloud_type, account_id, account_password, total_capacity, used_capacity, refresh_token, client_id, client_secret)
                 VALUES 
-                (@user, @type, @id, @pw, @total, @used, @token, @clientId, @clientSecret)";
+                (@user, @type, @id, @pw, @total, @used, @refresh, @clientId, @clientSecret)";
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@user", info.UserNum);
@@ -71,6 +71,7 @@ namespace DB.overcloud.Repository
             cmd.Parameters.AddWithValue("@refresh", info.RefreshToken ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@clientId", info.ClientId ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@clientSecret", info.ClientSecret ?? (object)DBNull.Value);
+
 
             return cmd.ExecuteNonQuery() > 0;
         }

@@ -31,7 +31,7 @@ namespace overcloud
         private Stack<int> folderHistory ; // 이전 폴더 기억용
         private Dictionary<int, bool> selectedMap;  // 2번째 탐색기에서 체크박스 상태 기억용
         private IFileRepository FileRepository; // 전체 파일 목록   
-        private List<AccessToken> tokenList = new();
+        private FileDeleteManager fileDeleteManager = new();
 
 
 
@@ -63,10 +63,11 @@ namespace overcloud
 
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine("삭제 버튼 누름");
             DeleteAccountWindow window = new DeleteAccountWindow(_accountService);
             window.Owner = this;
             window.ShowDialog();
-            RefreshExplorer();
+            //RefreshExplorer();
         }
 
 
@@ -404,19 +405,13 @@ namespace overcloud
 
             foreach (var file in selectedFiles)
             {
-                var access = tokenList.FirstOrDefault(a => a.StorageId == file.CloudStorageNum);
-                if (access == null)
-                {
-                    System.Windows.MessageBox.Show($"StorageId {file.CloudStorageNum}에 대한 토큰이 없습니다.");
-                    continue;
-                }
 
-                bool deleted = await DeleteFile("admin", file.GoogleFileId, file.FileId, tokenList);
+                bool deleted = await fileDeleteManager.DeleteFile("admin", file.GoogleFileId, file.FileId);
                 if (!deleted)
                     System.Windows.MessageBox.Show($"[{file.FileName}] 삭제 실패");
             }
 
-            System.Windows.MessageBox.Show("삭제 완료!");
+            System.Windows.MessageBox.Show("삭제 작업 종료!");
             RefreshExplorer();  // 트리 또는 새 탐색기 갱신
         }
 
@@ -432,27 +427,6 @@ namespace overcloud
             {
                 LoadFolderContents(currentFolderId);
             }
-        }
-
-        public class AccessToken //임시
-        {
-            public int StorageId { get; set; }
-            public string Token { get; set; }
-        }
-
-        public async Task<bool> DeleteFile(string userId, string cloudFileId, int fileId, List<AccessToken> tokens)
-        {
-            await Task.Delay(300); // 비동기 흉내
-            Console.WriteLine($"[삭제 요청] userId: {userId}, cloudFileId: {cloudFileId}, fileId: {fileId}");
-
-            // 접근 토큰 확인 로그
-            foreach (var token in tokens)
-            {
-                Console.WriteLine($"  - Token for StorageId {token.StorageId}: {token.Token.Substring(0, 10)}...");
-            }
-
-            // 항상 삭제 성공으로 처리
-            return true;
         }
     }
 }

@@ -40,7 +40,7 @@
 
         <!-- 클라우드 선택 -->
         <ComboBox x:Name="cloudComboBox" Grid.Row="2" Margin="0,5,0,5" Height="30">
-            <ComboBoxItem Content="Google Drive" IsSelected="True"/>
+            <ComboBoxItem Content="GoogleDrive" IsSelected="True"/>
             <ComboBoxItem Content="OneDrive"/>
             <ComboBoxItem Content="Dropbox"/>
         </ComboBox>
