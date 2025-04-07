@@ -27,11 +27,12 @@ namespace OverCloud.Services
             googleDriveService = new GoogleDriveService(new GoogleTokenProvider(), new StorageRepository(DbConfig.ConnectionString));
             tokenFactory = new TokenProviderFactory();
 
+            googleDriveService = new GoogleDriveService();
+          
             repo_file = new FileRepository(DbConfig.ConnectionString);
             fileService = new FileService(repo_file);
 
         }
-
         public async Task<bool> file_upload(string file_name)
         {
             //return await googleDriveService.UploadFileAsync("ojw73366@gamil.com", file_name);
