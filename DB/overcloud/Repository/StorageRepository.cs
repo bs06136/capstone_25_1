@@ -52,6 +52,38 @@ namespace DB.overcloud.Repository
             return list;
         }
 
+        public CloudStorageInfo GetCloud(string accountId)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"SELECT * FROM CloudStorageInfo WHERE account_id = @id LIMIT 1";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@id", accountId);
+
+            using var reader = cmd.ExecuteReader();
+
+            if (reader.Read())
+            {
+                return new CloudStorageInfo
+                {
+                    CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    UserNum = Convert.ToInt32(reader["user_num"]),
+                    CloudType = reader["cloud_type"].ToString(),
+                    AccountId = reader["account_id"].ToString(),
+                    AccountPassword = reader["account_password"].ToString(),
+                    TotalCapacity = Convert.ToInt32(reader["total_capacity"]),
+                    UsedCapacity = Convert.ToInt32(reader["used_capacity"]),
+                    RefreshToken = reader["refresh_token"]?.ToString(),
+                    ClientId = reader["client_id"]?.ToString(),
+                    ClientSecret = reader["client_secret"]?.ToString()
+                };
+            }
+
+            return null;
+        }
+
         public bool AddCloudStorage(CloudStorageInfo info)
         {
             using var conn = new MySqlConnection(connectionString);
