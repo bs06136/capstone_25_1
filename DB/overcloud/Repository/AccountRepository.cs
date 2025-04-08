@@ -58,7 +58,8 @@ namespace DB.overcloud.Repository
                     ClientSecret = reader["client_secret"]?.ToString()
                 });
             }
-
+            System.Diagnostics.Debug.WriteLine(list);
+            System.Diagnostics.Debug.WriteLine("hello");
             return list;
         }
 
@@ -84,7 +85,7 @@ namespace DB.overcloud.Repository
             }
 
             return result;
-        }
+            }
 
         public bool UpdateAccountUsage(int userNum, ulong totalSize, ulong usedSize)
         {

@@ -6,20 +6,23 @@ using System.Threading.Tasks;
 using DB.overcloud.Models;
 using DB.overcloud.Repository;
 using DB.overcloud.Models;
+using overcloud;
 
 namespace OverCloud.Services
 {
     public class FileDeleteManager
     {
         private readonly FileService fileService;
+        private readonly IFileRepository repo_file;
 
-        public FileDeleteManager(FileService fileService)
+        public FileDeleteManager()
         {
-            this.fileService = fileService;
+            repo_file = new FileRepository(DbConfig.ConnectionString);
+            fileService = new FileService(repo_file);
         }
 
         // 파일 ID를 기반으로 삭제
-        public bool DeleteFileById(int fileId)
+        public async Task<bool> DeleteFile(string userId, string cloudFileId, int fileId)
         {
             var file = fileService.GetFile(fileId);
             if (file == null)

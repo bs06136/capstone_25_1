@@ -7,6 +7,7 @@ using DB.overcloud.Models;
 using DB.overcloud.Repository;
 using DB.overcloud.Models;
 using overcloud;
+using MySqlX.XDevAPI;
 
 namespace OverCloud.Services
 {
@@ -22,9 +23,21 @@ namespace OverCloud.Services
         }
 
         // 오버클라우드 계정에 새로운 계정 추가 (UI에서 호출)
-        public bool AddCloudStorage(CloudStorageInfo account)
+        public async Task<bool> AddCloudStorage(CloudStorageInfo account)
         {
+           // var account = await GoogleAuthHelper.AuthorizeAsync();
+           if (account.CloudType =="GoogleDrive")
+            {
+                var (email, refreshToken, clientId, clientSecret) = await GoogleAuthHelper.AuthorizeAsync(account.AccountId);
 
+                account.AccountId = email;
+                account.RefreshToken = refreshToken;
+                account.ClientId = clientId;
+                account.ClientSecret = clientSecret;
+                account.UserNum = 1;                //자동으로 넣는 로직 필요함
+                Console.WriteLine("구글 계정 추가중...");
+
+            }
             return repo_storage.AddCloudStorage(account);
         }
 

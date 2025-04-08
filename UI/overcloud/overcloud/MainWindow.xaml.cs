@@ -21,6 +21,7 @@ namespace overcloud
 {
     public partial class MainWindow : Window
     {
+
         private AccountService _accountService;
         private FileUploadManager _FileUploadManager;
         private StorageUpdater _storageUpdater;
@@ -30,6 +31,7 @@ namespace overcloud
         private Stack<int> folderHistory ; // 이전 폴더 기억용
         private Dictionary<int, bool> selectedMap;  // 2번째 탐색기에서 체크박스 상태 기억용
         private IFileRepository FileRepository; // 전체 파일 목록   
+        private FileDeleteManager fileDeleteManager = new();
 
 
 
@@ -56,13 +58,16 @@ namespace overcloud
         {
             AddAccountWindow window = new AddAccountWindow(_accountService);
             window.ShowDialog();
+            RefreshExplorer();
         }
 
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine("삭제 버튼 누름");
             DeleteAccountWindow window = new DeleteAccountWindow(_accountService);
             window.Owner = this;
             window.ShowDialog();
+            //RefreshExplorer();
         }
 
 
@@ -117,6 +122,7 @@ namespace overcloud
                     }
                 }
             }
+            RefreshExplorer();
         }
 
         private void Button_DetailDisk_Click(object sender, RoutedEventArgs e)
@@ -124,12 +130,14 @@ namespace overcloud
             DiskDetailWindow detailWindow = new DiskDetailWindow(_accountService);
             detailWindow.Owner = this;
             detailWindow.ShowDialog();
+            RefreshExplorer();
         }
 
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             LoadRootFolders();
+            RefreshExplorer();
         }
 
         private void LoadRootFolders()
@@ -380,7 +388,45 @@ namespace overcloud
 
 
 
+        private async void Button_DeleteSelected_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedFiles = GetCheckedFiles();
+            if (selectedFiles.Count == 0)
+            {
+                System.Windows.MessageBox.Show("삭제할 파일이 선택되지 않았습니다.");
+                return;
+            }
+
+            var confirm = System.Windows.MessageBox.Show(
+                $"총 {selectedFiles.Count}개의 항목을 삭제하시겠습니까?",
+                "삭제 확인", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+            if (confirm != MessageBoxResult.Yes) return;
+
+            foreach (var file in selectedFiles)
+            {
+
+                bool deleted = await fileDeleteManager.DeleteFile("admin", file.GoogleFileId, file.FileId);
+                if (!deleted)
+                    System.Windows.MessageBox.Show($"[{file.FileName}] 삭제 실패");
+            }
+
+            System.Windows.MessageBox.Show("삭제 작업 종료!");
+            RefreshExplorer();  // 트리 또는 새 탐색기 갱신
+        }
 
 
+        private void RefreshExplorer()
+        {
+            if (FileExplorerTree.Visibility == Visibility.Visible)
+            {
+                FileExplorerTree.Items.Clear();
+                LoadRootFolders();
+            }
+            else
+            {
+                LoadFolderContents(currentFolderId);
+            }
+        }
     }
 }
