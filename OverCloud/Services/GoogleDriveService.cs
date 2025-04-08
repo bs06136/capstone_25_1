@@ -34,27 +34,33 @@ public class GoogleDriveService : ICloudFileService
 
     public async Task <string> UploadFileAsync(string userId, string filePath)
     {
+        System.Diagnostics.Debug.WriteLine("UploadFileAsync 1");
         var clouds = storageRepo.GetCloudsForUser(userId);
         var googleCloud = clouds.FirstOrDefault(c => c.CloudType == "GoogleDrive");
         if (googleCloud == null) return null;
 
+        System.Diagnostics.Debug.WriteLine("UploadFileAsync 2");
         var accessToken = await tokenProvider.GetAccessTokenAsync(googleCloud);
         var service = CreateDriveService(accessToken);
 
+        System.Diagnostics.Debug.WriteLine("UploadFileAsync 3");
         var fileMetadata = new Google.Apis.Drive.v3.Data.File()
         {
             Name = Path.GetFileName(filePath)
         };
 
+        System.Diagnostics.Debug.WriteLine("UploadFileAsync 4");
         using var stream = new FileStream(filePath, FileMode.Open);
         var request = service.Files.Create(fileMetadata, stream, "application/octet-stream");
         var result = await request.UploadAsync();
 
+        System.Diagnostics.Debug.WriteLine("UploadFileAsync 5");
         if (result.Status == Google.Apis.Upload.UploadStatus.Completed)
         {
             return request.ResponseBody.Id; // Google Drive 파일 ID 반환
         }
 
+        System.Diagnostics.Debug.WriteLine("UploadFileAsync 6");
         return null;
     }
 
@@ -73,6 +79,30 @@ public class GoogleDriveService : ICloudFileService
 
         return true;
     }
+
+    public async Task<bool> DeleteFileAsync(string userId, string fileId)
+    {
+        var clouds = storageRepo.GetCloudsForUser(userId);
+        var googleCloud = clouds.FirstOrDefault(c => c.CloudType == "GoogleDrive");
+        if (googleCloud == null) return false;
+
+        var accessToken = await tokenProvider.GetAccessTokenAsync(googleCloud);
+        var service = CreateDriveService(accessToken);
+
+        try
+        {
+            await service.Files.Delete(fileId).ExecuteAsync();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ 파일 삭제 실패: {ex.Message}");
+            return false;
+        }
+    }
+
+
+
 
     public async Task<(long, long)> GetDriveQuotaAsync(string userId)
     {

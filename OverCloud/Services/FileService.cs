@@ -22,6 +22,6 @@ namespace OverCloud.Services
 
         public bool SaveFile(CloudFileInfo file) => fileRepo.addfile(file);
 
-        public bool RemoveFile(int fileId) => fileRepo.DeleteFile(fileId);
+   //     public bool RemoveFile(int fileId) => fileRepo.DeleteFile(fileId);
     }
 }

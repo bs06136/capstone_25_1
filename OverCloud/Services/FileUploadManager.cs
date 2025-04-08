@@ -26,8 +26,6 @@ namespace OverCloud.Services
             accountService = new AccountService();
             googleDriveService = new GoogleDriveService(new GoogleTokenProvider(), new StorageRepository(DbConfig.ConnectionString));
             tokenFactory = new TokenProviderFactory();
-
-            googleDriveService = new GoogleDriveService();
           
             repo_file = new FileRepository(DbConfig.ConnectionString);
             fileService = new FileService(repo_file);
@@ -38,7 +36,7 @@ namespace OverCloud.Services
             //return await googleDriveService.UploadFileAsync("ojw73366@gamil.com", file_name);
 
             var accounts = accountService.GetCloudsForUser();
-            var googleAccount = accounts.FirstOrDefault(a => a.CloudType == "Google Drive");
+            var googleAccount = accounts.FirstOrDefault(a => a.CloudType == "GoogleDrive");
 
             if (googleAccount == null)
             {
