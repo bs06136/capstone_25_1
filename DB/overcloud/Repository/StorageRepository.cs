@@ -22,10 +22,11 @@ namespace DB.overcloud.Repository
             conn.Open();
 
             string query = @"
-                SELECT cs.* 
+                SELECT cs.*
                 FROM CloudStorageInfo cs
-                JOIN Account a ON cs.user_num = a.user_num
-                WHERE a.ID = @id";          //수정요구
+                WHERE cs.user_num IN (
+                    SELECT user_num FROM Account WHERE ID = @id
+                )";
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@id", userId);
