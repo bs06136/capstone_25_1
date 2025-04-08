@@ -85,5 +85,12 @@ namespace OverCloud.Services
         {
             return accountRepository.GetAllAccounts();
         }
+
+        public CloudStorageInfo GetOneCloud(string accountId)
+        {
+
+            return storageRepository.GetCloud(accountId);
+        }
+
     }
 }
