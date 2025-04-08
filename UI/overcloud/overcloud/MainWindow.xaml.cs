@@ -21,6 +21,7 @@ namespace overcloud
 {
     public partial class MainWindow : Window
     {
+
         private AccountService _accountService;
         private FileUploadManager _FileUploadManager;
         private StorageUpdater _storageUpdater;
