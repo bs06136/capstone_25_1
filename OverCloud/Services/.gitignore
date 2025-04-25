@@ -1,25 +1,29 @@
 # 모든 파일 무시
 *
 
+# 폴더 예외 (상위 디렉토리부터 풀어야 함)
+!OverCloud/
+!OverCloud/Services/
+
 # 예외: 핵심 클래스만 올리기
-!Services/
-!Services/AccountService.cs
-!Services/CloudStorageMerger.cs
-!Services/CloudTierManager.cs
-!Services/GoogleAuthHelper.cs
-!Services/QuotaManager.cs
-!Services/StorageAggregator.cs
-!Services/StorageUpdater.cs
-!Services/TokenProviderFactory.cs
-!Services/FileDeleteManager.cs
-!Services/FileDownloadManager.cs
-!Services/FileService.cs
-!Services/FileUploadManager.cs
-!Services/DropboxService.cs
-!Services/GoogleDriveService.cs
-!Services/GoogleTokenProvider.cs
-!Services/ICloudFileService.cs
-!Services/OneDriveService.cs
+!OverCloud/Services/
+!OverCloud/Services/AccountService.cs
+!OverCloud/Services/CloudStorageMerger.cs
+!OverCloud/Services/CloudTierManager.cs
+!OverCloud/Services/GoogleAuthHelper.cs
+!OverCloud/Services/QuotaManager.cs
+!OverCloud/Services/StorageAggregator.cs
+!OverCloud/Services/StorageUpdater.cs
+!OverCloud/Services/TokenProviderFactory.cs
+!OverCloud/Services/FileDeleteManager.cs
+!OverCloud/Services/FileDownloadManager.cs
+!OverCloud/Services/FileService.cs
+!OverCloud/Services/FileUploadManager.cs
+!OverCloud/Services/DropboxService.cs
+!OverCloud/Services/GoogleDriveService.cs
+!OverCloud/Services/GoogleTokenProvider.cs
+!OverCloud/Services/ICloudFileService.cs
+!OverCloud/Services/OneDriveService.cs
 
 
 # 예외: README, .gitignore
