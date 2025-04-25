@@ -11,12 +11,10 @@
 !Services/StorageAggregator.cs
 !Services/StorageUpdater.cs
 !Services/TokenProviderFactory.cs
-
 !Services/FileDeleteManager.cs
-!Services/FIleDownloadManager.cs
+!Services/FileDownloadManager.cs
 !Services/FileService.cs
 !Services/FileUploadManager.cs
-
 !Services/DropboxService.cs
 !Services/GoogleDriveService.cs
 !Services/GoogleTokenProvider.cs
