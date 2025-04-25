@@ -1,0 +1,29 @@
+# 모든 파일 무시
+*
+
+# 예외: 핵심 클래스만 올리기
+!Services/
+!Services/AccountService.cs
+!Services/CloudStorageMerger.cs
+!Services/CloudTierManager.cs
+!Services/GoogleAuthHelper.cs
+!Services/QuotaManager.cs
+!Services/StorageAggregator.cs
+!Services/StorageUpdater.cs
+!Services/TokenProviderFactory.cs
+
+!Services/FileDeleteManager.cs
+!Services/FIleDownloadManager.cs
+!Services/FileService.cs
+!Services/FileUploadManager.cs
+
+!Services/DropboxService.cs
+!Services/GoogleDriveService.cs
+!Services/GoogleTokenProvider.cs
+!Services/ICloudFileService.cs
+!Services/OneDriveService.cs
+
+
+# 예외: README, .gitignore
+!.gitignore
+!README.md

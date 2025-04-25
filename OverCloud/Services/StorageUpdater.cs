@@ -9,14 +9,14 @@ namespace OverCloud.Services
     public class StorageUpdater
     {
         private readonly GoogleDriveService googleDriveService;
-        private readonly IStorageRepository storageService;
+        private readonly IStorageRepository storageRepository;
         private readonly GoogleTokenProvider googleTokenProvider;
 
 
         public StorageUpdater()
         {
             googleDriveService = new GoogleDriveService(new GoogleTokenProvider(), new StorageRepository(DbConfig.ConnectionString));
-            storageService = new StorageRepository(DbConfig.ConnectionString);
+            storageRepository = new StorageRepository(DbConfig.ConnectionString);
         }
 
         //일단은 구글 드라이브 한정 DB에 업데이트.
@@ -34,7 +34,7 @@ namespace OverCloud.Services
             };
 
             // 3. 저장
-            return storageService.account_save(cloud);
+            return storageRepository.account_save(cloud);
         }
     }
 }

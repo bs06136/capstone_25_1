@@ -26,13 +26,17 @@ namespace OverCloud.Services
         }
 
         // 오버클라우드 계정에 새로운 계정 추가 (UI에서 호출)
-        public async Task<bool> AddCloudStorage(CloudStorageInfo account)
+        public async Task<bool> Add_Cloud_Storage(CloudStorageInfo account)
         {
-           // var account = await GoogleAuthHelper.AuthorizeAsync();
-           if (account.CloudType =="GoogleDrive")
-            {
-                var (email, refreshToken, clientId, clientSecret) = await GoogleAuthHelper.AuthorizeAsync(account.AccountId);
 
+            System.Diagnostics.Debug.WriteLine(account.CloudType);
+            //  var account = await GoogleAuthHelper.AuthorizeAsync();
+            
+            if (account.CloudType == "GoogleDrive")
+            {
+                Console.WriteLine("OAuth 인증 시작 전");
+                var (email, refreshToken, clientId, clientSecret) = await GoogleAuthHelper.AuthorizeAsync(account.AccountId);
+                Console.WriteLine("OAuth 인증 완료 후");
                 account.AccountId = email;
                 account.RefreshToken = refreshToken;
                 account.ClientId = clientId;
@@ -42,19 +46,13 @@ namespace OverCloud.Services
 
             }
 
-            bool result = storageRepository.AddCloudStorage(account);
+            //if(result)
+            //{
+            //    aggregator.UpdateAggregatedStorageForUser(account.AccountId);
+            //}
 
-            if(result)
-            {
-                aggregator.UpdateAggregatedStorageForUser("admin");
-            }
-
-
-           //계정 추가할때 용량정보 업데이트 함수 호출
-            aggregator.UpdateAggregatedStorageForUser("admin");
-
-          
             return storageRepository.AddCloudStorage(account);
+
         }
 
         // 오버클라우드 계정에 있던 클라우드 하나 삭제 (UI에서 호출)
@@ -68,6 +66,7 @@ namespace OverCloud.Services
             {
                 Console.WriteLine($" 삭제 실패 : userNum {userNum}에 해당하는 클라우드 계정이 없습닏.");
             }
+            //DeleteCloudStorage
 
             bool result = accountRepository.DeleteAccountByUserNum(userNum);
             
@@ -81,11 +80,13 @@ namespace OverCloud.Services
         }
 
         // 오버클라우드 계정 안의 모든 계정 정보 조회 (UI에서 호출)
-        public List<CloudStorageInfo> GetCloudsForUser()
+        public List<CloudStorageInfo> GetCloudsForUser(string userId)
         {
             return accountRepository.GetAllAccounts();
         }
 
+
+      // 하나의 클라우드만 가져오도록.
         public CloudStorageInfo GetOneCloud(string accountId)
         {
 

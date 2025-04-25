@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using DB.overcloud.Models;
 using DB.overcloud.Repository;
 using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Auth.OAuth2.Requests;
 using Google.Apis.Drive.v3;
 using Google.Apis.Util.Store;
 
@@ -14,30 +16,48 @@ namespace OverCloud.Services
     {
         private const string CredentialFile = "C:\\key\\credential.json";
 
-        public static async Task<(string email,string RefreshToken, string ClientId, string ClientSecret)> AuthorizeAsync(string id)    //string id 추가해둠
+        public static async Task<(string email, string RefreshToken, string ClientId, string ClientSecret)> AuthorizeAsync(string id)
         {
-
-            Console.WriteLine("AuthorizeAsync initial");
             using var stream = new FileStream(CredentialFile, FileMode.Open, FileAccess.Read);
             var secrets = GoogleClientSecrets.FromStream(stream).Secrets;
 
-            Console.WriteLine("AuthorizeAsync");
-            var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                secrets,
-                new[] { DriveService.Scope.Drive },
-                id,
-                CancellationToken.None,
-                new FileDataStore("Tokens", true)
-            );
+            //  Flow 초기화
+            var flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+            {
+                ClientSecrets = secrets,
+                Scopes = new[] { DriveService.Scope.Drive },
+                DataStore = new FileDataStore("Tokens", true)
+            });
 
-            Console.WriteLine("RefreshToken 추출");
-            // RefreshToken 추출
-            var refreshToken = ((UserCredential)credential).Token.RefreshToken;
-            var email = credential.UserId;
+            //  인증 요청 시 수동 설정
+            var codeReceiver = new LocalServerCodeReceiver();
 
-            Console.WriteLine("AuthorizeAsync end");
-            return (email,refreshToken, secrets.ClientId, secrets.ClientSecret);
+            var app = new AuthorizationCodeInstalledApp(flow, codeReceiver)
+            {
+                // 여기에 추가 설정 불가능. 대신 URL 수정 필요
+            };
+
+            //  OAuth URL 생성 시 직접 access_type, prompt 설정
+            var authUrl = new GoogleAuthorizationCodeRequestUrl(new Uri(flow.AuthorizationServerUrl))
+            {
+                ClientId = secrets.ClientId,
+                Scope = string.Join(" ", new[] { DriveService.Scope.Drive }),
+                RedirectUri = codeReceiver.RedirectUri,
+                AccessType = "offline",   //  필수
+                Prompt = "consent"        //  새로 로그인 강제
+            }.Build().ToString();
+
+            Console.WriteLine($"🔗 인증 URL: {authUrl}");
+
+            // 이 단계에서 웹브라우저 수동 호출 or 자동 실행
+            var result = await app.AuthorizeAsync(id ?? "user", CancellationToken.None);
+
+            string refreshToken = result.Token.RefreshToken;
+            string email = result.UserId;
+
+            return (email, refreshToken, secrets.ClientId, secrets.ClientSecret);
         }
+
     }
 
 }
