@@ -21,7 +21,7 @@ namespace OverCloud.Services
             using var stream = new FileStream(CredentialFile, FileMode.Open, FileAccess.Read);
             var secrets = GoogleClientSecrets.FromStream(stream).Secrets;
 
-            //  Flow 초기화
+            // ✅ Flow 초기화
             var flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
             {
                 ClientSecrets = secrets,
@@ -29,7 +29,7 @@ namespace OverCloud.Services
                 DataStore = new FileDataStore("Tokens", true)
             });
 
-            //  인증 요청 시 수동 설정
+            // ✅ 인증 요청 시 수동 설정
             var codeReceiver = new LocalServerCodeReceiver();
 
             var app = new AuthorizationCodeInstalledApp(flow, codeReceiver)
@@ -37,14 +37,14 @@ namespace OverCloud.Services
                 // 여기에 추가 설정 불가능. 대신 URL 수정 필요
             };
 
-            //  OAuth URL 생성 시 직접 access_type, prompt 설정
+            // ✅ OAuth URL 생성 시 직접 access_type, prompt 설정
             var authUrl = new GoogleAuthorizationCodeRequestUrl(new Uri(flow.AuthorizationServerUrl))
             {
                 ClientId = secrets.ClientId,
                 Scope = string.Join(" ", new[] { DriveService.Scope.Drive }),
                 RedirectUri = codeReceiver.RedirectUri,
-                AccessType = "offline",   //  필수
-                Prompt = "consent"        //  새로 로그인 강제
+                AccessType = "offline",   // ✅ 필수
+                Prompt = "consent"        // ✅ 새로 로그인 강제
             }.Build().ToString();
 
             Console.WriteLine($"🔗 인증 URL: {authUrl}");
