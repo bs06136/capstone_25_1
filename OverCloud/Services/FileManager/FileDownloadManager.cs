@@ -5,30 +5,28 @@ using System.Threading.Tasks;
 using DB.overcloud.Models;
 using DB.overcloud.Repository;
 using overcloud;
+using OverCloud.Services.FileManager.DriveManager;
 
-namespace OverCloud.Services
+namespace OverCloud.Services.FileManager
 {
     public class FileDownloadManager
     {
         private readonly Dictionary<string, ICloudFileService> serviceMap;
-        private readonly FileService fileService;
         private readonly IFileRepository fileRepo;
         private readonly GoogleTokenProvider googleTokenProvider;
         private readonly IStorageRepository storageRepository;
 
 //        new GoogleDriveService(new GoogleTokenProvider() , new StorageRepository(DbConfig.ConnectionString) )
-        public FileDownloadManager()
+        public FileDownloadManager(IStorageRepository storageRepository, ICloudFileService cloudService)
         {
-            fileRepo = new FileRepository(DbConfig.ConnectionString);
-            fileService = new FileService(fileRepo);
+            this.storageRepository = storageRepository;
+           // fileRepo = FileRepository;
+            
 
-            // 현재는 GoogleDrive만 등록
-            var googleTokenProvider = new GoogleTokenProvider();
-            var googleService = new GoogleDriveService(googleTokenProvider, storageRepository);
-
+           
             serviceMap = new Dictionary<string, ICloudFileService>
             {
-                { "GoogleDrive", googleService }
+                { "GoogleDrive", cloudService }
                 // Dropbox, OneDrive도 추가 가능
             };
         }
@@ -45,15 +43,15 @@ namespace OverCloud.Services
 
             bool result = await serviceMap["GoogleDrive"].DownloadFileAsync(userId, cloudFileId, savePath);
 
-            if (result)
-            {
-                var file = fileService.GetFile(fileId);
-                if(file != null)
-                {
-                    fileService.SaveFile(file);
+            //if (result)
+            //{
+            //    var file = fileService.GetFile(fileId);
+            //    if(file != null)
+            //    {
+            //        fileRepo.addfile(file);
 
-                }
-            }
+            //    }
+            //}
 
             return result;
         }

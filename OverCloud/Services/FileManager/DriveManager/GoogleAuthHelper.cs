@@ -10,7 +10,7 @@ using Google.Apis.Auth.OAuth2.Requests;
 using Google.Apis.Drive.v3;
 using Google.Apis.Util.Store;
 
-namespace OverCloud.Services
+namespace OverCloud.Services.FileManager.DriveManager
 {
     public static class GoogleAuthHelper
     {

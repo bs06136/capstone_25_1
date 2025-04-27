@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using DB.overcloud.Models;
 using DB.overcloud.Repository;
 
-namespace OverCloud.Services
+namespace OverCloud.Services.FileManager.DriveManager
 {
 
 
@@ -21,7 +21,7 @@ namespace OverCloud.Services
 
         Task<string> UploadFileAsync(string userId, string filePath);
 
-        Task<(long, long)> GetDriveQuotaAsync(string userId);
+        Task<(long total, long used)> GetDriveQuotaAsync(string userId);
 
 
         //나중에 분산저장 구현 시 청크로 분리된 메서드를 하나로 합해서 사용할 수 있도록 분리

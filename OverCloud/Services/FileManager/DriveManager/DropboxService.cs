@@ -10,7 +10,7 @@ using DB.overcloud.Repository;
 using overcloud;
 
 
-namespace OverCloud.Services
+namespace OverCloud.Services.FileManager.DriveManager
 {
     public class DropboxService
     {

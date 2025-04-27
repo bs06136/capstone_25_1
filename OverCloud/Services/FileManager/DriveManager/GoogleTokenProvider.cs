@@ -5,7 +5,7 @@ using System.Net.Http;
 using DB.overcloud.Repository;
 
 
-namespace OverCloud.Services
+namespace OverCloud.Services.FileManager.DriveManager
 {
     public class GoogleTokenProvider
     {

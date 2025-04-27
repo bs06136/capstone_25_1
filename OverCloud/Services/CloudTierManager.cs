@@ -11,17 +11,17 @@ namespace OverCloud.Services
     public class CloudTierManager
     {
 
-        private readonly AccountService accountService;
+        private readonly AccountRepository accountRepository;
 
-        public CloudTierManager(AccountService accountService)
+        public CloudTierManager(AccountRepository accountRepository)
         {
-            this.accountService = accountService;
+            this.accountRepository = accountRepository;
         }
 
         public CloudStorageInfo SelectBestStorage(ulong fileSize)
         {
 
-            var clouds = accountService.GetCloudsForUser();
+            var clouds = accountRepository.GetAllAccounts("admin");
             if (clouds == null)
             {
                 System.Diagnostics.Debug.WriteLine("❌ 클라우드 계정 없음");
