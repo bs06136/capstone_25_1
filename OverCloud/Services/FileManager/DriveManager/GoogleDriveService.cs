@@ -110,7 +110,7 @@ namespace OverCloud.Services.FileManager.DriveManager
         public async Task<(long, long)> GetDriveQuotaAsync(string userId)
         {
             var clouds = accountRepository.GetAllAccounts("admin");
-            var googleCloud = clouds.FirstOrDefault(c => c.CloudType == "GoogleDrive");
+            var googleCloud = clouds.FirstOrDefault(c => c.AccountId == userId);
             if (googleCloud == null) return (0, 0);
 
             var accessToken = await tokenProvider.GetAccessTokenAsync(googleCloud);

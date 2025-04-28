@@ -28,15 +28,16 @@ namespace OverCloud.Services
                 return null;
             }
             // 사전 정의된 티어 순서
-            var ordered = clouds.OrderBy(c => GetTierValue(c.CloudType))
-                                .ThenByDescending(c => c.TotalCapacity - c.UsedCapacity); // 같은 티어일 땐 여유 공간 많은 순
+            var ordered = clouds
+                .OrderBy(c => GetTierValue(c.CloudType))  //1순위: 티어 순서 
+                .ThenByDescending(c => c.TotalCapacity - c.UsedCapacity); // 같은 티어일 땐 여유 공간 많은 순
 
             foreach (var cloud in ordered)
             {
                 var remaining = (ulong)(cloud.TotalCapacity - cloud.UsedCapacity);
                 Console.WriteLine($"🧪 클라우드: {cloud.CloudType}, 잔여용량: {remaining}MB");
 
-             // if (remaining >= fileSize / 1048576) // MB 단위 맞추기
+                if (remaining >= fileSize / 1048576) // MB 단위 맞추기
                     return cloud;
             }
 

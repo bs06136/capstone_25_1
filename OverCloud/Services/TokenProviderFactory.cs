@@ -19,7 +19,12 @@ namespace OverCloud.Services
             return new GoogleTokenProvider();
         }
 
-       
+        public OneDriveTokenRefresher CreateOneDriveTokenRefresher()
+        {
+            return new OneDriveTokenRefresher();
+        }
+
+
     }
 
 }

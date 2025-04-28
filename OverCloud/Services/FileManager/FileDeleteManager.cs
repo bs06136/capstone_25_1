@@ -14,33 +14,27 @@ namespace OverCloud.Services.FileManager
 {
     public class FileDeleteManager
     {
-        private readonly AccountRepository accountRepository;
+        private readonly IAccountRepository accountRepository;
         private readonly QuotaManager quotaManager;
         private readonly IStorageRepository storageRepository;
         private readonly IFileRepository fileRepository;
-        private readonly Dictionary<string, ICloudFileService> serviceMap;
+        private readonly List<ICloudFileService> cloudServices;
+
+       // private readonly Dictionary<string, ICloudFileService> serviceMap;
 
 
         public FileDeleteManager(
-            AccountRepository accountRepository,
+            IAccountRepository accountRepository,
             QuotaManager quotaManager,
             IStorageRepository storageRepository,
             IFileRepository fileRepository,
-            ICloudFileService cloudService)
+            List<ICloudFileService> cloudServices)
         {
             this.accountRepository = accountRepository;
             this.quotaManager = quotaManager;
             this.storageRepository = storageRepository;
             this.fileRepository = fileRepository;
-
-            // 현재는 GoogleDrive만 연동
-            serviceMap = new Dictionary<string, ICloudFileService>
-            {
-                { "GoogleDrive", cloudService }
-                // 추후 OneDrive, Dropbox 추가 가능
-            };
-
-
+            this.cloudServices = cloudServices;
         }
 
         // 파일 ID를 기반으로 삭제
@@ -53,28 +47,35 @@ namespace OverCloud.Services.FileManager
                 return false;
             }
 
-            var cloudType = accountRepository
+            var cloudInfo = accountRepository
                .GetAllAccounts(userId)
-               .FirstOrDefault(c => c.CloudStorageNum == file.CloudStorageNum)?.CloudType;
+               .FirstOrDefault(c => c.CloudStorageNum == file.CloudStorageNum);
 
-            if (string.IsNullOrEmpty(cloudType) || !serviceMap.ContainsKey(cloudType))
+            string cloudType = cloudInfo.CloudType;
+            var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(cloudType));
+            if (service == null)
             {
-                Console.WriteLine("❌ 지원되지 않는 클라우드 타입입니다.");
+                Console.WriteLine($"❌ 지원되지 않는 클라우드: {cloudType}");
                 return false;
             }
 
-            var service = serviceMap[cloudType];
-            bool apiDeleted = await service.DeleteFileAsync(userId, file.GoogleFileId);
 
-            if (apiDeleted)
+            bool apiDeleted = await service.DeleteFileAsync(userId, file.GoogleFileId);
+            if (!apiDeleted)
             {
-                // 삭제 성공했을 때 용량 반영
-                quotaManager.UpdateQuotaAfterUploadOrDelete(file.CloudStorageNum, (int)(file.FileSize / 1048576), false);
-            
-                return fileRepository.DeleteFile(fileId);
+                Console.WriteLine("❌ 클라우드 API에서 파일 삭제 실패");
+                return false;
+            }
+                //파일 DB에서 삭제
+            bool dbDeleted = fileRepository.DeleteFile(fileId);
+
+
+            if (dbDeleted)
+            {
+                quotaManager.UpdateQuotaAfterUploadOrDelete(cloudInfo.CloudStorageNum, (int)(file.FileSize), false);
             }
 
-            return false;
+            return dbDeleted;
         }
 
         //// (선택) 폴더 전체 삭제 등 확장 가능

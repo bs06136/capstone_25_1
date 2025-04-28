@@ -98,8 +98,8 @@ namespace OverCloud.Services.StorageManager
         }
 
 
-        //용량 합치기 AggregateQuota 메소드 사용. -> ui보여주기용.
 
+        //업로드 or 삭제 시 스토리지 용량 최신화.
         public void UpdateQuotaAfterUploadOrDelete(int cloudStorageNum, int fileSizeMB, bool isUpload)
         {
             var quota = StorageSessionManager.Quotas.FirstOrDefault(q => q.CloudStorageNum == cloudStorageNum);
@@ -140,6 +140,39 @@ namespace OverCloud.Services.StorageManager
                 });
             }
         }
+
+
+
+        ////새로고침 버튼이 있다면 버튼 누를때만 호출.
+        //public async Task<bool> SyncAllCloudQuota()
+        //{
+        //    var success = true;
+
+        //    foreach (var quota in StorageSessionManager.Quotas)
+        //    {
+        //        var cloudInfo = storageRepository.GetCloudByStorageNum(quota.CloudStorageNum);
+        //        if (cloudInfo == null) continue;
+
+        //        var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(cloudInfo.CloudType));
+        //        if (service == null) continue;
+
+        //        var (total, used) = await service.GetDriveQuotaAsync(cloudInfo.AccountId);
+
+        //        quota.TotalCapacityMB = (int)(total / 1048576);
+        //        quota.UsedCapacityMB = (int)(used / 1048576);
+
+        //        // DB에도 반영
+        //        var updatedCloud = new CloudStorageInfo
+        //        {
+        //            CloudStorageNum = cloudInfo.CloudStorageNum,
+        //            TotalCapacity = quota.TotalCapacityMB,
+        //            UsedCapacity = quota.UsedCapacityMB
+        //        };
+        //        storageRepository.account_save(updatedCloud);
+        //    }
+
+        //    return success;
+        //}
 
 
 

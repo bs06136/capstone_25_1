@@ -13,8 +13,6 @@ namespace OverCloud.Services.StorageManager
     {
         public static List<CloudQuotaInfo> Quotas { get; set; } = new List<CloudQuotaInfo>();
 
-
-
     }
 
 }

@@ -33,9 +33,7 @@ namespace OverCloud.Services
             
             if (storage.CloudType == "GoogleDrive")
             {
-                Console.WriteLine("OAuth 인증 시작 전");
                 var (email, refreshToken, clientId, clientSecret) = await GoogleAuthHelper.AuthorizeAsync(storage.AccountId);
-                Console.WriteLine("OAuth 인증 완료 후");
                 storage.AccountId = email;
                 storage.RefreshToken = refreshToken;
                 storage.ClientId = clientId;
@@ -44,6 +42,18 @@ namespace OverCloud.Services
                 Console.WriteLine("구글 계정 추가중...");
 
             }
+            else if (storage.CloudType == "OneDrive")
+            {
+                var (email, refreshToken, clientId, clientSecret) = await OneDriveAuthHelper.AuthorizeAsync(storage.AccountId);
+                storage.AccountId = email;
+                storage.RefreshToken = refreshToken;
+                storage.ClientId = clientId;
+                storage.ClientSecret = clientSecret;
+                storage.UserNum = 1;
+                Console.WriteLine("원드라이브 계정 추가중...");
+            }
+
+
 
             bool result = storageRepository.AddCloudStorage(storage);
 

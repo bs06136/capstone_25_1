@@ -11,48 +11,40 @@ namespace OverCloud.Services.FileManager
 {
     public class FileDownloadManager
     {
-        private readonly Dictionary<string, ICloudFileService> serviceMap;
-        private readonly IFileRepository fileRepo;
-        private readonly GoogleTokenProvider googleTokenProvider;
-        private readonly IStorageRepository storageRepository;
+      //  private readonly Dictionary<string, ICloudFileService> serviceMap;
+         private readonly IAccountRepository acountRepository;
+        private readonly List<ICloudFileService> cloudServices;
 
 //        new GoogleDriveService(new GoogleTokenProvider() , new StorageRepository(DbConfig.ConnectionString) )
-        public FileDownloadManager(IStorageRepository storageRepository, ICloudFileService cloudService)
-        {
-            this.storageRepository = storageRepository;
-           // fileRepo = FileRepository;
-            
+        public FileDownloadManager(
+            IAccountRepository acountRepository,
+            List<ICloudFileService> cloudServices)
 
-           
-            serviceMap = new Dictionary<string, ICloudFileService>
-            {
-                { "GoogleDrive", cloudService }
-                // Dropbox, OneDrive도 추가 가능
-            };
+        {
+            this.acountRepository = acountRepository;
+            this.cloudServices = cloudServices;
         }
 
         public async Task <bool> DownloadFile(string userId, string cloudFileId, int fileId, string savePath)
         {
-            if (!serviceMap.ContainsKey("GoogleDrive"))
+            var clouds = acountRepository.GetAllAccounts(userId);
+            var cloudInfo = clouds.FirstOrDefault(c => c.CloudStorageNum == fileId);
+            if (cloudInfo == null)
             {
-                Console.WriteLine($"❌ 지원되지 않는 클라우드: {"GoogleDrive"}");
+                Console.WriteLine("❌ 클라우드 정보 없음");
+                return false;
+            }
+
+            string cloudType = cloudInfo.CloudType;
+            var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains("GoogleDrive"));
+            if (service == null)
+            {
+                Console.WriteLine($"❌ 지원되지 않는 클라우드: GoogleDrive");
                 return false;
             }
 
 
-
-            bool result = await serviceMap["GoogleDrive"].DownloadFileAsync(userId, cloudFileId, savePath);
-
-            //if (result)
-            //{
-            //    var file = fileService.GetFile(fileId);
-            //    if(file != null)
-            //    {
-            //        fileRepo.addfile(file);
-
-            //    }
-            //}
-
+            bool result = await service.DownloadFileAsync(userId, cloudFileId, savePath);
             return result;
         }
 

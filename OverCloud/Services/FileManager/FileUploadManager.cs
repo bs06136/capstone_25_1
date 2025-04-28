@@ -19,47 +19,52 @@ namespace OverCloud.Services.FileManager
         private readonly AccountService accountService;
         //private readonly GoogleDriveService googleDriveService;
         private readonly IFileRepository repo_file;
-        private readonly TokenProviderFactory tokenFactory;
-        private readonly IAccountRepository accountRepo;
         private readonly CloudTierManager cloudTierManager;
         private readonly QuotaManager quotaManager;
         private readonly IStorageRepository storageRepository;
-        private readonly ICloudFileService cloudService;
+        private readonly List<ICloudFileService> cloudServices;
 
         public FileUploadManager(
             AccountService accountService,
             QuotaManager quotaManager,
             IStorageRepository storageRepository,
             IFileRepository repo_file,
-            ICloudFileService cloudService,
+            List<ICloudFileService> cloudServices,
             CloudTierManager cloudTierManager)
-
         {
             this.accountService = accountService;
             this.quotaManager = quotaManager; 
             this.storageRepository = storageRepository;
             this.repo_file = repo_file;
-            this.cloudService = cloudService;
+            this.cloudServices = cloudServices;
             this.cloudTierManager = cloudTierManager;
-          
         }
 
         public async Task<bool> file_upload(string file_name)
         {
-            var cloud = cloudTierManager.SelectBestStorage((ulong)new FileInfo(file_name).Length);
+            ulong fileSize = (ulong)new FileInfo(file_name).Length;
+
+            // 1. 업로드 가능한 스토리지 선택
+            var cloud = cloudTierManager.SelectBestStorage(fileSize);
             if (cloud == null) return false;
 
 
-            var cloudFileId = await cloudService.UploadFileAsync(cloud.AccountId, file_name);
-            // 1. 업로드 수행
-            // 1. 파일 업로드 후 Google Drive 내부 파일 ID 반환
+            string cloudType = cloud.CloudType;
+
+            // 2. 클라우드 타입에 맞는 서비스 찾기
+            var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(cloudType));
+            if (service == null)
+            {
+                Console.WriteLine($"❌ 지원되지 않는 클라우드: {cloudType}");
+                return false;
+            }
+
+            // 3. 파일 업로드
+            var cloudFileId = await service.UploadFileAsync(cloud.AccountId, file_name);
             if (string.IsNullOrEmpty(cloudFileId)) return false;
 
-            // 2. 파일 정보 추출
+            // 4. 파일 정보 저장
             var fileInfo = new FileInfo(file_name);
-
-            quotaManager.UpdateQuotaAfterUploadOrDelete(cloud.CloudStorageNum, (int)(fileInfo.Length / 1048576), true);
-
             CloudFileInfo file = new CloudFileInfo
             {
                 FileName = fileInfo.Name,
@@ -72,8 +77,12 @@ namespace OverCloud.Services.FileManager
                 GoogleFileId = cloudFileId
             };
 
-            // 3. DB 저장
+            // 5. DB 저장
             repo_file.addfile(file);
+
+
+            // 6. 업로드 후 용량 갱신
+            quotaManager.UpdateQuotaAfterUploadOrDelete(cloud.CloudStorageNum, (int)(fileInfo.Length / 1048576), true);
 
             return true;
         }
