@@ -24,7 +24,7 @@
 !Services/FileManager/DriveManager/ICloudFileService.cs
 !Services/FileManager/DriveManager/OneDriveAuthHelper.cs
 !Services/FileManager/DriveManager/OneDriveService.cs
-!Services/FileManager/DriveManager/OneDriveAuthHelper.cs
+!Services/FileManager/DriveManager/OneDriveTokenRefresher.cs
 
 
 !Services/StorageManager/CloudQuotaInfo.cs
