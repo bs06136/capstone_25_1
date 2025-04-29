@@ -53,10 +53,13 @@ namespace DB.overcloud.Repository
                     AccountPassword = reader["account_password"].ToString(),
                     TotalCapacity = Convert.ToInt32(reader["total_capacity"]),
                     UsedCapacity = Convert.ToInt32(reader["used_capacity"]),
-                    //AccessToken = reader["access_token"]?.ToString()
+                    RefreshToken = reader["refresh_token"]?.ToString(),
+                    ClientId = reader["client_id"]?.ToString(),
+                    ClientSecret = reader["client_secret"]?.ToString()
                 });
             }
-
+            System.Diagnostics.Debug.WriteLine(list);
+            System.Diagnostics.Debug.WriteLine("hello");
             return list;
         }
 
@@ -82,7 +85,7 @@ namespace DB.overcloud.Repository
             }
 
             return result;
-        }
+            }
 
         public bool UpdateAccountUsage(int userNum, ulong totalSize, ulong usedSize)
         {

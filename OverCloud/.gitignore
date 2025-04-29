@@ -1,20 +1,37 @@
-# 모든 파일 무시
+# 전체 무시
 *
 
-# 예외: 핵심 클래스만 올리기
+# 폴더 예외: 상위 폴더부터 열기
 !Services/
+!Services/FileManager/
+!Services/StorageManager/
+!Services/FileManager/DriveManager/
+
+# 예외 처리: 핵심 클래스들만 추적
 !Services/AccountService.cs
-!Services/CloudStorageMerger.cs
-!Services/FileDeleteManager.cs
-!Services/FIleDownloadManager.cs
-!Services/FileOptimizerService.cs
-!Services/FileService.cs
-!Services/FileUploadManager.cs
-!Services/GoogleDriveService.cs
-!Services/ICloudFileService.cs
-!Services/StorageUpdater.cs
+!Services/CloudTierManager.cs
+!Services/TokenProviderFactory.cs
+
+!Services/FileManager/FileCopyManager.cs
+!Services/FileManager/FileDeleteManager.cs
+!Services/FileManager/FileDownloadManager.cs
+!Services/FileManager/FileUploadManager.cs
+
+!Services/FileManager/DriveManager/DropboxService.cs
+!Services/FileManager/DriveManager/GoogleAuthHelper.cs
+!Services/FileManager/DriveManager/GoogleDriveService.cs
+!Services/FileManager/DriveManager/GoogleTokenProvider.cs
+!Services/FileManager/DriveManager/ICloudFileService.cs
+!Services/FileManager/DriveManager/OneDriveAuthHelper.cs
+!Services/FileManager/DriveManager/OneDriveService.cs
+!Services/FileManager/DriveManager/OneDriveTokenRefresher.cs
 
 
-# 예외: README, .gitignore
+!Services/StorageManager/CloudQuotaInfo.cs
+!Services/StorageManager/QuotaManager.cs
+!Services/StorageManager/StorageSessionManager.cs
+
+
+# README 및 .gitignore 제외
 !.gitignore
 !README.md

@@ -31,7 +31,7 @@ namespace overcloud
         private Stack<int> folderHistory; // 이전 폴더 기억용
         private Dictionary<int, bool> selectedMap;  // 2번째 탐색기에서 체크박스 상태 기억용
         private IFileRepository FileRepository; // 전체 파일 목록   
-        //private List<AccessToken> tokenList = new();
+        private FileDeleteManager fileDeleteManager = new();
 
 
 
@@ -69,10 +69,11 @@ namespace overcloud
 
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine("삭제 버튼 누름");
             DeleteAccountWindow window = new DeleteAccountWindow(_accountService);
             window.Owner = this;
             window.ShowDialog();
-            RefreshExplorer();
+            //RefreshExplorer();
         }
 
 
