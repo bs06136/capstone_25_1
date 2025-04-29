@@ -9,8 +9,8 @@ namespace DB.overcloud.Models
         public string AccountId { get; set; }           // 클라우드 로그인 ID
         public string AccountPassword { get; set; }     // 클라우드 로그인 비밀번호 (필요시)
 
-        public int TotalCapacity { get; set; }          // 계정 한 개의 전체 용량
-        public int UsedCapacity { get; set; }           // 계정 한 개의 사용 중인 용량
+        public ulong TotalCapacity { get; set; }          // 계정 한 개의 전체 용량
+        public ulong UsedCapacity { get; set; }           // 계정 한 개의 사용 중인 용량
 
         public string RefreshToken { get; set; }        // Google Drive API Refresh Token
         public string ClientId { get; set; }            // credential.json 의 client_id 값
