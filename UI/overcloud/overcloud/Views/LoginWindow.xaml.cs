@@ -17,7 +17,6 @@ namespace overcloud.Views
 
             // MainWindow 실행
             var main = new MainWindow();
-            System.Windows.Application.Current.MainWindow = main;
             main.Show();
 
             this.Close();

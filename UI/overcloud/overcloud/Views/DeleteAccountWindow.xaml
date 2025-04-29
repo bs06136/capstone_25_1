@@ -19,7 +19,7 @@
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Margin="5">
 
-                        <TextBlock Text="{Binding AccountId}" 
+                        <TextBlock Text="{Binding ID}" 
                            FontWeight="Bold" 
                            Margin="0,0,10,0"/>
 

@@ -16,7 +16,11 @@ namespace overcloud.Views
         {
             InitializeComponent();
 
-            _accountService = accountService;                                    
+
+
+            //string connStr = "server=localhost;database=overcloud;uid=admin;pwd=admin;"; ;  //
+            //IAccountRepository repo = new AccountRepository(connStr);                       // 수정필요
+            _accountService = accountService;                                    //
 
             LoadAccounts();
         }
@@ -26,8 +30,6 @@ namespace overcloud.Views
             var main = System.Windows.Application.Current.MainWindow as MainWindow;
             if (main != null)
             {
-
-                System.Diagnostics.Debug.WriteLine("계정 불러오기 시작");
                 // 기존: List<CloudStorageInfo> accounts = main.GetAllCloudStatus();
                 // 변경: List<CloudAccountInfo> accounts = main.GetAllAccounts();
                 List<CloudStorageInfo> accounts = _accountService.GetCloudsForUser();

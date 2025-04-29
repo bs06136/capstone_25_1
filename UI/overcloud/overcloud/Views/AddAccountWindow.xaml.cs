@@ -15,13 +15,15 @@ namespace overcloud.Views
         {
 
             InitializeComponent();
+
+            //string connStr = "server=localhost;database=overcloud;uid=admin;pwd=admin;"; ;  //
+            //IAccountRepository repo = new AccountRepository(connStr);                       // 수정필요
             _accountService = accountService;                                   //
 
         }
 
-        private async void Confirm_Click(object sender, RoutedEventArgs e)
+        private void Confirm_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Confirm_Click call");
             string id = txtID.Text;
             string password = txtPassword.Password;
             string cloudType = (cloudComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
@@ -36,9 +38,8 @@ namespace overcloud.Views
                 UserNum = 1
             };
 
-            System.Diagnostics.Debug.WriteLine(cloudType);
             // ⭐ 객체 생성 없이 정적 메서드 직접 호출
-            bool result = await _accountService.AddCloudStorage(accountInfo);
+            bool result = _accountService.AddCloudStorage(accountInfo);
             System.Windows.MessageBox.Show(result ? "계정 추가 성공" : "계정 추가 실패");
 
             this.Close();
