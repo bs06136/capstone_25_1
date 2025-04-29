@@ -1,0 +1,923 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DrawingImage x:Key="Main_App_Layout">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V1048 H1920 V0 H0 Z">
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1920,1048"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#F7F7F7">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0.5,0.5,99,1047"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0.5,0.5,99,1047"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#D4D2D0"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="10,20,80,80"/>
+                    </GeometryDrawing.Geometry>
+                    <RectangleGeometry.Brush/>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#F7F7F7">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,80,0.0001"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M43.75 187.333V166.5H56.25V187.333M31.25 160.25L50 145.667L68.75 160.25V183.167C68.75 184.272 68.311 185.332 67.5296 186.113C66.7482 186.894 65.6884 187.333 64.5833 187.333H35.4167C34.3116 187.333 33.2518 186.894 32.4704 186.113C31.689 185.332 31.25 184.272 31.25 183.167V160.25Z">
+                    <GeometryDrawing.Pen>
+                        <Pen Thickness="4" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" Brush="#1E1E1E"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                홈
+                <GeometryDrawing Brush="#F7F7F7">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,80,0.0001"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M60 312V308C60 305.879 59.1571 303.844 57.6569 302.343C56.1566 300.843 54.1217 300 52 300H36C33.8783 300 31.8434 300.843 30.3431 302.343C28.8429 303.844 28 305.879 28 308V312M72 312V308C71.9987 306.228 71.4087 304.506 70.3227 303.105C69.2368 301.704 67.7163 300.703 66 300.26M58 276.26C59.7208 276.701 61.2461 277.702 62.3353 279.105C63.4245 280.508 64.0157 282.234 64.0157 284.01C64.0157 285.787 63.4245 287.512 62.3353 288.916C61.2461 290.319 59.7208 291.32 58 291.76M52 284C52 288.419 48.4183 292 44 292C39.5817 292 36 288.419 36 284C36 279.582 39.5817 276 44 276C48.4183 276 52 279.582 52 284Z">
+                    <GeometryDrawing.Pen>
+                        <Pen Thickness="4" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" Brush="#1E1E1E"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                계정 관리
+                <GeometryDrawing Brush="#F7F7F7">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="100,0,300,1048"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                홈
+                <GeometryDrawing Geometry="M154.087 147.2L165 153.513L175.912 147.2M165 166.1V153.5M176.25 158.5V148.5C176.25 148.062 176.134 147.631 175.914 147.251C175.695 146.872 175.38 146.557 175 146.337L166.25 141.337C165.87 141.118 165.439 141.003 165 141.003C164.561 141.003 164.13 141.118 163.75 141.337L155 146.337C154.62 146.557 154.305 146.872 154.086 147.251C153.866 147.631 153.75 148.062 153.75 148.5V158.5C153.75 158.938 153.866 159.369 154.086 159.749C154.305 160.128 154.62 160.443 155 160.662L163.75 165.662C164.13 165.882 164.561 165.997 165 165.997C165.439 165.997 165.87 165.882 166.25 165.662L175 160.662C175.38 160.443 175.695 160.128 175.914 159.749C176.134 159.369 176.25 158.938 176.25 158.5Z">
+                    <GeometryDrawing.Pen>
+                        <Pen Thickness="4" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" Brush="#1E1E1E"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                모든 파일
+                <GeometryDrawing Brush="#D7EDFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="130,986,240,2" RadiusX="1" RadiusY="1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#4094F7" Geometry="M130 987C130 986.448 130.448 986 131 986H310V988H131C130.448 988 130 987.552 130 987Z"/>
+                1500GB 중 1200GB 사용
+                <GeometryDrawing Geometry="M159.25 207L166.75 199.5L159.25 192">
+                    <GeometryDrawing.Pen>
+                        <Pen Thickness="4" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" Brush="#1E1E1E"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                main
+                <GeometryDrawing Geometry="M191.25 285L198.75 277.5L191.25 270">
+                    <GeometryDrawing.Pen>
+                        <Pen Thickness="4" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" Brush="#1E1E1E"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                class 1
+                <GeometryDrawing Geometry="M191.25 324L198.75 316.5L191.25 309">
+                    <GeometryDrawing.Pen>
+                        <Pen Thickness="4" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" Brush="#1E1E1E"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                class 2
+                <GeometryDrawing Geometry="M191.25 363L198.75 355.5L191.25 348">
+                    <GeometryDrawing.Pen>
+                        <Pen Thickness="4" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" Brush="#1E1E1E"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                class 3
+                <GeometryDrawing Geometry="M155.5 234.75L163 242.25L170.5 234.75">
+                    <GeometryDrawing.Pen>
+                        <Pen Thickness="4" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" Brush="#1E1E1E"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                voice
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="100.5,0.5,299,1047"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#D4D2D0"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1520,1048"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1397,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1397,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                모든 파일 /
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="1738.5,178.5,107,31" RadiusX="5.5" RadiusY="5.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="1738.5,178.5,107,31" RadiusX="5.5" RadiusY="5.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#DDE2E4"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#1D1B20" Geometry="M1750 202C1749.45 202 1748.98 201.804 1748.59 201.413C1748.2 201.021 1748 200.55 1748 200V188C1748 187.45 1748.2 186.979 1748.59 186.588C1748.98 186.196 1749.45 186 1750 186H1756L1758 188H1766C1766.55 188 1767.02 188.196 1767.41 188.588C1767.8 188.979 1768 189.45 1768 190V200C1768 200.55 1767.8 201.021 1767.41 201.413C1767.02 201.804 1766.55 202 1766 202H1750ZM1750 200H1766V190H1757.18L1755.18 188H1750V200Z"/>
+                폴더 추가
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="1649.5,178.5,77,31" RadiusX="5.5" RadiusY="5.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="1649.5,178.5,77,31" RadiusX="5.5" RadiusY="5.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#DDE2E4"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M1662 197H1661C1660.47 197 1659.96 196.789 1659.59 196.414C1659.21 196.039 1659 195.53 1659 195V186C1659 185.47 1659.21 184.961 1659.59 184.586C1659.96 184.211 1660.47 184 1661 184H1670C1670.53 184 1671.04 184.211 1671.41 184.586C1671.79 184.961 1672 185.47 1672 186V187M1668 191H1677C1678.1 191 1679 191.895 1679 193V202C1679 203.105 1678.1 204 1677 204H1668C1666.9 204 1666 203.105 1666 202V193C1666 191.895 1666.9 191 1668 191Z">
+                    <GeometryDrawing.Pen>
+                        <Pen Thickness="4" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" Brush="#1E1E1E"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                복사
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="1560.5,178.5,77,31" RadiusX="5.5" RadiusY="5.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="1560.5,178.5,77,31" RadiusX="5.5" RadiusY="5.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#DDE2E4"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#1D1B20" Geometry="M1575.83 195L1581.43 200.6L1580 202L1572 194L1580 186L1581.43 187.4L1575.83 193H1588V195H1575.83Z"/>
+                이동
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="1471.5,178.5,77,31" RadiusX="5.5" RadiusY="5.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="1471.5,178.5,77,31" RadiusX="5.5" RadiusY="5.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#DDE2E4"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#1D1B20" Geometry="M1486 203C1485.45 203 1484.98 202.804 1484.59 202.413C1484.2 202.021 1484 201.55 1484 201V188H1483V186H1488V185H1494V186H1499V188H1498V201C1498 201.55 1497.8 202.021 1497.41 202.413C1497.02 202.804 1496.55 203 1496 203H1486ZM1496 188H1486V201H1496V188ZM1488 199H1490V190H1488V199ZM1492 199H1494V190H1492V199Z"/>
+                삭제
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="1356.5,178.5,103,31" RadiusX="5.5" RadiusY="5.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="1356.5,178.5,103,31" RadiusX="5.5" RadiusY="5.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#DDE2E4"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#1D1B20" Geometry="M1376 198L1371 193L1372.4 191.55L1375 194.15V186H1377V194.15L1379.6 191.55L1381 193L1376 198ZM1370 202C1369.45 202 1368.98 201.804 1368.59 201.413C1368.2 201.021 1368 200.55 1368 200V197H1370V200H1382V197H1384V200C1384 200.55 1383.8 201.021 1383.41 201.413C1383.02 201.804 1382.55 202 1382 202H1370Z"/>
+                다운로드
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="1254.5,178.5,90,31" RadiusX="5.5" RadiusY="5.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="1254.5,178.5,90,31" RadiusX="5.5" RadiusY="5.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#DDE2E4"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#1D1B20" Geometry="M1273 198V189.85L1270.4 192.45L1269 191L1274 186L1279 191L1277.6 192.45L1275 189.85V198H1273ZM1268 202C1267.45 202 1266.98 201.804 1266.59 201.413C1266.2 201.021 1266 200.55 1266 200V197H1268V200H1280V197H1282V200C1282 200.55 1281.8 201.021 1281.41 201.413C1281.02 201.804 1280.55 202 1280 202H1268Z"/>
+                업로드
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,294.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,294.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                이름
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,71,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                수정 날자
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,244,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,334.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,334.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 30, 09:42 PM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 342C1800 342.53 1799.79 343.039 1799.41 343.414C1799.04 343.789 1798.53 344 1798 344C1797.47 344 1796.96 343.789 1796.59 343.414C1796.21 343.039 1796 342.53 1796 342C1796 341.47 1796.21 340.961 1796.59 340.586C1796.96 340.211 1797.47 340 1798 340C1798.53 340 1799.04 340.211 1799.41 340.586C1799.79 340.961 1800 341.47 1800 342ZM1806 342C1806 342.53 1805.79 343.039 1805.41 343.414C1805.04 343.789 1804.53 344 1804 344C1803.47 344 1802.96 343.789 1802.59 343.414C1802.21 343.039 1802 342.53 1802 342C1802 341.47 1802.21 340.961 1802.59 340.586C1802.96 340.211 1803.47 340 1804 340C1804.53 340 1805.04 340.211 1805.41 340.586C1805.79 340.961 1806 341.47 1806 342ZM1810 344C1810.53 344 1811.04 343.789 1811.41 343.414C1811.79 343.039 1812 342.53 1812 342C1812 341.47 1811.79 340.961 1811.41 340.586C1811.04 340.211 1810.53 340 1810 340C1809.47 340 1808.96 340.211 1808.59 340.586C1808.21 340.961 1808 341.47 1808 342C1808 342.53 1808.21 343.039 1808.59 343.414C1808.96 343.789 1809.47 344 1810 344Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,374.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,374.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 29, 09:42 PM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 382C1800 382.53 1799.79 383.039 1799.41 383.414C1799.04 383.789 1798.53 384 1798 384C1797.47 384 1796.96 383.789 1796.59 383.414C1796.21 383.039 1796 382.53 1796 382C1796 381.47 1796.21 380.961 1796.59 380.586C1796.96 380.211 1797.47 380 1798 380C1798.53 380 1799.04 380.211 1799.41 380.586C1799.79 380.961 1800 381.47 1800 382ZM1806 382C1806 382.53 1805.79 383.039 1805.41 383.414C1805.04 383.789 1804.53 384 1804 384C1803.47 384 1802.96 383.789 1802.59 383.414C1802.21 383.039 1802 382.53 1802 382C1802 381.47 1802.21 380.961 1802.59 380.586C1802.96 380.211 1803.47 380 1804 380C1804.53 380 1805.04 380.211 1805.41 380.586C1805.79 380.961 1806 381.47 1806 382ZM1810 384C1810.53 384 1811.04 383.789 1811.41 383.414C1811.79 383.039 1812 382.53 1812 382C1812 381.47 1811.79 380.961 1811.41 380.586C1811.04 380.211 1810.53 380 1810 380C1809.47 380 1808.96 380.211 1808.59 380.586C1808.21 380.961 1808 381.47 1808 382C1808 382.53 1808.21 383.039 1808.59 383.414C1808.96 383.789 1809.47 384 1810 384Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,414.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,414.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 28, 11:14 PM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 422C1800 422.53 1799.79 423.039 1799.41 423.414C1799.04 423.789 1798.53 424 1798 424C1797.47 424 1796.96 423.789 1796.59 423.414C1796.21 423.039 1796 422.53 1796 422C1796 421.47 1796.21 420.961 1796.59 420.586C1796.96 420.211 1797.47 420 1798 420C1798.53 420 1799.04 420.211 1799.41 420.586C1799.79 420.961 1800 421.47 1800 422ZM1806 422C1806 422.53 1805.79 423.039 1805.41 423.414C1805.04 423.789 1804.53 424 1804 424C1803.47 424 1802.96 423.789 1802.59 423.414C1802.21 423.039 1802 422.53 1802 422C1802 421.47 1802.21 420.961 1802.59 420.586C1802.96 420.211 1803.47 420 1804 420C1804.53 420 1805.04 420.211 1805.41 420.586C1805.79 420.961 1806 421.47 1806 422ZM1810 424C1810.53 424 1811.04 423.789 1811.41 423.414C1811.79 423.039 1812 422.53 1812 422C1812 421.47 1811.79 420.961 1811.41 420.586C1811.04 420.211 1810.53 420 1810 420C1809.47 420 1808.96 420.211 1808.59 420.586C1808.21 420.961 1808 421.47 1808 422C1808 422.53 1808.21 423.039 1808.59 423.414C1808.96 423.789 1809.47 424 1810 424Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,454.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,454.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 27, 09:42 PM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 462C1800 462.53 1799.79 463.039 1799.41 463.414C1799.04 463.789 1798.53 464 1798 464C1797.47 464 1796.96 463.789 1796.59 463.414C1796.21 463.039 1796 462.53 1796 462C1796 461.47 1796.21 460.961 1796.59 460.586C1796.96 460.211 1797.47 460 1798 460C1798.53 460 1799.04 460.211 1799.41 460.586C1799.79 460.961 1800 461.47 1800 462ZM1806 462C1806 462.53 1805.79 463.039 1805.41 463.414C1805.04 463.789 1804.53 464 1804 464C1803.47 464 1802.96 463.789 1802.59 463.414C1802.21 463.039 1802 462.53 1802 462C1802 461.47 1802.21 460.961 1802.59 460.586C1802.96 460.211 1803.47 460 1804 460C1804.53 460 1805.04 460.211 1805.41 460.586C1805.79 460.961 1806 461.47 1806 462ZM1810 464C1810.53 464 1811.04 463.789 1811.41 463.414C1811.79 463.039 1812 462.53 1812 462C1812 461.47 1811.79 460.961 1811.41 460.586C1811.04 460.211 1810.53 460 1810 460C1809.47 460 1808.96 460.211 1808.59 460.586C1808.21 460.961 1808 461.47 1808 462C1808 462.53 1808.21 463.039 1808.59 463.414C1808.96 463.789 1809.47 464 1810 464Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,494.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,494.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 26, 07:52 AM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 502C1800 502.53 1799.79 503.039 1799.41 503.414C1799.04 503.789 1798.53 504 1798 504C1797.47 504 1796.96 503.789 1796.59 503.414C1796.21 503.039 1796 502.53 1796 502C1796 501.47 1796.21 500.961 1796.59 500.586C1796.96 500.211 1797.47 500 1798 500C1798.53 500 1799.04 500.211 1799.41 500.586C1799.79 500.961 1800 501.47 1800 502ZM1806 502C1806 502.53 1805.79 503.039 1805.41 503.414C1805.04 503.789 1804.53 504 1804 504C1803.47 504 1802.96 503.789 1802.59 503.414C1802.21 503.039 1802 502.53 1802 502C1802 501.47 1802.21 500.961 1802.59 500.586C1802.96 500.211 1803.47 500 1804 500C1804.53 500 1805.04 500.211 1805.41 500.586C1805.79 500.961 1806 501.47 1806 502ZM1810 504C1810.53 504 1811.04 503.789 1811.41 503.414C1811.79 503.039 1812 502.53 1812 502C1812 501.47 1811.79 500.961 1811.41 500.586C1811.04 500.211 1810.53 500 1810 500C1809.47 500 1808.96 500.211 1808.59 500.586C1808.21 500.961 1808 501.47 1808 502C1808 502.53 1808.21 503.039 1808.59 503.414C1808.96 503.789 1809.47 504 1810 504Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,534.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,534.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 25, 05:18 AM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 542C1800 542.53 1799.79 543.039 1799.41 543.414C1799.04 543.789 1798.53 544 1798 544C1797.47 544 1796.96 543.789 1796.59 543.414C1796.21 543.039 1796 542.53 1796 542C1796 541.47 1796.21 540.961 1796.59 540.586C1796.96 540.211 1797.47 540 1798 540C1798.53 540 1799.04 540.211 1799.41 540.586C1799.79 540.961 1800 541.47 1800 542ZM1806 542C1806 542.53 1805.79 543.039 1805.41 543.414C1805.04 543.789 1804.53 544 1804 544C1803.47 544 1802.96 543.789 1802.59 543.414C1802.21 543.039 1802 542.53 1802 542C1802 541.47 1802.21 540.961 1802.59 540.586C1802.96 540.211 1803.47 540 1804 540C1804.53 540 1805.04 540.211 1805.41 540.586C1805.79 540.961 1806 541.47 1806 542ZM1810 544C1810.53 544 1811.04 543.789 1811.41 543.414C1811.79 543.039 1812 542.53 1812 542C1812 541.47 1811.79 540.961 1811.41 540.586C1811.04 540.211 1810.53 540 1810 540C1809.47 540 1808.96 540.211 1808.59 540.586C1808.21 540.961 1808 541.47 1808 542C1808 542.53 1808.21 543.039 1808.59 543.414C1808.96 543.789 1809.47 544 1810 544Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,574.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,574.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 24, 09:42 PM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 582C1800 582.53 1799.79 583.039 1799.41 583.414C1799.04 583.789 1798.53 584 1798 584C1797.47 584 1796.96 583.789 1796.59 583.414C1796.21 583.039 1796 582.53 1796 582C1796 581.47 1796.21 580.961 1796.59 580.586C1796.96 580.211 1797.47 580 1798 580C1798.53 580 1799.04 580.211 1799.41 580.586C1799.79 580.961 1800 581.47 1800 582ZM1806 582C1806 582.53 1805.79 583.039 1805.41 583.414C1805.04 583.789 1804.53 584 1804 584C1803.47 584 1802.96 583.789 1802.59 583.414C1802.21 583.039 1802 582.53 1802 582C1802 581.47 1802.21 580.961 1802.59 580.586C1802.96 580.211 1803.47 580 1804 580C1804.53 580 1805.04 580.211 1805.41 580.586C1805.79 580.961 1806 581.47 1806 582ZM1810 584C1810.53 584 1811.04 583.789 1811.41 583.414C1811.79 583.039 1812 582.53 1812 582C1812 581.47 1811.79 580.961 1811.41 580.586C1811.04 580.211 1810.53 580 1810 580C1809.47 580 1808.96 580.211 1808.59 580.586C1808.21 580.961 1808 581.47 1808 582C1808 582.53 1808.21 583.039 1808.59 583.414C1808.96 583.789 1809.47 584 1810 584Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,614.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,614.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 23, 05:18 AM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 622C1800 622.53 1799.79 623.039 1799.41 623.414C1799.04 623.789 1798.53 624 1798 624C1797.47 624 1796.96 623.789 1796.59 623.414C1796.21 623.039 1796 622.53 1796 622C1796 621.47 1796.21 620.961 1796.59 620.586C1796.96 620.211 1797.47 620 1798 620C1798.53 620 1799.04 620.211 1799.41 620.586C1799.79 620.961 1800 621.47 1800 622ZM1806 622C1806 622.53 1805.79 623.039 1805.41 623.414C1805.04 623.789 1804.53 624 1804 624C1803.47 624 1802.96 623.789 1802.59 623.414C1802.21 623.039 1802 622.53 1802 622C1802 621.47 1802.21 620.961 1802.59 620.586C1802.96 620.211 1803.47 620 1804 620C1804.53 620 1805.04 620.211 1805.41 620.586C1805.79 620.961 1806 621.47 1806 622ZM1810 624C1810.53 624 1811.04 623.789 1811.41 623.414C1811.79 623.039 1812 622.53 1812 622C1812 621.47 1811.79 620.961 1811.41 620.586C1811.04 620.211 1810.53 620 1810 620C1809.47 620 1808.96 620.211 1808.59 620.586C1808.21 620.961 1808 621.47 1808 622C1808 622.53 1808.21 623.039 1808.59 623.414C1808.96 623.789 1809.47 624 1810 624Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,654.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,654.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 22, 11:26 PM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 662C1800 662.53 1799.79 663.039 1799.41 663.414C1799.04 663.789 1798.53 664 1798 664C1797.47 664 1796.96 663.789 1796.59 663.414C1796.21 663.039 1796 662.53 1796 662C1796 661.47 1796.21 660.961 1796.59 660.586C1796.96 660.211 1797.47 660 1798 660C1798.53 660 1799.04 660.211 1799.41 660.586C1799.79 660.961 1800 661.47 1800 662ZM1806 662C1806 662.53 1805.79 663.039 1805.41 663.414C1805.04 663.789 1804.53 664 1804 664C1803.47 664 1802.96 663.789 1802.59 663.414C1802.21 663.039 1802 662.53 1802 662C1802 661.47 1802.21 660.961 1802.59 660.586C1802.96 660.211 1803.47 660 1804 660C1804.53 660 1805.04 660.211 1805.41 660.586C1805.79 660.961 1806 661.47 1806 662ZM1810 664C1810.53 664 1811.04 663.789 1811.41 663.414C1811.79 663.039 1812 662.53 1812 662C1812 661.47 1811.79 660.961 1811.41 660.586C1811.04 660.211 1810.53 660 1810 660C1809.47 660 1808.96 660.211 1808.59 660.586C1808.21 660.961 1808 661.47 1808 662C1808 662.53 1808.21 663.039 1808.59 663.414C1808.96 663.789 1809.47 664 1810 664Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,694.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,694.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 21, 07:28 PM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 702C1800 702.53 1799.79 703.039 1799.41 703.414C1799.04 703.789 1798.53 704 1798 704C1797.47 704 1796.96 703.789 1796.59 703.414C1796.21 703.039 1796 702.53 1796 702C1796 701.47 1796.21 700.961 1796.59 700.586C1796.96 700.211 1797.47 700 1798 700C1798.53 700 1799.04 700.211 1799.41 700.586C1799.79 700.961 1800 701.47 1800 702ZM1806 702C1806 702.53 1805.79 703.039 1805.41 703.414C1805.04 703.789 1804.53 704 1804 704C1803.47 704 1802.96 703.789 1802.59 703.414C1802.21 703.039 1802 702.53 1802 702C1802 701.47 1802.21 700.961 1802.59 700.586C1802.96 700.211 1803.47 700 1804 700C1804.53 700 1805.04 700.211 1805.41 700.586C1805.79 700.961 1806 701.47 1806 702ZM1810 704C1810.53 704 1811.04 703.789 1811.41 703.414C1811.79 703.039 1812 702.53 1812 702C1812 701.47 1811.79 700.961 1811.41 700.586C1811.04 700.211 1810.53 700 1810 700C1809.47 700 1808.96 700.211 1808.59 700.586C1808.21 700.961 1808 701.47 1808 702C1808 702.53 1808.21 703.039 1808.59 703.414C1808.96 703.789 1809.47 704 1810 704Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,734.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,734.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 20, 11:14 PM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 742C1800 742.53 1799.79 743.039 1799.41 743.414C1799.04 743.789 1798.53 744 1798 744C1797.47 744 1796.96 743.789 1796.59 743.414C1796.21 743.039 1796 742.53 1796 742C1796 741.47 1796.21 740.961 1796.59 740.586C1796.96 740.211 1797.47 740 1798 740C1798.53 740 1799.04 740.211 1799.41 740.586C1799.79 740.961 1800 741.47 1800 742ZM1806 742C1806 742.53 1805.79 743.039 1805.41 743.414C1805.04 743.789 1804.53 744 1804 744C1803.47 744 1802.96 743.789 1802.59 743.414C1802.21 743.039 1802 742.53 1802 742C1802 741.47 1802.21 740.961 1802.59 740.586C1802.96 740.211 1803.47 740 1804 740C1804.53 740 1805.04 740.211 1805.41 740.586C1805.79 740.961 1806 741.47 1806 742ZM1810 744C1810.53 744 1811.04 743.789 1811.41 743.414C1811.79 743.039 1812 742.53 1812 742C1812 741.47 1811.79 740.961 1811.41 740.586C1811.04 740.211 1810.53 740 1810 740C1809.47 740 1808.96 740.211 1808.59 740.586C1808.21 740.961 1808 741.47 1808 742C1808 742.53 1808.21 743.039 1808.59 743.414C1808.96 743.789 1809.47 744 1810 744Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,774.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,774.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 19, 11:14 PM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 782C1800 782.53 1799.79 783.039 1799.41 783.414C1799.04 783.789 1798.53 784 1798 784C1797.47 784 1796.96 783.789 1796.59 783.414C1796.21 783.039 1796 782.53 1796 782C1796 781.47 1796.21 780.961 1796.59 780.586C1796.96 780.211 1797.47 780 1798 780C1798.53 780 1799.04 780.211 1799.41 780.586C1799.79 780.961 1800 781.47 1800 782ZM1806 782C1806 782.53 1805.79 783.039 1805.41 783.414C1805.04 783.789 1804.53 784 1804 784C1803.47 784 1802.96 783.789 1802.59 783.414C1802.21 783.039 1802 782.53 1802 782C1802 781.47 1802.21 780.961 1802.59 780.586C1802.96 780.211 1803.47 780 1804 780C1804.53 780 1805.04 780.211 1805.41 780.586C1805.79 780.961 1806 781.47 1806 782ZM1810 784C1810.53 784 1811.04 783.789 1811.41 783.414C1811.79 783.039 1812 782.53 1812 782C1812 781.47 1811.79 780.961 1811.41 780.586C1811.04 780.211 1810.53 780 1810 780C1809.47 780 1808.96 780.211 1808.59 780.586C1808.21 780.961 1808 781.47 1808 782C1808 782.53 1808.21 783.039 1808.59 783.414C1808.96 783.789 1809.47 784 1810 784Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,814.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,814.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 18, 11:26 PM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 822C1800 822.53 1799.79 823.039 1799.41 823.414C1799.04 823.789 1798.53 824 1798 824C1797.47 824 1796.96 823.789 1796.59 823.414C1796.21 823.039 1796 822.53 1796 822C1796 821.47 1796.21 820.961 1796.59 820.586C1796.96 820.211 1797.47 820 1798 820C1798.53 820 1799.04 820.211 1799.41 820.586C1799.79 820.961 1800 821.47 1800 822ZM1806 822C1806 822.53 1805.79 823.039 1805.41 823.414C1805.04 823.789 1804.53 824 1804 824C1803.47 824 1802.96 823.789 1802.59 823.414C1802.21 823.039 1802 822.53 1802 822C1802 821.47 1802.21 820.961 1802.59 820.586C1802.96 820.211 1803.47 820 1804 820C1804.53 820 1805.04 820.211 1805.41 820.586C1805.79 820.961 1806 821.47 1806 822ZM1810 824C1810.53 824 1811.04 823.789 1811.41 823.414C1811.79 823.039 1812 822.53 1812 822C1812 821.47 1811.79 820.961 1811.41 820.586C1811.04 820.211 1810.53 820 1810 820C1809.47 820 1808.96 820.211 1808.59 820.586C1808.21 820.961 1808 821.47 1808 822C1808 822.53 1808.21 823.039 1808.59 823.414C1808.96 823.789 1809.47 824 1810 824Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,854.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,854.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 17, 11:14 PM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 862C1800 862.53 1799.79 863.039 1799.41 863.414C1799.04 863.789 1798.53 864 1798 864C1797.47 864 1796.96 863.789 1796.59 863.414C1796.21 863.039 1796 862.53 1796 862C1796 861.47 1796.21 860.961 1796.59 860.586C1796.96 860.211 1797.47 860 1798 860C1798.53 860 1799.04 860.211 1799.41 860.586C1799.79 860.961 1800 861.47 1800 862ZM1806 862C1806 862.53 1805.79 863.039 1805.41 863.414C1805.04 863.789 1804.53 864 1804 864C1803.47 864 1802.96 863.789 1802.59 863.414C1802.21 863.039 1802 862.53 1802 862C1802 861.47 1802.21 860.961 1802.59 860.586C1802.96 860.211 1803.47 860 1804 860C1804.53 860 1805.04 860.211 1805.41 860.586C1805.79 860.961 1806 861.47 1806 862ZM1810 864C1810.53 864 1811.04 863.789 1811.41 863.414C1811.79 863.039 1812 862.53 1812 862C1812 861.47 1811.79 860.961 1811.41 860.586C1811.04 860.211 1810.53 860 1810 860C1809.47 860 1808.96 860.211 1808.59 860.586C1808.21 860.961 1808 861.47 1808 862C1808 862.53 1808.21 863.039 1808.59 863.414C1808.96 863.789 1809.47 864 1810 864Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,894.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,894.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 16, 11:26 PM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 902C1800 902.53 1799.79 903.039 1799.41 903.414C1799.04 903.789 1798.53 904 1798 904C1797.47 904 1796.96 903.789 1796.59 903.414C1796.21 903.039 1796 902.53 1796 902C1796 901.47 1796.21 900.961 1796.59 900.586C1796.96 900.211 1797.47 900 1798 900C1798.53 900 1799.04 900.211 1799.41 900.586C1799.79 900.961 1800 901.47 1800 902ZM1806 902C1806 902.53 1805.79 903.039 1805.41 903.414C1805.04 903.789 1804.53 904 1804 904C1803.47 904 1802.96 903.789 1802.59 903.414C1802.21 903.039 1802 902.53 1802 902C1802 901.47 1802.21 900.961 1802.59 900.586C1802.96 900.211 1803.47 900 1804 900C1804.53 900 1805.04 900.211 1805.41 900.586C1805.79 900.961 1806 901.47 1806 902ZM1810 904C1810.53 904 1811.04 903.789 1811.41 903.414C1811.79 903.039 1812 902.53 1812 902C1812 901.47 1811.79 900.961 1811.41 900.586C1811.04 900.211 1810.53 900 1810 900C1809.47 900 1808.96 900.211 1808.59 900.586C1808.21 900.961 1808 901.47 1808 902C1808 902.53 1808.21 903.039 1808.59 903.414C1808.96 903.789 1809.47 904 1810 904Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,934.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,934.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 15, 05:18 AM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 942C1800 942.53 1799.79 943.039 1799.41 943.414C1799.04 943.789 1798.53 944 1798 944C1797.47 944 1796.96 943.789 1796.59 943.414C1796.21 943.039 1796 942.53 1796 942C1796 941.47 1796.21 940.961 1796.59 940.586C1796.96 940.211 1797.47 940 1798 940C1798.53 940 1799.04 940.211 1799.41 940.586C1799.79 940.961 1800 941.47 1800 942ZM1806 942C1806 942.53 1805.79 943.039 1805.41 943.414C1805.04 943.789 1804.53 944 1804 944C1803.47 944 1802.96 943.789 1802.59 943.414C1802.21 943.039 1802 942.53 1802 942C1802 941.47 1802.21 940.961 1802.59 940.586C1802.96 940.211 1803.47 940 1804 940C1804.53 940 1805.04 940.211 1805.41 940.586C1805.79 940.961 1806 941.47 1806 942ZM1810 944C1810.53 944 1811.04 943.789 1811.41 943.414C1811.79 943.039 1812 942.53 1812 942C1812 941.47 1811.79 940.961 1811.41 940.586C1811.04 940.211 1810.53 940 1810 940C1809.47 940 1808.96 940.211 1808.59 940.586C1808.21 940.961 1808 941.47 1808 942C1808 942.53 1808.21 943.039 1808.59 943.414C1808.96 943.789 1809.47 944 1810 944Z"/>
+                <GeometryDrawing Brush="#F6F8F9">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,974.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="465.5,974.5,15,15" RadiusX="3.5" RadiusY="3.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#B0BABF"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,48,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Invoice 6B1E73DA–0017
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1105,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                Dec 7, 11:26 PM
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,160,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#E5E9EB">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#5B6871" Geometry="M1800 982C1800 982.53 1799.79 983.039 1799.41 983.414C1799.04 983.789 1798.53 984 1798 984C1797.47 984 1796.96 983.789 1796.59 983.414C1796.21 983.039 1796 982.53 1796 982C1796 981.47 1796.21 980.961 1796.59 980.586C1796.96 980.211 1797.47 980 1798 980C1798.53 980 1799.04 980.211 1799.41 980.586C1799.79 980.961 1800 981.47 1800 982ZM1806 982C1806 982.53 1805.79 983.039 1805.41 983.414C1805.04 983.789 1804.53 984 1804 984C1803.47 984 1802.96 983.789 1802.59 983.414C1802.21 983.039 1802 982.53 1802 982C1802 981.47 1802.21 980.961 1802.59 980.586C1802.96 980.211 1803.47 980 1804 980C1804.53 980 1805.04 980.211 1805.41 980.586C1805.79 980.961 1806 981.47 1806 982ZM1810 984C1810.53 984 1811.04 983.789 1811.41 983.414C1811.79 983.039 1812 982.53 1812 982C1812 981.47 1811.79 980.961 1811.41 980.586C1811.04 980.211 1810.53 980 1810 980C1809.47 980 1808.96 980.211 1808.59 980.586C1808.21 980.961 1808 981.47 1808 982C1808 982.53 1808.21 983.039 1808.59 983.414C1808.96 983.789 1809.47 984 1810 984Z"/>
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="449.5,31.5,1299,74" RadiusX="9.5" RadiusY="9.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="449.5,31.5,1299,74" RadiusX="9.5" RadiusY="9.5"/>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#000000"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#D4D2D0" Geometry="M493.5 79.75L485.625 71.875C485 72.375 484.281 72.7708 483.469 73.0625C482.656 73.3542 481.792 73.5 480.875 73.5C478.604 73.5 476.682 72.7135 475.109 71.1406C473.536 69.5677 472.75 67.6458 472.75 65.375C472.75 63.1042 473.536 61.1823 475.109 59.6094C476.682 58.0365 478.604 57.25 480.875 57.25C483.146 57.25 485.068 58.0365 486.641 59.6094C488.214 61.1823 489 63.1042 489 65.375C489 66.2917 488.854 67.1562 488.563 67.9688C488.271 68.7812 487.875 69.5 487.375 70.125L495.25 78L493.5 79.75ZM480.875 71C482.438 71 483.766 70.4531 484.859 69.3594C485.953 68.2656 486.5 66.9375 486.5 65.375C486.5 63.8125 485.953 62.4844 484.859 61.3906C483.766 60.2969 482.438 59.75 480.875 59.75C479.312 59.75 477.984 60.2969 476.891 61.3906C475.797 62.4844 475.25 63.8125 475.25 65.375C475.25 66.9375 475.797 68.2656 476.891 69.3594C477.984 70.4531 479.312 71 480.875 71Z"/>
+                검색
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="100,0,300,1048"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,30,30"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,88,24"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,58,24"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,58,24"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,58,24"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,84,24"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,71,24"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,71,56"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+</ResourceDictionary>

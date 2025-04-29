@@ -28,10 +28,10 @@ namespace overcloud
         private FileDownloadManager _fileDownloadManager;
 
         private int currentFolderId = -1; // 현재 폴더 위치
-        private Stack<int> folderHistory ; // 이전 폴더 기억용
+        private Stack<int> folderHistory; // 이전 폴더 기억용
         private Dictionary<int, bool> selectedMap;  // 2번째 탐색기에서 체크박스 상태 기억용
         private IFileRepository FileRepository; // 전체 파일 목록   
-        private List<AccessToken> tokenList = new();
+        //private List<AccessToken> tokenList = new();
 
 
 
@@ -47,6 +47,11 @@ namespace overcloud
 
             _fileDownloadManager = new FileDownloadManager();
             FileRepository = new FileRepository(DbConfig.ConnectionString);
+        }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            LoadRootFolders();
+            RefreshExplorer();
         }
 
         private async void SaveDriveQuotaToDBAsync()
@@ -121,338 +126,171 @@ namespace overcloud
                     }
                 }
             }
-            RefreshExplorer();
         }
 
-        private void Button_DetailDisk_Click(object sender, RoutedEventArgs e)
-        {
-            DiskDetailWindow detailWindow = new DiskDetailWindow(_accountService);
-            detailWindow.Owner = this;
-            detailWindow.ShowDialog();
-            RefreshExplorer();
-        }
-
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            LoadRootFolders();
-            RefreshExplorer();
-        }
+        //FileRepository.all_file_list
 
         private void LoadRootFolders()
         {
-            //var rootItems = all_file_list(-1); // ParentFolderId == null 처리
-            var rootItems = FileRepository.all_file_list(null);
-            foreach (var item in rootItems)
+            // "모든 파일" 루트 노드
+            var rootItem = new TreeViewItem
             {
-                var node = new FileTreeNode(item);
-                node.Expanded += FileNode_Expanded;
-                FileExplorerTree.Items.Add(node);
+                Header = "최상위 폴더",
+                Tag = -1
+            };
+
+            // 바로 하위 폴더만 조회해서 추가
+            var rootChildren = all_file_list(-1)
+                                 .Where(f => f.IsFolder)
+                                 .ToList();
+
+            foreach (var child in rootChildren)
+            {
+                var childItem = new TreeViewItem
+                {
+                    Header = child.FileName,
+                    Tag = child.FileId
+                };
+                childItem.Items.Add("Loading..."); // 하위 폴더 열 때만 로드
+                childItem.Expanded += Folder_Expanded;
+                rootItem.Items.Add(childItem);
+            }
+
+            FileExplorerTree.Items.Add(rootItem);
+        }
+
+        private void Folder_Expanded(object sender, RoutedEventArgs e)
+        {
+            if (sender is TreeViewItem parentItem)
+            {
+                if (parentItem.Items.Count == 1 && parentItem.Items[0] is string && (string)parentItem.Items[0] == "Loading...")
+                {
+                    parentItem.Items.Clear();
+
+                    int parentId = (int)parentItem.Tag;
+
+                    var children = all_file_list(parentId)
+                                    .Where(f => f.IsFolder)
+                                    .ToList();
+
+                    foreach (var child in children)
+                    {
+                        var childItem = new TreeViewItem
+                        {
+                            Header = child.FileName,
+                            Tag = child.FileId
+                        };
+                        childItem.Items.Add("Loading..."); // 또 하위가 있을 수 있으니
+                        childItem.Expanded += Folder_Expanded;
+                        parentItem.Items.Add(childItem);
+                    }
+                }
             }
         }
+
+        private void RefreshExplorer()
+        {
+            // 1. 현재 열려 있는 노드들의 ID 저장
+            var expandedIds = new HashSet<int>();
+            foreach (var item in FileExplorerTree.Items)
+            {
+                if (item is FileTreeNode node)
+                    CollectExpandedNodes(node, expandedIds);
+            }
+
+            // 2. 트리 전체 클리어
+            FileExplorerTree.Items.Clear();
+
+            // 3. 루트부터 다시 로드
+            LoadRootFolders();
+
+            // 4. 저장한 ID 기준으로 다시 열기
+            ExpandNodesById(FileExplorerTree.Items, expandedIds);
+        }
+
+        private void CollectExpandedNodes(FileTreeNode node, HashSet<int> expandedIds)
+        {
+            if (node.IsExpanded)
+                expandedIds.Add(node.FileInfo.FileId);
+
+            foreach (var child in node.Items)
+            {
+                if (child is FileTreeNode childNode)
+                    CollectExpandedNodes(childNode, expandedIds);
+            }
+        }
+
+        private void ExpandNodesById(ItemCollection items, HashSet<int> expandedIds)
+        {
+            foreach (var item in items)
+            {
+                if (item is FileTreeNode node)
+                {
+                    if (expandedIds.Contains(node.FileInfo.FileId))
+                    {
+                        node.IsExpanded = true;
+                        if (!node.IsLoaded)
+                        {
+                            var children = all_file_list(node.FileInfo.FileId);
+                            node.LoadChildren(children);
+
+                            // 자식에도 이벤트 연결
+                            foreach (var child in node.Items)
+                            {
+                                if (child is FileTreeNode childNode && childNode.FileInfo.IsFolder)
+                                    childNode.Expanded += FileNode_Expanded;
+                            }
+                        }
+                        ExpandNodesById(node.Items, expandedIds); // 재귀적으로 하위도 펼치기
+                    }
+                }
+            }
+        }
+
 
         private void FileNode_Expanded(object sender, RoutedEventArgs e)
         {
             if (sender is FileTreeNode node && node.FileInfo.IsFolder && !node.IsLoaded)
             {
-                var children = FileRepository.all_file_list(node.FileInfo.FileId);
+                var children = all_file_list(node.FileInfo.FileId);
                 node.LoadChildren(children);
 
-                // 자식에도 이벤트 달기
+                // 자식에도 이벤트 달아주기 (다시 확장할 수 있게)
                 foreach (var child in node.Items)
                 {
                     if (child is FileTreeNode childNode && childNode.FileInfo.IsFolder)
+                    {
                         childNode.Expanded += FileNode_Expanded;
+                    }
                 }
             }
         }
 
-
-        private List<CloudFileInfo> GetCheckedFiles()
+        private void FileExplorerTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (FileExplorerTree.Visibility == Visibility.Visible)
+            if (e.NewValue is TreeViewItem item && item.Tag is int folderId)
             {
-                var result = new List<CloudFileInfo>();
-                foreach (var item in FileExplorerTree.Items)
-                {
-                    if (item is FileTreeNode node)
-                        FindCheckedFilesRecursive(node, result, false);
-                }
-                return result;
-            }
-            else
-            {
-                return GetCheckedFiles_NewExplorer();  // ⭐ 이거 추가!
-            }
-        }
-
-        private void FindCheckedFilesRecursive(FileTreeNode node, List<CloudFileInfo> result, bool parentChecked = false)
-        {
-            bool isCurrentChecked = node.IsChecked || parentChecked;
-
-            if (node.FileInfo.IsFolder)
-            {
-                if (!node.IsLoaded)
-                {
-                    var children = FileRepository.all_file_list(node.FileInfo.FileId);
-                    node.LoadChildren(children);
-                }
-
-                foreach (var child in node.ChildrenNodes)
-                {
-                    FindCheckedFilesRecursive(child, result, isCurrentChecked);
-                }
-            }
-            else
-            {
-                if (isCurrentChecked)
-                    result.Add(node.FileInfo);
-            }
-        }
-
-        
-        private async void Button_Down_Click(object sender, RoutedEventArgs e)
-        {
-            var selectedFiles = GetCheckedFiles();
-            if (selectedFiles.Count == 0)
-            {
-                System.Windows.MessageBox.Show("선택된 파일이 없습니다.");
-                return;
-            }
-
-            // 전체 CloudFileInfo를 ID 기준으로 저장 (부모 경로 추적용)
-            Dictionary<int, CloudFileInfo> allFileMap = GetAllFilesRecursively();
-
-            // 기본 저장 루트 (예시)
-            string localBase = @"C:\down";
-
-            foreach (var file in selectedFiles)
-            {
-                string relativePath = GetCloudPath(file, allFileMap); // Cloud 경로
-                string localPath = System.IO.Path.Combine(localBase, relativePath);
-
-                // 폴더 생성
-                string? dir = System.IO.Path.GetDirectoryName(localPath);
-                if (!string.IsNullOrEmpty(dir)) System.IO.Directory.CreateDirectory(dir);
-
-                // 실제 다운로드 (예: 구글드라이브에서 파일 가져오기)
-                await _fileDownloadManager.DownloadFile("1",  file.GoogleFileId,  file.FileId, localPath);
-            }
-
-            System.Windows.MessageBox.Show("다운로드 완료");
-        }
-
-
-        /*
-        private void Button_Down_Click(object sender, RoutedEventArgs e)    //testcode
-        {
-            var selectedFiles = GetCheckedFiles();
-
-            if (selectedFiles.Count == 0)
-            {
-                System.Windows.MessageBox.Show("선택된 파일이 없습니다.");
-                return;
-            }
-
-            string message = "선택된 파일:\n" + string.Join("\n", selectedFiles.Select(f => f.FileName));
-            System.Windows.MessageBox.Show(message, "파일 선택 결과");
-        }*/
-
-        private string GetCloudPath(CloudFileInfo file, Dictionary<int, CloudFileInfo> allMap)
-        {
-            List<string> pathParts = new List<string> { file.FileName };
-            int? currentParent = file.ParentFolderId;
-
-            while (currentParent.HasValue && allMap.ContainsKey(currentParent.Value))
-            {
-                var parent = allMap[currentParent.Value];
-                pathParts.Insert(0, parent.FileName);
-                currentParent = parent.ParentFolderId;
-            }
-
-            return string.Join("\\", pathParts);
-        }
-
-        private Dictionary<int, CloudFileInfo> GetAllFilesRecursively()
-        {
-            var result = new Dictionary<int, CloudFileInfo>();
-            void Traverse(int fileId)
-            {
-                var children = FileRepository.all_file_list(fileId);
-                foreach (var item in children)
-                {
-                    result[item.FileId] = item;
-                    if (item.IsFolder) Traverse(item.FileId);
-                }
-            }
-            Traverse(-1);
-            return result;
-        }
-
-
-
-
-
-        private void Button_SwitchExplorer_Click(object sender, RoutedEventArgs e)
-        {
-            bool isTreeVisible = FileExplorerTree.Visibility == Visibility.Visible;
-
-            FileExplorerTree.Visibility = isTreeVisible ? Visibility.Collapsed : Visibility.Visible;
-            Panel_FolderExplorer.Visibility = isTreeVisible ? Visibility.Visible : Visibility.Collapsed;
-
-            if (!isTreeVisible) return;
-
-            currentFolderId = -1;
-            LoadFolderContents(currentFolderId);
-        }
-
-        private void FolderItem_Click(object sender, MouseButtonEventArgs e)
-        {
-            if (sender is TextBlock tb && tb.DataContext is CloudFileInfo info && info.IsFolder)
-            {
-                folderHistory.Push(currentFolderId);
-                currentFolderId = info.FileId;
+                currentFolderId = folderId;
                 LoadFolderContents(currentFolderId);
             }
         }
-
 
         private void LoadFolderContents(int folderId)
         {
-            var contents = FileRepository.all_file_list(folderId).ToList();
-
-            // 현재 폴더의 부모를 알아내서 "상위 폴더로" 항목 삽입
-            if (folderId != -1)
+            var contents = all_file_list(folderId).Select(file =>
             {
-                var all = GetAllFilesRecursively();
-                if (all.TryGetValue(folderId, out var current) && current.ParentFolderId.HasValue)
+                return new
                 {
-                    contents.Insert(0, new CloudFileInfo
-                    {
-                        FileName = "📁 상위 폴더로",
-                        IsFolder = true,
-                        FileId = current.ParentFolderId.Value
-                    });
-                }
-            }
+                    FileName = file.FileName,
+                    Icon = file.IsFolder ? "asset/folder.png" : "asset/file.png"  // 폴더는 폴더아이콘, 파일은 파일아이콘
+                };
+            }).ToList();
 
-            FolderContentPanel.ItemsSource = contents;
-        }
-
-
-        private string GetCloudPathString(int folderId)
-        {
-            if (folderId == -1) return "Root";
-
-            Dictionary<int, CloudFileInfo> allMap = GetAllFilesRecursively();  // 전체 트리
-
-            List<string> parts = new();
-            int? current = folderId;
-
-            while (current.HasValue && allMap.ContainsKey(current.Value))
-            {
-                parts.Insert(0, allMap[current.Value].FileName);
-                current = allMap[current.Value].ParentFolderId;
-            }
-
-            return "Root > " + string.Join(" > ", parts);
-        }
-
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            if (sender is System.Windows.Controls.CheckBox cb && cb.Tag is int id)
-                selectedMap[id] = true;
-        }
-
-        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            if (sender is System.Windows.Controls.CheckBox cb && cb.Tag is int id)
-                selectedMap[id] = false;
-        }
-
-
-        private List<CloudFileInfo> GetCheckedFiles_NewExplorer()
-        {
-            if (FolderContentPanel.ItemsSource is IEnumerable<CloudFileInfo> list)
-            {
-                return list
-                    .Where(f => selectedMap.TryGetValue(f.FileId, out var isChecked)
-                                && isChecked
-                                && f.FileName != "📁 상위 폴더로")
-                    .ToList();
-            }
-
-            return new List<CloudFileInfo>();
+            RightFileListPanel.ItemsSource = contents;
         }
 
 
 
-        private async void Button_DeleteSelected_Click(object sender, RoutedEventArgs e)
-        {
-            var selectedFiles = GetCheckedFiles();
-            if (selectedFiles.Count == 0)
-            {
-                System.Windows.MessageBox.Show("삭제할 파일이 선택되지 않았습니다.");
-                return;
-            }
 
-            var confirm = System.Windows.MessageBox.Show(
-                $"총 {selectedFiles.Count}개의 항목을 삭제하시겠습니까?",
-                "삭제 확인", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-            if (confirm != MessageBoxResult.Yes) return;
-
-            foreach (var file in selectedFiles)
-            {
-                var access = tokenList.FirstOrDefault(a => a.StorageId == file.CloudStorageNum);
-                if (access == null)
-                {
-                    System.Windows.MessageBox.Show($"StorageId {file.CloudStorageNum}에 대한 토큰이 없습니다.");
-                    continue;
-                }
-
-                bool deleted = await DeleteFile("admin", file.GoogleFileId, file.FileId, tokenList);
-                if (!deleted)
-                    System.Windows.MessageBox.Show($"[{file.FileName}] 삭제 실패");
-            }
-
-            System.Windows.MessageBox.Show("삭제 완료!");
-            RefreshExplorer();  // 트리 또는 새 탐색기 갱신
-        }
-
-
-        private void RefreshExplorer()
-        {
-            if (FileExplorerTree.Visibility == Visibility.Visible)
-            {
-                FileExplorerTree.Items.Clear();
-                LoadRootFolders();
-            }
-            else
-            {
-                LoadFolderContents(currentFolderId);
-            }
-        }
-
-        public class AccessToken //임시
-        {
-            public int StorageId { get; set; }
-            public string Token { get; set; }
-        }
-
-        public async Task<bool> DeleteFile(string userId, string cloudFileId, int fileId, List<AccessToken> tokens)
-        {
-            await Task.Delay(300); // 비동기 흉내
-            Console.WriteLine($"[삭제 요청] userId: {userId}, cloudFileId: {cloudFileId}, fileId: {fileId}");
-
-            // 접근 토큰 확인 로그
-            foreach (var token in tokens)
-            {
-                Console.WriteLine($"  - Token for StorageId {token.StorageId}: {token.Token.Substring(0, 10)}...");
-            }
-
-            // 항상 삭제 성공으로 처리
-            return true;
-        }
     }
 }

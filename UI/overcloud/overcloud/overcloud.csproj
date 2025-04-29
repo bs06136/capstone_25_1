@@ -34,4 +34,78 @@
 
 		<Compile Include="..\..\..\OverCloud\Services\**\*.cs" Link="OverCloud\Services\%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="asset\accounts.png" />
+	  <None Remove="asset\active.png" />
+	  <None Remove="asset\arrow_back.png" />
+	  <None Remove="asset\arrow_right.png" />
+	  <None Remove="asset\box.png" />
+	  <None Remove="asset\cancel.png" />
+	  <None Remove="asset\delete.png" />
+	  <None Remove="asset\download.png" />
+	  <None Remove="asset\folder.png" />
+	  <None Remove="asset\home.png" />
+	  <None Remove="asset\Icon.png" />
+	  <None Remove="asset\overcloud_logo.png" />
+	  <None Remove="asset\pir.png" />
+	  <None Remove="asset\search.png" />
+	  <None Remove="asset\switch_left.png" />
+	  <None Remove="asset\upload.png" />
+	  <None Remove="asset\Vector.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="asset\accounts.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\active.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\arrow_back.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\arrow_right.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\box.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\cancel.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\delete.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\download.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\folder.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\home.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\Icon.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\overcloud_logo.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\pir.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\search.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\switch_left.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\upload.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\Vector.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	</ItemGroup>
 </Project>
