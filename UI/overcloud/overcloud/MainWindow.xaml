@@ -76,7 +76,7 @@
                     <TextBlock Text="업로드" VerticalAlignment="Center" FontSize="12" Foreground="Black"/>
                 </StackPanel>
             </Button>
-            <Button Width="90" Height="31" Canvas.Left="1383" Canvas.Top="178" Background="White" BorderBrush="#DDE2E4" BorderThickness="1">
+            <Button Width="90" Height="31" Canvas.Left="1383" Canvas.Top="178" Background="White" BorderBrush="#DDE2E4" BorderThickness="1" Click="Button_Save_Click">
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="5"/>
@@ -136,16 +136,33 @@
             <TextBlock Text="수정 날짜" FontSize="14" FontWeight="Bold" Canvas.Left="1600" Canvas.Top="250" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
             <!-- 오른쪽 파일 리스트 추가 (선택한 폴더 하위 보여주기) -->
-            <ItemsControl x:Name="RightFileListPanel" Canvas.Left="340" Canvas.Top="318" Width="1500" Height="632" HorizontalAlignment="Center" VerticalAlignment="Top">
-                <ItemsControl.ItemTemplate>
+            <ListBox x:Name="RightFileListPanel"
+         Canvas.Left="340" Canvas.Top="318"
+         Width="1500" Height="632"
+         Background="Transparent"
+         BorderThickness="0"
+         HorizontalAlignment="Left"
+         VerticalAlignment="Top"
+         SelectionMode="Single">
+                <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Margin="5">
-                            <Image Width="16" Height="16" Source="{Binding Icon}" Margin="5"/>
+                        <StackPanel Orientation="Horizontal" Margin="5"
+                        MouseLeftButtonDown="RightFileItem_Click"
+                        VerticalAlignment="Center">
+                            <!-- 체크박스 -->
+                            <CheckBox VerticalAlignment="Center" Margin="0,0,5,0"
+                          IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                          Click="CheckBox_Click"/>
+
+                            <!-- 아이콘 -->
+                            <Image Width="16" Height="16" Source="{Binding Icon}" Margin="5,0"/>
+
+                            <!-- 파일 이름 -->
                             <TextBlock Text="{Binding FileName}" FontSize="16" Margin="5,0,0,0"/>
                         </StackPanel>
                     </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                </ListBox.ItemTemplate>
+            </ListBox>
 
             <!-- 하단 스토리지 바 -->
             <Rectangle Width="240" Height="10" Fill="#D7EDFF" Canvas.Left="130" Canvas.Top="986" RadiusX="1" RadiusY="1"/>

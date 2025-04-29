@@ -37,6 +37,7 @@ namespace overcloud
 
         public MainWindow()
         {
+
             InitializeComponent();
 
             _accountService = new AccountService();
@@ -288,6 +289,110 @@ namespace overcloud
 
             RightFileListPanel.ItemsSource = contents;
         }
+
+
+        private void RightFileItem_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is StackPanel panel && panel.DataContext != null)
+            {
+                var fileInfo = panel.DataContext;
+
+                // dynamic으로 분리
+                dynamic info = fileInfo;
+
+                string fileName = info.FileName;
+                string iconPath = info.Icon;
+
+                if (iconPath == "asset/folder.png")
+                {
+                    var folder = all_file_list(currentFolderId)
+                                 .FirstOrDefault(f => f.IsFolder && f.FileName == fileName);
+
+                    if (folder != null)
+                    {
+                        currentFolderId = folder.FileId;
+                        LoadFolderContents(currentFolderId);
+                        SelectFolderInTree(folder.FileId);
+                    }
+                }
+            }
+        }
+
+
+
+
+        private void SelectFolderInTree(int folderId)
+        {
+            foreach (var item in FileExplorerTree.Items)
+            {
+                if (item is TreeViewItem rootItem)
+                {
+                    if (SelectFolderInTreeRecursive(rootItem, folderId))
+                        break;
+                }
+            }
+        }
+
+        private bool SelectFolderInTreeRecursive(TreeViewItem parent, int folderId)
+        {
+            if (parent.Tag is int id && id == folderId)
+            {
+                parent.IsSelected = true;
+                parent.BringIntoView();
+                return true;
+            }
+
+            foreach (var childObj in parent.Items)
+            {
+                if (childObj is TreeViewItem childItem)
+                {
+                    // 하위 항목이 "Loading..."이고 아직 로드되지 않은 경우만 처리
+                    if (childItem.Items.Count == 1 && childItem.Items[0] is string s && s == "Loading...")
+                    {
+                        // 여기서 childItem.Tag 기준으로 로드해야 함!
+                        if (childItem.Tag is int childId)
+                        {
+                            childItem.Items.Clear();
+
+                            // ⚠️ 하위 항목을 중복해서 추가하지 않도록 체크
+                            var children = all_file_list(childId)
+                                           .Where(f => f.IsFolder && f.FileId != childId) // 자기 자신은 제외
+                                           .ToList();
+
+                            foreach (var child in children)
+                            {
+                                // 중복 방지: 같은 FileId의 항목이 이미 존재하면 추가하지 않음
+                                bool alreadyExists = childItem.Items.OfType<TreeViewItem>()
+                                                      .Any(x => x.Tag is int tag && tag == child.FileId);
+                                if (alreadyExists) continue;
+
+                                var newChild = new TreeViewItem
+                                {
+                                    Header = child.FileName,
+                                    Tag = child.FileId
+                                };
+                                newChild.Items.Add("Loading...");
+                                newChild.Expanded += Folder_Expanded;
+                                childItem.Items.Add(newChild);
+                            }
+                        }
+                    }
+
+                    if (SelectFolderInTreeRecursive(childItem, folderId))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true; // 클릭이 상위 StackPanel로 가지 않게 막음
+        }
+
+
+
 
 
 
