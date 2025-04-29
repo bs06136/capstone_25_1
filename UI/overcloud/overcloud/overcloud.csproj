@@ -34,4 +34,12 @@
 
 		<Compile Include="..\..\..\OverCloud\Services\**\*.cs" Link="OverCloud\Services\%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Remove="..\..\..\OverCloud\Services\FileManager\DriveService\GoogleAuthHelper.cs" />
+	  <Compile Remove="..\..\..\OverCloud\Services\FileManager\FileService.cs" />
+	  <Compile Remove="..\..\..\OverCloud\Services\StorageManager\CloudStorageMerger.cs" />
+	  <Compile Remove="..\..\..\OverCloud\Services\StorageManager\StorageAggregator.cs" />
+	  <Compile Remove="..\..\..\OverCloud\Services\StorageManager\StorageUpdater.cs" />
+	</ItemGroup>
 </Project>
