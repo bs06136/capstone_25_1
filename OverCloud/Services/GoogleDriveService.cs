@@ -80,6 +80,30 @@ public class GoogleDriveService : ICloudFileService
         return true;
     }
 
+    public async Task<bool> DeleteFileAsync(string userId, string fileId)
+    {
+        var clouds = storageRepo.GetCloudsForUser(userId);
+        var googleCloud = clouds.FirstOrDefault(c => c.CloudType == "GoogleDrive");
+        if (googleCloud == null) return false;
+
+        var accessToken = await tokenProvider.GetAccessTokenAsync(googleCloud);
+        var service = CreateDriveService(accessToken);
+
+        try
+        {
+            await service.Files.Delete(fileId).ExecuteAsync();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ 파일 삭제 실패: {ex.Message}");
+            return false;
+        }
+    }
+
+
+
+
     public async Task<(long, long)> GetDriveQuotaAsync(string userId)
     {
         var clouds = storageRepo.GetCloudsForUser(userId);

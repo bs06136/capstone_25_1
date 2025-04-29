@@ -14,8 +14,8 @@
 !Services/GoogleDriveService.cs
 !Services/GoogleTokenProvider.cs
 !Services/ICloudFileService.cs
+!Services/StorageAggregator.cs
 !Services/StorageUpdater.cs
-!Services/TokenManager.cs
 !Services/TokenProviderFactory.cs
 
 
