@@ -107,7 +107,7 @@ namespace OverCloud.Services.FileManager.DriveManager
         }
 
 
-        public async Task<(long, long)> GetDriveQuotaAsync(string userId)
+        public async Task<(ulong, ulong)> GetDriveQuotaAsync(string userId)
         {
             var clouds = accountRepository.GetAllAccounts("admin");
             var googleCloud = clouds.FirstOrDefault(c => c.AccountId == userId);
@@ -120,8 +120,8 @@ namespace OverCloud.Services.FileManager.DriveManager
             about.Fields = "storageQuota";
             var result = await about.ExecuteAsync();
 
-            long total = long.Parse(result.StorageQuota.Limit?.ToString() ?? "0");
-            long used = long.Parse(result.StorageQuota.Usage?.ToString() ?? "0");
+            ulong total = ulong.Parse(result.StorageQuota.Limit?.ToString() ?? "0");
+            ulong used = ulong.Parse(result.StorageQuota.Usage?.ToString() ?? "0");
             return (total, used);
         }
 

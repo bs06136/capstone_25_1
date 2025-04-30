@@ -7,62 +7,161 @@ using System.Threading.Tasks;
 using Microsoft.Identity.Client; // Microsoft Authentication Library (MSAL) 필요
 using DB.overcloud.Models;
 using MySql.Data.MySqlClient;
+using System.Diagnostics;
+using OverCloud.Views;
+
+using System.Windows; // Application 객체를 사용하려면 필요
+using System.Windows.Threading;       // Dispatcher를 사용하려면 필요
+
+
 
 namespace OverCloud.Services.FileManager.DriveManager
 {
     public static class OneDriveAuthHelper
     {
-        private const string clientId = "9be3b88a-60b4-404b-93e7-ace80ff849f2"; // 너가 Azure 등록하면서 받은 Client ID
-        private const string tenant = "consumers"; // 개인 Microsoft 계정은 "consumers" 
-        private const string redirectUri = "http://localhost:5000/"; // 등록한 리다이렉션 URL
+        private const string CredentialFile = "C:\\key\\onedrive_credential.json";
+
+        private const string Authority = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize";// 개인 Microsoft 계정은 "consumers" 
+
+        //private static readonly string[] Scopes = {
+        //"offline_access", "Files.ReadWrite.All", "User.Read"
+        //};
 
         public static async Task<(string email, string refreshToken, string clientId, string clientSecret)> AuthorizeAsync(string dummyId)
         {
-            var app = PublicClientApplicationBuilder
-                .Create(clientId)
-                .WithAuthority(AzureCloudInstance.AzurePublic, tenant)
-                .WithRedirectUri(redirectUri)
-                .Build();
 
-            string[] scopes = { "Files.ReadWrite.All", "offline_access", "User.Read" };
+            var config = OneDriveCredentialConfig.Load(CredentialFile);
+            
+            string ClientId = config.client_id; // 너가 Azure 등록하면서 받은 Client ID
+            string RedirectUri = config.redirect_uri;
+            string scopeString = string.Join(" ", config.scopes);
+
+            // 1. 브라우저로 사용자 인증
+            string authUrl = $"{Authority}?client_id={ClientId}&response_type=code&redirect_uri={RedirectUri}&response_mode=query&scope={scopeString}&state=12345";
+            Console.WriteLine("브라우저 열기: " + authUrl);
+
+            // 1.5  브라우저 열기. 
+            Process.Start(new ProcessStartInfo(authUrl) { UseShellExecute = true });
+
+            // 2. 사용자가 URL에서 code 복사해서 콘솔에 입력
+            Console.Write("🔐 인증 후 받은 code를 입력하세요: ");
+            Console.Write("✏️ code 입력: ");
+
+            string code = null;
+
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                var inputDialog = new InputDialog(); // 👉 반드시 네임스페이스 맞추기 (OverCloud.Views.InputDialog)  
+
+                if (inputDialog.ShowDialog() == true)
+                {
+                    {
+                        Console.WriteLine(" 다이얼로그 OK 누름");
+                        code = inputDialog.ResponseText;
+                        Console.WriteLine(" 받은 코드: " + code);
+                    }
+                }
+                else
+                {
+                    throw new Exception("인증 코드 입력이 취소되었습니다.");
+                }
+            });
+
+            if (string.IsNullOrEmpty(code))
+            {
+                Console.WriteLine(" code가 null 또는 빈 문자열입니다");
+                throw new Exception("Code가 입력되지 않았습니다.");
+            }
+
+
+            // 3. code로 토큰 요청 (scope 제거)
+            using var client = new HttpClient();
+            var parameters = new Dictionary<string, string>
+            {
+                { "client_id", ClientId },
+                { "scope", scopeString},
+                { "code", code },
+                { "redirect_uri", RedirectUri },
+                { "grant_type", "authorization_code" },
+                
+            };
+
+            // 추가!
+            Console.WriteLine(" 요청 파라미터:");
+            foreach (var kv in parameters)
+            {
+                Console.WriteLine($"{kv.Key} = {kv.Value}");
+            }
+
+            HttpResponseMessage response ;
 
             try
             {
-                var result = await app.AcquireTokenInteractive(scopes)
-                    .WithPrompt(Prompt.SelectAccount) // 사용자에게 계정선택 요구
-                    .ExecuteAsync();
-
-                // RefreshToken은 PublicClientApplication에서는 바로 접근이 어려움
-                // accessToken만 제공됨 (refresh는 내부적으로 갱신됨)
-                // workaround: graph API로 추가로 가져와야 할 수 있음
-
-                // 여기선 AccessToken 기반으로 User 정보 가져오는 코드 작성
-                var email = await GetUserEmailAsync(result.AccessToken);
-
-                return (email, result.AccessToken, clientId, "");
-                // OneDrive는 ClientSecret 없이 Public Client로 동작함 (빈값 반환)
+                response = await client.PostAsync("https://login.microsoftonline.com/consumers/oauth2/v2.0/token", new FormUrlEncodedContent(parameters));
             }
-            catch (MsalException ex)
+            catch (Exception ex)
             {
-                Console.WriteLine($"❌ MSAL 서비스 에러: {ex.Message}");
-                Console.WriteLine($"❌ 코드: {ex.ErrorCode}");
-                Console.WriteLine($"❌ 상세: {ex.InnerException?.Message}");
-                throw;
+                Console.WriteLine($" HTTP 요청 예외 발생: {ex.Message}");
+                return (null, null, null, null);
             }
+
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($" 응답 코드: {response.StatusCode}");
+            Console.WriteLine($" 응답 본문: {content}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine(" 토큰 요청 실패 - DB 저장 불가");
+                return (null, null, null, null);
+            }
+
+            // 5. Access Token 추출
+            string accessToken, refreshToken;
+            try
+            {
+                var json = JsonDocument.Parse(content);
+                accessToken = json.RootElement.GetProperty("access_token").GetString();
+                refreshToken = json.RootElement.GetProperty("refresh_token").GetString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(" 토큰 파싱 실패: " + ex.Message);
+                return (null, null, null, null);
+            }
+
+            // 6. 사용자 이메일 가져오기
+            string email = await GetUserEmailAsync(accessToken);
+            if (string.IsNullOrEmpty(email))
+            {
+                Console.WriteLine(" 사용자 이메일 조회 실패");
+                return (null, null, null, null);
+            }
+
+            Console.WriteLine(" OneDrive 인증 성공: " + email);
+            return (email, refreshToken, ClientId, null);
         }
+        
 
         private static async Task<string> GetUserEmailAsync(string accessToken)
         {
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-            var response = await client.GetAsync("https://graph.microsoft.com/v1.0/me/");
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                var response = await client.GetAsync("https://graph.microsoft.com/v1.0/me");
+                var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("📡 OneDrive quota 응답: " + content);
+                var doc = JsonDocument.Parse(content);
 
-            var content = await response.Content.ReadAsStringAsync();
-            using var doc = JsonDocument.Parse(content);
-
-            return doc.RootElement.GetProperty("userPrincipalName").GetString();
+                return doc.RootElement.GetProperty("userPrincipalName").GetString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(" 이메일 조회 중 예외: " + ex.Message);
+                return null;
+            }
         }
+
     }
 }

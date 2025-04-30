@@ -72,7 +72,7 @@ namespace OverCloud.Services.FileManager
 
             if (dbDeleted)
             {
-                quotaManager.UpdateQuotaAfterUploadOrDelete(cloudInfo.CloudStorageNum, (int)(file.FileSize), false);
+                quotaManager.UpdateQuotaAfterUploadOrDelete(cloudInfo.CloudStorageNum, (ulong)((file.FileSize)/1024), false);
             }
 
             return dbDeleted;

@@ -44,8 +44,9 @@ namespace OverCloud.Services.StorageManager
             int userNum = cloudList.First().UserNum;
 
             // 2. 합산
-            ulong totalSize = (ulong)cloudList.Sum(c => c.TotalCapacity);
-            ulong usedSize = (ulong)cloudList.Sum(c => c.UsedCapacity);
+            ulong totalSize = cloudList.Aggregate(0UL, (acc, c) => acc + c.TotalCapacity);
+            ulong usedSize = cloudList.Aggregate(0UL, (acc, c) => acc + c.UsedCapacity);
+
 
             // 3. DB 업데이트
             return accountRepository.UpdateAccountUsage(userNum, totalSize, usedSize);
@@ -78,46 +79,59 @@ namespace OverCloud.Services.StorageManager
                 return false;
             }
 
-                 // 3. 해당 클라우드에 API 호출
+                  // 3. 해당 클라우드에 API 호출
             var (total, used) = await service.GetDriveQuotaAsync(userEmail);
 
-             // 4. 기존 저장된 CloudStorageInfo를 가져오기
-            var existingCloud = cloudInfo;
-            if (existingCloud == null)
-            {
-                Console.WriteLine("❌ 해당 StorageNum에 맞는 클라우드 레코드가 없습니다.");
-                return false;
-            }
+                  // 4. 기존 저장된 CloudStorageInfo를 가져오기
+            
 
             // 5. TotalCapacity, UsedCapacity만 업데이트
-            existingCloud.TotalCapacity = (int)(total / 1048576);
-            existingCloud.UsedCapacity = (int)(used / 1048576);
+            cloudInfo.TotalCapacity = (ulong)(total / 1024);
+            cloudInfo.UsedCapacity = (ulong)(used / 1024);
+
+            // 💡 메모리 세션도 갱신
+            StorageSessionManager.SetQuota(
+                cloudStorageNum: cloudInfo.CloudStorageNum,
+                accountId : cloudInfo.AccountId,
+                cloudType: cloudInfo.CloudType,
+                totalKB: cloudInfo.TotalCapacity,
+                usedKB: cloudInfo.UsedCapacity
+            );
 
             // 3. 저장
-            return storageRepository.account_save(existingCloud);
+            return storageRepository.account_save(cloudInfo);
         }
 
 
 
         //업로드 or 삭제 시 스토리지 용량 최신화.
-        public void UpdateQuotaAfterUploadOrDelete(int cloudStorageNum, int fileSizeMB, bool isUpload)
+        public void UpdateQuotaAfterUploadOrDelete(int cloudStorageNum, ulong fileSizeKB, bool isUpload)
         {
             var quota = StorageSessionManager.Quotas.FirstOrDefault(q => q.CloudStorageNum == cloudStorageNum);
-            if (quota == null) return;
+            Console.WriteLine($"🛠 업로드 반영 전: quota.Used = {quota.UsedCapacityKB}");
+            if (quota == null)
+            {
+                Console.WriteLine($"❌ quota not found for CloudStorageNum: {cloudStorageNum}");
+                return;
+            }
 
             if (isUpload)
-                quota.UsedCapacityMB += fileSizeMB;
+                quota.UsedCapacityKB += fileSizeKB;
             else
-                quota.UsedCapacityMB -= fileSizeMB;
+                quota.UsedCapacityKB -= fileSizeKB;
+
+            Console.WriteLine($"✅ 업로드 반영 후: quota.Used = {quota.UsedCapacityKB}");
 
             var cloudInfo = new CloudStorageInfo
             {
                 CloudStorageNum = quota.CloudStorageNum,
-                TotalCapacity = quota.TotalCapacityMB,
-                UsedCapacity = quota.UsedCapacityMB
+                TotalCapacity = quota.TotalCapacityKB,
+                UsedCapacity = quota.UsedCapacityKB
             };
 
-            storageRepository.account_save(cloudInfo);
+            bool dbResult = storageRepository.account_save(cloudInfo);
+            Console.WriteLine(dbResult ? "✅ DB 저장 성공" : "❌ DB 저장 실패");
+
         }
 
 
@@ -135,8 +149,8 @@ namespace OverCloud.Services.StorageManager
                 {
                     CloudStorageNum = cloud.CloudStorageNum,
                     CloudType = cloud.CloudType,
-                    TotalCapacityMB = cloud.TotalCapacity,
-                    UsedCapacityMB = cloud.UsedCapacity
+                    TotalCapacityKB = cloud.TotalCapacity,
+                    UsedCapacityKB = cloud.UsedCapacity
                 });
             }
         }
