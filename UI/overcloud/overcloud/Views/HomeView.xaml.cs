@@ -730,7 +730,7 @@ namespace overcloud.Views
                 IsFolder = true,
                 UploadedAt = DateTime.Now,
                 FileSize = 0,
-                CloudStorageNum = 0,
+                CloudStorageNum = -1,
                 CloudFileId = string.Empty,
             };
 
@@ -747,7 +747,7 @@ namespace overcloud.Views
                 return;
             }
 
-            if (result == true)
+            if (result == false)
             {
                 System.Windows.MessageBox.Show("폴더 추가에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
