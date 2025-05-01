@@ -70,7 +70,6 @@ namespace DB.overcloud.Repository
                     AccountPw = reader["account_pw"].ToString(),
                     TotalCapacity = Convert.ToUInt64(reader["total_capacity"]),
                     UsedCapacity = Convert.ToUInt64(reader["used_capacity"]),
-                    AccessToken = reader["access_token"]?.ToString(),
                     RefreshToken = reader["refresh_token"]?.ToString(),
                     ClientId = reader["client_id"]?.ToString(),
                     ClientSecret = reader["client_secret"]?.ToString()
