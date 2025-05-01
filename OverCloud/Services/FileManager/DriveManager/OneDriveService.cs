@@ -44,7 +44,7 @@ namespace OverCloud.Services.FileManager.DriveManager
         public async Task<string> UploadFileAsync(string userId, string filePath)
         {
             var cloud = accountRepository.GetAllAccounts("admin")
-                .FirstOrDefault(c => c.CloudType == "OneDrive");
+                .FirstOrDefault(c => c.AccountId == userId);
 
             if (cloud == null) return null;
             if (!await EnsureAccessTokenAsync(cloud)) return null;
@@ -65,8 +65,11 @@ namespace OverCloud.Services.FileManager.DriveManager
 
         public async Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath)
         {
+            Console.WriteLine(userId);
+            Console.WriteLine("one DownloadFileAsync");
+
             var cloud = accountRepository.GetAllAccounts("admin")
-                .FirstOrDefault(c => c.CloudType == "OneDrive");
+                .FirstOrDefault(c => c.AccountId == userId);
 
             if (cloud == null) return false;
             if (!await EnsureAccessTokenAsync(cloud)) return false;
@@ -82,10 +85,10 @@ namespace OverCloud.Services.FileManager.DriveManager
             return true;
         }
 
-        public async Task<bool> DeleteFileAsync(string userId, string cloudFileId)
+        public async Task<bool> DeleteFileAsync(int cloudStorageNum, string cloudFileId)
         {
             var cloud = accountRepository.GetAllAccounts("admin")
-                .FirstOrDefault(c => c.CloudType == "OneDrive");
+                .FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
 
             if (cloud == null) return false;
             if (!await EnsureAccessTokenAsync(cloud)) return false;
@@ -96,10 +99,10 @@ namespace OverCloud.Services.FileManager.DriveManager
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<(ulong, ulong)> GetDriveQuotaAsync(string overcloud_id)
+        public async Task<(ulong, ulong)> GetDriveQuotaAsync(string userId)
         {
             var cloud = accountRepository.GetAllAccounts("admin")
-                .FirstOrDefault(c => c.CloudType == "OneDrive");
+                .FirstOrDefault(c => c.AccountId == userId);
 
             if (cloud == null) return (0, 0);
             if (!await EnsureAccessTokenAsync(cloud)) return (0, 0);

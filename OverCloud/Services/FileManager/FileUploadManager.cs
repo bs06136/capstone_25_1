@@ -41,7 +41,7 @@ namespace OverCloud.Services.FileManager
             this.cloudTierManager = cloudTierManager;
         }
 
-        public async Task<bool> file_upload(string file_name)
+        public async Task<bool> file_upload(string file_name, int target_parent_file_id)
         {
             ulong fileSize = (ulong)new FileInfo(file_name).Length;
 
@@ -72,10 +72,9 @@ namespace OverCloud.Services.FileManager
                 FileSize = (ulong)((fileInfo.Length)/1024),
                 UploadedAt = DateTime.Now,
                 CloudStorageNum = cloud.CloudStorageNum,
-                ParentFolderId = null, // 최상위 업로드라면 -1 ,일단은 파일만처리, 나중에는 폴더까지 
-                IsFolder = false, 
-                Count = 0,
-                GoogleFileId = cloudFileId
+                ParentFolderId = target_parent_file_id, // 최상위 업로드라면 -1 ,일단은 파일만처리, 나중에는 폴더까지 
+                IsFolder = false,
+                CloudFileId = cloudFileId,
             };
 
             // 5. DB 저장

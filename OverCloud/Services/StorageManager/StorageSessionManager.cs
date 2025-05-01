@@ -95,6 +95,23 @@ namespace OverCloud.Services.StorageManager
             Quotas.Clear();
         }
 
+        public static void InitializeFromDatabase(List<CloudStorageInfo> storages)
+        {
+            Quotas.Clear(); // 기존 세션 초기화
+            foreach (var s in storages)
+            {
+                SetQuota(
+                    s.CloudStorageNum,
+                    s.AccountId,
+                    s.CloudType,
+                    s.TotalCapacity,
+                    s.UsedCapacity
+                );
+            }
+
+            Console.WriteLine($"✅ StorageSessionManager 초기화 완료: {Quotas.Count}개 로드됨");
+        }
+
 
     }
 
