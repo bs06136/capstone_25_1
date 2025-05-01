@@ -60,7 +60,7 @@ namespace overcloud.Views
                 IsActive = true,
                 AccountId = a.AccountId,
                 UsagePercent = (int)(a.UsedCapacity * 100 / a.TotalCapacity),
-                UsageDisplay = $"{a.UsedCapacity}/{a.TotalCapacity} GB",
+                UsageDisplay = $"{a.UsedCapacity}/{a.TotalCapacity } GB",
                 LastLoginDate = DateTime.Now,
                 IsSelected = false
             }).ToList();

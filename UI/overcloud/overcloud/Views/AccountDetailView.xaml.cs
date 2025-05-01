@@ -65,7 +65,7 @@ namespace overcloud.Views
         private void LoadUsageDetails(string filter)
         {
             // 1) 전체 계정 정보 가져오기
-            var all = _accountService.Get_Clouds_For_User("user123");
+            var all = _accountService.Get_Clouds_For_User("1");
 
             // 2) 필터링
             var list = filter == "All"
@@ -74,7 +74,7 @@ namespace overcloud.Views
 
             // 3) 뷰모델 생성
             var items = new List<UsageItemViewModel>();
-            int total = 0, used = 0;
+            ulong total = 0, used = 0;
             foreach (var a in list)
             {
                 total += a.TotalCapacity;
@@ -103,7 +103,7 @@ namespace overcloud.Views
 
         private void LoadChart(string filter)
         {
-            var all = _accountService.Get_Clouds_For_User("user123");
+            var all = _accountService.Get_Clouds_For_User("1");
 
             if (_isBarMode)
             {
