@@ -14,5 +14,6 @@ namespace DB.overcloud.Repository
         CloudFileInfo specific_file_info(int fileId);
         List<CloudFileInfo> GetAllFileInfo(string file_direc);
         bool IncrementDownloadCount(int fileId);
+        bool add_folder(CloudFileInfo file_info);
     }
 }

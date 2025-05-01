@@ -244,5 +244,37 @@ namespace DB.overcloud.Repository
 
             return cmd.ExecuteNonQuery() > 0;
         }
+        
+        public bool add_folder(CloudFileInfo file_info)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                INSERT INTO CloudFileInfo (
+                    file_name,
+                    file_size,
+                    uploaded_at,
+                    cloud_storage_num,
+                    parent_folder_id,
+                    is_folder,
+                    count,
+                    google_file_id
+                ) VALUES (
+                    @name, @size, @uploaded, @storage, @parent, @isFolder, @count, @google
+                )";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@name", file_info.FileName);
+            cmd.Parameters.AddWithValue("@size", file_info.FileSize);
+            cmd.Parameters.AddWithValue("@uploaded", file_info.UploadedAt);
+            cmd.Parameters.AddWithValue("@storage", file_info.CloudStorageNum);
+            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
+            cmd.Parameters.AddWithValue("@isFolder", file_info.IsFolder);
+            cmd.Parameters.AddWithValue("@count", file_info.Count);
+            cmd.Parameters.AddWithValue("@google", file_info.GoogleFileId ?? (object)DBNull.Value);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
     }
 }
