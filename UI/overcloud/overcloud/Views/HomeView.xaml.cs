@@ -180,7 +180,7 @@ namespace overcloud.Views
                     string filePath = fileDialog.FileName;
 
                     // ⭐ temp_class.file_upload 호출
-                    bool result = await _fileUploadManager.file_upload(filePath);
+                    bool result = await _fileUploadManager.file_upload(filePath, currentFolderId);
 
                     System.Windows.MessageBox.Show(result
                         ? $"파일 업로드 성공\n경로: {filePath}"
