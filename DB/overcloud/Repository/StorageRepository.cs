@@ -41,8 +41,8 @@ namespace DB.overcloud.Repository
                     CloudType = reader["cloud_type"].ToString(),
                     AccountId = reader["account_id"].ToString(),
                     AccountPassword = reader["account_password"].ToString(),
-                    TotalCapacity = Convert.ToInt32(reader["total_capacity"]),
-                    UsedCapacity = Convert.ToInt32(reader["used_capacity"]),
+                    TotalCapacity = Convert.ToUInt64(reader["total_capacity"]),
+                    UsedCapacity = Convert.ToUInt64(reader["used_capacity"]),
                     RefreshToken = reader["refresh_token"]?.ToString(),
                     ClientId = reader["client_id"]?.ToString(),
                     ClientSecret = reader["client_secret"]?.ToString()
@@ -73,8 +73,8 @@ namespace DB.overcloud.Repository
                     CloudType = reader["cloud_type"].ToString(),
                     AccountId = reader["account_id"].ToString(),
                     AccountPassword = reader["account_password"].ToString(),
-                    TotalCapacity = Convert.ToInt32(reader["total_capacity"]),
-                    UsedCapacity = Convert.ToInt32(reader["used_capacity"]),
+                    TotalCapacity = Convert.ToUInt64(reader["total_capacity"]),
+                    UsedCapacity = Convert.ToUInt64(reader["used_capacity"]),
                     RefreshToken = reader["refresh_token"]?.ToString(),
                     ClientId = reader["client_id"]?.ToString(),
                     ClientSecret = reader["client_secret"]?.ToString()
