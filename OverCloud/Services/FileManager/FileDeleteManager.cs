@@ -38,7 +38,7 @@ namespace OverCloud.Services.FileManager
         }
 
         // 파일 ID를 기반으로 삭제
-        public async Task<bool> DeleteFile(string userId, int fileId)
+        public async Task<bool> Delete_File(string userId, int fileId)
         {
             var file = fileRepository.GetFileById(fileId);
             if (file == null)
@@ -48,7 +48,7 @@ namespace OverCloud.Services.FileManager
             }
 
             var cloudInfo = accountRepository
-               .GetAllAccounts(userId)
+               .GetAllAccounts("admin")
                .FirstOrDefault(c => c.CloudStorageNum == file.CloudStorageNum);
 
             string cloudType = cloudInfo.CloudType;

@@ -36,13 +36,14 @@ namespace OverCloud.Services.FileManager.DriveManager
             {
                 accessToken = await oneDriveTokenRefresher.RefreshAccessTokenAsync(cloud);
                 Console.WriteLine($"[OneDrive AccessToken] {accessToken}");
+                
             }
             return !string.IsNullOrEmpty(accessToken); ;
         }
 
         public async Task<string> UploadFileAsync(string userId, string filePath)
         {
-            var cloud = accountRepository.GetAllAccounts(userId)
+            var cloud = accountRepository.GetAllAccounts("admin")
                 .FirstOrDefault(c => c.CloudType == "OneDrive");
 
             if (cloud == null) return null;
@@ -64,7 +65,7 @@ namespace OverCloud.Services.FileManager.DriveManager
 
         public async Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath)
         {
-            var cloud = accountRepository.GetAllAccounts(userId)
+            var cloud = accountRepository.GetAllAccounts("admin")
                 .FirstOrDefault(c => c.CloudType == "OneDrive");
 
             if (cloud == null) return false;
@@ -83,7 +84,7 @@ namespace OverCloud.Services.FileManager.DriveManager
 
         public async Task<bool> DeleteFileAsync(string userId, string cloudFileId)
         {
-            var cloud = accountRepository.GetAllAccounts(userId)
+            var cloud = accountRepository.GetAllAccounts("admin")
                 .FirstOrDefault(c => c.CloudType == "OneDrive");
 
             if (cloud == null) return false;
@@ -95,9 +96,9 @@ namespace OverCloud.Services.FileManager.DriveManager
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<(ulong, ulong)> GetDriveQuotaAsync(string userId)
+        public async Task<(ulong, ulong)> GetDriveQuotaAsync(string overcloud_id)
         {
-            var cloud = accountRepository.GetAllAccounts(userId)
+            var cloud = accountRepository.GetAllAccounts("admin")
                 .FirstOrDefault(c => c.CloudType == "OneDrive");
 
             if (cloud == null) return (0, 0);
