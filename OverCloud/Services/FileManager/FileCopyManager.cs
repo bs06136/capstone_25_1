@@ -28,7 +28,7 @@ namespace OverCloud.Services.FileManager
             CloudFileInfo copiedFile = new CloudFileInfo
             {
                 FileName = GenerateCopiedFileName(originalFile.FileName),
-                FileSize = originalFile.FileSize,
+                FileSize = originalFile.FileSize/(1024),
                 UploadedAt = DateTime.Now,
                 CloudStorageNum = originalFile.CloudStorageNum,
                 ParentFolderId = target_parent_file_Id,

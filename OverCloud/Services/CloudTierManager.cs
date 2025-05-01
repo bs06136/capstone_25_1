@@ -27,7 +27,8 @@ namespace OverCloud.Services
                 System.Diagnostics.Debug.WriteLine("❌ 클라우드 계정 없음");
                 return null;
             }
-            // 사전 정의된 티어 순서
+                
+                  // 사전 정의된 티어 순서
             var ordered = clouds
                 .OrderBy(c => GetTierValue(c.CloudType))  //1순위: 티어 순서 
                 .ThenByDescending(c => c.TotalCapacity - c.UsedCapacity); // 같은 티어일 땐 여유 공간 많은 순
@@ -35,9 +36,9 @@ namespace OverCloud.Services
             foreach (var cloud in ordered)
             {
                 var remaining = (ulong)(cloud.TotalCapacity - cloud.UsedCapacity);
-                Console.WriteLine($"🧪 클라우드: {cloud.CloudType}, 잔여용량: {remaining}MB");
+                Console.WriteLine($"🧪 클라우드: {cloud.CloudType}, 잔여용량: {remaining}KB");
 
-                if (remaining >= fileSize / 1048576) // MB 단위 맞추기
+                if (remaining >= fileSize / 1024) // KB 단위 맞추기
                     return cloud;
             }
 

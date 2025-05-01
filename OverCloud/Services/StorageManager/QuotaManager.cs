@@ -34,7 +34,7 @@ namespace OverCloud.Services.StorageManager
 
         //계정에 있는 모든 스토리지의 용량 업데이트
 
-        public bool UpdateAggregatedStorageForUser(string userId) //여기서 넘기는 userId는 overcloud계정의 id임요
+        public bool UpdateAggregatedStorageForUser(string userId) //여기서 넘기는 userId는 overcloud계정의 id임요.
         {
             // 1. 해당 계정이 가진 모든 클라우드 가져오기
             var cloudList = accountRepository.GetAllAccounts(userId);
@@ -44,16 +44,19 @@ namespace OverCloud.Services.StorageManager
             int userNum = cloudList.First().UserNum;
 
             // 2. 합산
-            ulong totalSize = (ulong)cloudList.Sum(c => c.TotalCapacity);
-            ulong usedSize = (ulong)cloudList.Sum(c => c.UsedCapacity);
+            ulong totalSize = cloudList.Aggregate(0UL, (acc, c) => acc + c.TotalCapacity);
+            ulong usedSize = cloudList.Aggregate(0UL, (acc, c) => acc + c.UsedCapacity);
+
 
             // 3. DB 업데이트
             return accountRepository.UpdateAccountUsage(userNum, totalSize, usedSize);
         }
 
+      
 
 
-            // 계정에 있는 특정 클라우드 하나만 용량 업데이트 (일단은 구글 드라이브 한정 DB에 업데이트)
+
+        // 계정에 있는 특정 클라우드 하나만 용량 업데이트 (일단은 구글 드라이브 한정 DB에 업데이트)
         public async Task<bool> SaveDriveQuotaToDB(string userEmail, int CloudStorageNum)
         {
 
@@ -78,46 +81,59 @@ namespace OverCloud.Services.StorageManager
                 return false;
             }
 
-                 // 3. 해당 클라우드에 API 호출
+                  // 3. 해당 클라우드에 API 호출
             var (total, used) = await service.GetDriveQuotaAsync(userEmail);
 
-             // 4. 기존 저장된 CloudStorageInfo를 가져오기
-            var existingCloud = cloudInfo;
-            if (existingCloud == null)
-            {
-                Console.WriteLine("❌ 해당 StorageNum에 맞는 클라우드 레코드가 없습니다.");
-                return false;
-            }
+                  // 4. 기존 저장된 CloudStorageInfo를 가져오기
+            
 
             // 5. TotalCapacity, UsedCapacity만 업데이트
-            existingCloud.TotalCapacity = (int)(total / 1048576);
-            existingCloud.UsedCapacity = (int)(used / 1048576);
+            cloudInfo.TotalCapacity = (ulong)(total / 1024);
+            cloudInfo.UsedCapacity = (ulong)(used / 1024);
+
+            // 💡 메모리 세션도 갱신
+            StorageSessionManager.SetQuota(
+                cloudStorageNum: cloudInfo.CloudStorageNum,
+                accountId : cloudInfo.AccountId,
+                cloudType: cloudInfo.CloudType,
+                totalKB: cloudInfo.TotalCapacity,
+                usedKB: cloudInfo.UsedCapacity
+            );
 
             // 3. 저장
-            return storageRepository.account_save(existingCloud);
+            return storageRepository.account_save(cloudInfo);
         }
 
 
 
         //업로드 or 삭제 시 스토리지 용량 최신화.
-        public void UpdateQuotaAfterUploadOrDelete(int cloudStorageNum, int fileSizeMB, bool isUpload)
+        public void UpdateQuotaAfterUploadOrDelete(int cloudStorageNum, ulong fileSizeKB, bool isUpload)
         {
             var quota = StorageSessionManager.Quotas.FirstOrDefault(q => q.CloudStorageNum == cloudStorageNum);
-            if (quota == null) return;
+            Console.WriteLine($"🛠 업로드 반영 전: quota.Used = {quota.UsedCapacityKB}");
+            if (quota == null)
+            {
+                Console.WriteLine($"❌ quota not found for CloudStorageNum: {cloudStorageNum}");
+                return;
+            }
 
             if (isUpload)
-                quota.UsedCapacityMB += fileSizeMB;
+                quota.UsedCapacityKB += fileSizeKB;
             else
-                quota.UsedCapacityMB -= fileSizeMB;
+                quota.UsedCapacityKB -= fileSizeKB;
+
+            Console.WriteLine($"✅ 업로드 반영 후: quota.Used = {quota.UsedCapacityKB}");
 
             var cloudInfo = new CloudStorageInfo
             {
                 CloudStorageNum = quota.CloudStorageNum,
-                TotalCapacity = quota.TotalCapacityMB,
-                UsedCapacity = quota.UsedCapacityMB
+                TotalCapacity = quota.TotalCapacityKB,
+                UsedCapacity = quota.UsedCapacityKB
             };
 
-            storageRepository.account_save(cloudInfo);
+            bool dbResult = storageRepository.account_save(cloudInfo);
+            Console.WriteLine(dbResult ? "✅ DB 저장 성공" : "❌ DB 저장 실패");
+
         }
 
 
@@ -135,11 +151,35 @@ namespace OverCloud.Services.StorageManager
                 {
                     CloudStorageNum = cloud.CloudStorageNum,
                     CloudType = cloud.CloudType,
-                    TotalCapacityMB = cloud.TotalCapacity,
-                    UsedCapacityMB = cloud.UsedCapacity
+                    TotalCapacityKB = cloud.TotalCapacity,
+                    UsedCapacityKB = cloud.UsedCapacity
                 });
             }
         }
+
+
+        /// <summary>
+        /// 외부에서 호출 가능한 전체 리프레시 API (프론트 UI 연동 또는 서비스 내 자동 호출)
+        /// </summary>
+        public async Task<bool> RefreshQuotaAsync(string userEmail, int cloudStorageNum)
+        {
+            try
+            {
+                Console.WriteLine($"⏳ {userEmail} - 용량 정보 새로고침 시작...");
+                bool result = await SaveDriveQuotaToDB(userEmail, cloudStorageNum);
+                Console.WriteLine(result
+                    ? $"✅ {userEmail} - 용량 새로고침 성공"
+                    : $"❌ {userEmail} - 새로고침 실패");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ 예외 발생: {ex.Message}");
+                return false;
+            }
+        }
+
+
 
 
 
