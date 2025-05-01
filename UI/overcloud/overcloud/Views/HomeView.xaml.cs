@@ -743,7 +743,8 @@ namespace overcloud.Views
             List<CloudFileInfo> result;
             try
             {
-                result = _fileRepository.add_folder(info);
+                //result = _fileRepository.add_folder(info);
+                result = null;
             }
             catch (Exception ex)
             {
