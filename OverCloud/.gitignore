@@ -22,8 +22,8 @@
 !Services/FileManager/DriveManager/GoogleDriveService.cs
 !Services/FileManager/DriveManager/GoogleTokenProvider.cs
 !Services/FileManager/DriveManager/ICloudFileService.cs
-!Services/FileManager/DriveManager/OneDriveCredentialConfig.cs
 !Services/FileManager/DriveManager/OneDriveAuthHelper.cs
+!Services/FileManager/DriveManager/OneDriveCredentialConfig.cs
 !Services/FileManager/DriveManager/OneDriveService.cs
 !Services/FileManager/DriveManager/OneDriveTokenRefresher.cs
 
