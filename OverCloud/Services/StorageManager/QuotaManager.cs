@@ -84,12 +84,10 @@ namespace OverCloud.Services.StorageManager
                   // 3. 해당 클라우드에 API 호출
             var (total, used) = await service.GetDriveQuotaAsync(userEmail);
 
-                  // 4. 기존 저장된 CloudStorageInfo를 가져오기
-            
 
             // 5. TotalCapacity, UsedCapacity만 업데이트
-            cloudInfo.TotalCapacity = (ulong)(total / 1024);
-            cloudInfo.UsedCapacity = (ulong)(used / 1024);
+            cloudInfo.TotalCapacity = (total / 1024);
+            cloudInfo.UsedCapacity = (used / 1024);
 
             // 💡 메모리 세션도 갱신
             StorageSessionManager.SetQuota(

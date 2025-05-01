@@ -48,7 +48,7 @@ namespace OverCloud.Services.FileManager
             }
 
             var cloudInfo = accountRepository
-               .GetAllAccounts(userId)
+               .GetAllAccounts("admin")
                .FirstOrDefault(c => c.CloudStorageNum == file.CloudStorageNum);
 
             string cloudType = cloudInfo.CloudType;
@@ -60,7 +60,7 @@ namespace OverCloud.Services.FileManager
             }
 
 
-            bool apiDeleted = await service.DeleteFileAsync(userId, file.GoogleFileId);
+            bool apiDeleted = await service.DeleteFileAsync(userId, file.CloudFileId);
             if (!apiDeleted)
             {
                 Console.WriteLine("❌ 클라우드 API에서 파일 삭제 실패");

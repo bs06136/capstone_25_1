@@ -149,6 +149,7 @@ namespace overcloud.Views
                 ParentFolderId = moveTargetFolderId, // 여기서만 목적지로 덮어씀
                 IsFolder = vm.IsFolder,
                 CloudFileId = vm.cloud_file_id
+
             };
         }
 
@@ -179,7 +180,7 @@ namespace overcloud.Views
                     string filePath = fileDialog.FileName;
 
                     // ⭐ temp_class.file_upload 호출
-                    bool result = await _fileUploadManager.file_upload(filePath);
+                    bool result = await _fileUploadManager.file_upload(filePath, currentFolderId);
 
                     System.Windows.MessageBox.Show(result
                         ? $"파일 업로드 성공\n경로: {filePath}"
