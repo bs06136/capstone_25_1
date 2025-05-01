@@ -30,7 +30,7 @@ namespace DB.overcloud.Repository
             return cmd.ExecuteNonQuery() > 0;
         }
 
-        public List<CloudStorageInfo> GetAllAccounts()
+        public List<CloudStorageInfo> GetAllAccounts(string ID)
         {
             var list = new List<CloudStorageInfo>();
 

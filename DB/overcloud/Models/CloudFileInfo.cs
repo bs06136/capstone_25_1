@@ -2,6 +2,8 @@ namespace DB.overcloud.Models
 {
     public class CloudFileInfo
     {
+        internal int count;
+
         public int FileId { get; set; }                     // 파일 또는 폴더의 고유 ID (PK)
         public string FileName { get; set; }                // 이름 (파일명 or 폴더명)
         public ulong FileSize { get; set; }                 // 파일 크기 (바이트, 폴더는 0)
@@ -12,6 +14,8 @@ namespace DB.overcloud.Models
 
         public bool IsFolder { get; set; }                  // 폴더 여부
         public int Count { get; set; }                      // 파일 다운로드 횟수
-        public string GoogleFileId { get; set; }            // 실제 구글 드라이브 파일 ID
+        public string cloud_file_id { get; set; }            // 실제 구글 드라이브 파일 ID
+
+        public string GoogleFileId { get; set; }                // 구글 드라이브 파일 ID
     }
 }

@@ -108,7 +108,7 @@ namespace OverCloud.Services
         }
 
         // 오버클라우드 계정 안의 모든 계정 정보 조회 (UI에서 호출)
-        public List<CloudStorageInfo> GetCloudsForUser(string userId)
+        public List<CloudStorageInfo> Get_Clouds_For_User(string userId)
         {
             return accountRepository.GetAllAccounts(userId);
         }
