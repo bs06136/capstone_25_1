@@ -67,7 +67,7 @@ namespace DB.overcloud.Repository
                     UserNum = Convert.ToInt32(reader["user_num"]),
                     CloudType = reader["cloud_type"].ToString(),
                     AccountId = reader["account_id"].ToString(),
-                    AccountPassword = reader["account_pw"].ToString(),
+                    AccountPassword = reader["account_password"].ToString(),
                     TotalCapacity = Convert.ToUInt64(reader["total_capacity"]),
                     UsedCapacity = Convert.ToUInt64(reader["used_capacity"]),
                     RefreshToken = reader["refresh_token"]?.ToString(),
