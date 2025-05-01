@@ -24,7 +24,7 @@ namespace OverCloud.Services.FileManager.DriveManager
                 { "refresh_token", cloud.RefreshToken },
                 { "redirect_uri", "http://localhost:5000/" },
                 { "grant_type", "refresh_token" },
-                { "scope", "offline_access Files.ReadWrite User.Read" }
+                { "scope", "offline_access Files.ReadWrite.ALL User.Read" }
             };
 
             var response = await client.PostAsync("https://login.microsoftonline.com/consumers/oauth2/v2.0/token", new FormUrlEncodedContent(parameters));

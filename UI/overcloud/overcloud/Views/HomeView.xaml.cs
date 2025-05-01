@@ -22,7 +22,7 @@ namespace overcloud.Views
 {
     public partial class HomeView : System.Windows.Controls.UserControl
     {
-        // Services and managers
+
         private AccountService _accountService;
         private FileUploadManager _fileUploadManager;
         private FileDownloadManager _fileDownloadManager;
@@ -31,13 +31,14 @@ namespace overcloud.Views
         private QuotaManager _quotaManager;
         private IFileRepository _fileRepository;
 
+
         // 탐색기 상태
         private int currentFolderId = -1;
         private bool isMoveMode = false;
-        private int moveTargetFolderId = -1;
+        private int moveTargetFolderId = -2;
         private List<FileItemViewModel> moveCandidates = new();
 
-        public HomeView()
+        public HomeView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository)
         {
             try
             {
@@ -49,26 +50,15 @@ namespace overcloud.Views
                 throw;
             }
             Loaded += HomeView_Loaded;
+            _accountService = accountService;
+            _fileUploadManager = fileUploadManager;
+            _fileDownloadManager = fileDownloadManager;
+            _fileDeleteManager = fileDeleteManager;
+            _fileCopyManager = fileCopyManager;
+            _quotaManager = quotaManager;
+            _fileRepository = fileRepository;
 
             // 초기 서비스 설정
-            var connStr = DbConfig.ConnectionString;
-            var storageRepo = new StorageRepository(connStr);
-            var accountRepo = new AccountRepository(connStr);
-            _fileRepository = new FileRepository(connStr);
-
-            var tokenFactory = new TokenProviderFactory();
-            var googleSvc = new GoogleDriveService(tokenFactory.CreateGoogleTokenProvider(), storageRepo, accountRepo);
-            var oneDriveSvc = new OneDriveService(tokenFactory.CreateOneDriveTokenRefresher(), storageRepo, accountRepo);
-            var cloudSvcs = new List<ICloudFileService> { googleSvc, oneDriveSvc };
-
-            _quotaManager = new QuotaManager(cloudSvcs, storageRepo, accountRepo);
-            _accountService = new AccountService(accountRepo, storageRepo, _quotaManager);
-            var tierMgr = new CloudTierManager(accountRepo);
-
-            _fileUploadManager = new FileUploadManager(_accountService, _quotaManager, storageRepo, _fileRepository, cloudSvcs, tierMgr);
-            _fileDownloadManager = new FileDownloadManager(accountRepo, cloudSvcs);
-            _fileDeleteManager = new FileDeleteManager(accountRepo, _quotaManager, storageRepo, _fileRepository, cloudSvcs);
-            _fileCopyManager = new FileCopyManager(_fileRepository);
         }
 
 
@@ -342,6 +332,7 @@ namespace overcloud.Views
                     moveTargetFolderId = folderId;
                 }
             }
+            Console.WriteLine("현제 폴더 위치 변경 : " + currentFolderId);
         }
 
         private void LoadFolderContents(int folderId)
@@ -659,7 +650,7 @@ namespace overcloud.Views
 
         private void Button_ConfirmMove_Click(object sender, RoutedEventArgs e)
         {
-            if (!isMoveMode || moveTargetFolderId == -1 || moveCandidates.Count == 0)
+            if (!isMoveMode || moveTargetFolderId == -2 || moveCandidates.Count == 0)
             {
                 System.Windows.MessageBox.Show("이동할 항목 또는 대상 폴더가 지정되지 않았습니다.");
                 return;
@@ -672,7 +663,7 @@ namespace overcloud.Views
             }
 
             isMoveMode = false;
-            moveTargetFolderId = -1;
+            moveTargetFolderId = -2;
             moveCandidates.Clear();
 
 
@@ -695,7 +686,7 @@ namespace overcloud.Views
         private void Button_CancelMove_Click(object sender, RoutedEventArgs e)
         {
             isMoveMode = false;
-            moveTargetFolderId = -1;
+            moveTargetFolderId = -2;
             moveCandidates.Clear();
 
             UploadButton.Visibility = Visibility.Visible;

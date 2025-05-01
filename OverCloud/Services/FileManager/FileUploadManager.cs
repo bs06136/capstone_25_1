@@ -73,7 +73,8 @@ namespace OverCloud.Services.FileManager
                 UploadedAt = DateTime.Now,
                 CloudStorageNum = cloud.CloudStorageNum,
                 ParentFolderId = target_parent_file_id, // 최상위 업로드라면 -1 ,일단은 파일만처리, 나중에는 폴더까지 
-                IsFolder = false, 
+                IsFolder = false,
+                CloudFileId = cloudFileId,
             };
 
             // 5. DB 저장
