@@ -16,7 +16,7 @@ using OverCloud.Services.FileManager;
 using OverCloud.Services.FileManager.DriveManager;
 using OverCloud.Services.StorageManager;
 using overcloud.Converters;
-using static overcloud.temp_class.TempClass;
+//using static overcloud.temp_class.TempClass;
 
 namespace overcloud.Views
 {
@@ -130,9 +130,7 @@ namespace overcloud.Views
                 CloudStorageNum = file.CloudStorageNum,
                 ParentFolderId = file.ParentFolderId,
                 IsFolder = file.IsFolder,
-                Count = file.Count,
-                cloud_file_id = file.cloud_file_id,
-                GoogleFileId = file.GoogleFileId,
+                cloud_file_id = file.CloudFileId,
                 IsChecked = false
             };
         }
@@ -150,9 +148,7 @@ namespace overcloud.Views
                 CloudStorageNum = vm.CloudStorageNum,
                 ParentFolderId = moveTargetFolderId, // 여기서만 목적지로 덮어씀
                 IsFolder = vm.IsFolder,
-                Count = vm.Count,
-                cloud_file_id = vm.cloud_file_id,
-                GoogleFileId = vm.GoogleFileId
+                CloudFileId = vm.cloud_file_id
             };
         }
 
@@ -535,7 +531,7 @@ namespace overcloud.Views
                 if (!string.IsNullOrEmpty(dir))
                     Directory.CreateDirectory(dir);
 
-                await _fileDownloadManager.DownloadFile("1", file.cloud_file_id, file.FileId, localPath);
+                await _fileDownloadManager.DownloadFile("1", file.CloudFileId, file.FileId, localPath);
             }
         }
 
@@ -543,7 +539,7 @@ namespace overcloud.Views
         {
             var parts = new List<string> { file.FileName };
             var current = file;
-            while (current.ParentFolderId != null && allMap.TryGetValue(current.ParentFolderId.Value, out var parent))
+            while (current.ParentFolderId != null && allMap.TryGetValue(current.ParentFolderId, out var parent))
             {
                 parts.Insert(0, parent.FileName);
                 current = parent;
@@ -619,7 +615,7 @@ namespace overcloud.Views
             }
 
             // 비동기 삭제 호출
-            bool deleted = await _fileDeleteManager.Delete_File(file.cloud_file_id, file.FileId);
+            bool deleted = await _fileDeleteManager.Delete_File(file.CloudFileId, file.FileId);
 
             if (!deleted)
             {
@@ -671,7 +667,7 @@ namespace overcloud.Views
             foreach (var item in moveCandidates)
             {
                 var cloudInfo = ToCloudFileInfo(item);
-                var result = change_dir(cloudInfo);
+                var result = _fileRepository.change_dir(cloudInfo);
             }
 
             isMoveMode = false;
@@ -734,17 +730,15 @@ namespace overcloud.Views
                 UploadedAt = DateTime.Now,
                 FileSize = 0,
                 CloudStorageNum = 0,
-                Count = 0,
-                cloud_file_id = string.Empty,
-                GoogleFileId = string.Empty
+                CloudFileId = string.Empty,
             };
 
             // DB에 삽입
-            List<CloudFileInfo> result;
+            bool result;
             try
             {
-                //result = _fileRepository.add_folder(info);
-                result = null;
+                result = _fileRepository.add_folder(info);
+                //result = null;
             }
             catch (Exception ex)
             {
@@ -752,7 +746,7 @@ namespace overcloud.Views
                 return;
             }
 
-            if (result == null || !result.Any())
+            if (result == true)
             {
                 System.Windows.MessageBox.Show("폴더 추가에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
