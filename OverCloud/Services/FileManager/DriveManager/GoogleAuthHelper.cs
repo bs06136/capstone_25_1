@@ -18,6 +18,11 @@ namespace OverCloud.Services.FileManager.DriveManager
 
         public static async Task<(string email, string RefreshToken, string ClientId, string ClientSecret)> AuthorizeAsync(string id)
         {
+            // ✅ 이 부분 추가: 기존 토큰 삭제
+            string tokenPath = Path.Combine("Tokens", $"{id}.TokenResponse-user");
+            if (File.Exists(tokenPath))
+                File.Delete(tokenPath);
+
             using var stream = new FileStream(CredentialFile, FileMode.Open, FileAccess.Read);
             var secrets = GoogleClientSecrets.FromStream(stream).Secrets;
 
