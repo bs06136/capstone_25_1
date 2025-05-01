@@ -132,7 +132,6 @@ namespace overcloud.Views
                 IsFolder = file.IsFolder,
                 Count = file.Count,
                 cloud_file_id = file.cloud_file_id,
-                GoogleFileId = file.GoogleFileId,
                 IsChecked = false
             };
         }
@@ -152,7 +151,6 @@ namespace overcloud.Views
                 IsFolder = vm.IsFolder,
                 Count = vm.Count,
                 cloud_file_id = vm.cloud_file_id,
-                GoogleFileId = vm.GoogleFileId
             };
         }
 
@@ -736,7 +734,6 @@ namespace overcloud.Views
                 CloudStorageNum = 0,
                 Count = 0,
                 cloud_file_id = string.Empty,
-                GoogleFileId = string.Empty
             };
 
             // DB에 삽입

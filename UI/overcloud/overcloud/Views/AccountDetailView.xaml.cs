@@ -11,6 +11,7 @@ using OverCloud.Services.StorageManager;
 using DB.overcloud.Repository;
 using DB.overcloud.Models;
 using Separator = LiveCharts.Wpf.Separator;
+using System.Diagnostics;
 
 namespace overcloud.Views
 {
@@ -56,7 +57,7 @@ namespace overcloud.Views
         {
             if (FilterTab.SelectedItem is TabItem ti)
             {
-                _currentFilter = ti.Header.ToString();
+                _currentFilter = ti.Tag.ToString();
                 LoadUsageDetails(_currentFilter);
                 LoadChart(_currentFilter);
             }
@@ -64,69 +65,100 @@ namespace overcloud.Views
 
         private void LoadUsageDetails(string filter)
         {
-            // 1) 전체 계정 정보 가져오기
-            var all = _accountService.Get_Clouds_For_User("1");
+            // 전체 계정 정보 가져오기
+            var all = _accountService.Get_Clouds_For_User("admin");
 
-            // 2) 필터링
-            var list = filter == "All"
+            // 필터링: “All” 이 아니면 해당 CloudType만
+            var filtered = filter == "All"
                 ? all
                 : all.Where(a => a.CloudType.Equals(filter, StringComparison.OrdinalIgnoreCase)).ToList();
 
-            // 3) 뷰모델 생성
-            var items = new List<UsageItemViewModel>();
-            ulong total = 0, used = 0;
-            foreach (var a in list)
-            {
-                total += a.TotalCapacity;
-                used += a.UsedCapacity;
-
-                items.Add(new UsageItemViewModel
+            // 드라이브별 그룹화 및 합산
+            var grouped = filtered
+                .GroupBy(a => a.CloudType)
+                .Select(g => new
                 {
-                    DriveName = a.CloudType,
-                    TotalDisplay = $"{a.TotalCapacity}GB",
-                    UsedDisplay = $"{a.UsedCapacity}GB",
-                    UsedPercent = (int)(a.UsedCapacity * 100.0 / a.TotalCapacity)
+                    CloudType = g.Key,
+                    Total = g.Sum(x => (double)x.TotalCapacity) / 1024/1024,
+                    Used = g.Sum(x => (double)x.UsedCapacity)/1024/1024
+                })
+                .ToList();
+
+            // 뷰모델 생성
+            var items = grouped
+                .Select(g => new UsageItemViewModel
+                {
+                    DriveName = g.CloudType,
+                    TotalDisplay = $"{g.Total:F2}GB",
+                    UsedDisplay = $"{g.Used:F2}GB",
+                    UsedPercent = g.Total > 0
+                        ? (int)(g.Used * 100.0 / g.Total)
+                        : 0
+                })
+                .ToList();
+
+            // “All” 필터일 때 전체 합계 행 추가
+            if (filter == "All")
+            {
+                ulong totalSum = (ulong)grouped.Sum(g => g.Total);
+                ulong usedSum = (ulong)grouped.Sum(g => g.Used);
+                items.Insert(0, new UsageItemViewModel
+                {
+                    DriveName = "Total",
+                    TotalDisplay = $"{totalSum:F2}GB",
+                    UsedDisplay = $"{usedSum:F2}GB",
+                    UsedPercent = totalSum > 0
+                        ? (int)(usedSum * 100.0 / totalSum)
+                        : 0
                 });
             }
-
-            // 합계 추가
-            items.Insert(0, new UsageItemViewModel
-            {
-                DriveName = "Total",
-                TotalDisplay = $"{total}GB",
-                UsedDisplay = $"{used}GB",
-                UsedPercent = total > 0 ? (int)(used * 100.0 / total) : 0
-            });
 
             UsageList.ItemsSource = items;
         }
 
         private void LoadChart(string filter)
         {
-            var all = _accountService.Get_Clouds_For_User("1");
+            var all = _accountService.Get_Clouds_For_User("admin");
+
+            // 필터링
+            var filtered = filter == "All"
+                ? all
+                : all.Where(a => a.CloudType.Equals(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            // 그룹화 & 합산
+            var grouped = filtered
+                .GroupBy(a => a.CloudType)
+                .Select(g => new
+                {
+                    CloudType = g.Key,
+                    Total = g.Sum(x => (double)x.TotalCapacity) /1024 /1024,
+                    Used = g.Sum(x => (double)x.UsedCapacity) / 1024 / 1024
+                })
+                .ToList();
 
             if (_isBarMode)
             {
-                // 막대 그래프
+                // 막대 차트
                 var cart = new CartesianChart
                 {
                     Series = new SeriesCollection
-                    {
-                        new ColumnSeries
-                        {
-                            Title  = "Used",
-                            Values = new ChartValues<double>(all.Select(a => (double)a.UsedCapacity))
-                        },
-                        new ColumnSeries
-                        {
-                            Title  = "Free",
-                            Values = new ChartValues<double>(all.Select(a => (double)(a.TotalCapacity - a.UsedCapacity)))
-                        }
-                    }
+            {
+                new ColumnSeries
+                {
+                    Title  = "Used",
+                    Values = new ChartValues<double>(grouped.Select(g => (double)g.Used))
+                },
+                new ColumnSeries
+                {
+                    Title  = "Free",
+                    Values = new ChartValues<double>(
+                        grouped.Select(g => (double)(g.Total - g.Used)))
+                }
+            }
                 };
                 cart.AxisX.Add(new Axis
                 {
-                    Labels = all.Select(a => a.CloudType).ToArray(),
+                    Labels = grouped.Select(g => g.CloudType).ToArray(),
                     Separator = new Separator { Step = 1 }
                 });
                 cart.AxisY.Add(new Axis { Title = "Storage (GB)" });
@@ -135,14 +167,8 @@ namespace overcloud.Views
             }
             else
             {
-                // 파이 그래프
-                // All 탭: 각 클라우드별 Used/Free 파이 조각
-                // 개별 탭: 해당 클라우드만
-                var list = filter == "All"
-                    ? all
-                    : all.Where(a => a.CloudType.Equals(filter, StringComparison.OrdinalIgnoreCase)).ToList();
-
-                if (!list.Any())
+                // 파이 차트
+                if (!grouped.Any())
                 {
                     ChartContainer.Content = null;
                     return;
@@ -154,18 +180,18 @@ namespace overcloud.Views
                     Series = new SeriesCollection()
                 };
 
-                foreach (var acc in list)
+                foreach (var g in grouped)
                 {
                     pie.Series.Add(new PieSeries
                     {
-                        Title = $"{acc.CloudType} Used ({acc.UsedCapacity}GB)",
-                        Values = new ChartValues<double> { acc.UsedCapacity },
+                        Title = $"{g.CloudType} Used ({g.Used:F2}GB)",
+                        Values = new ChartValues<double> { g.Used },
                         DataLabels = true
                     });
                     pie.Series.Add(new PieSeries
                     {
-                        Title = $"{acc.CloudType} Free ({acc.TotalCapacity - acc.UsedCapacity}GB)",
-                        Values = new ChartValues<double> { acc.TotalCapacity - acc.UsedCapacity },
+                        Title = $"{g.CloudType} Free ({g.Total - g.Used:F2}GB)",
+                        Values = new ChartValues<double> { g.Total - g.Used },
                         DataLabels = true
                     });
                 }
@@ -190,12 +216,18 @@ namespace overcloud.Views
 
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
-            // … 계정 추가 로직 …
+            AddAccountWindow window = new AddAccountWindow(_accountService);
+            window.ShowDialog();
         }
 
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
-            // … 계정 삭제 로직 …
+            Debug.WriteLine("삭제 버튼 누름");
+            var window = new DeleteAccountWindow(_accountService);
+            // this(UserControl)가 아니라 이 컨트롤을 호스트하는 Window를 Owner로 지정
+            window.Owner = Window.GetWindow(this);
+            window.ShowDialog();
+            // 필요하다면 HomeView 쪽 RefreshExplorer() 호출
         }
     }
 

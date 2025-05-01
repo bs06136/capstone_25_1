@@ -38,7 +38,6 @@ namespace DB.overcloud.Repository
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
                     Count = Convert.ToInt32(reader["count"]),
-                    GoogleFileId = reader["google_file_id"]?.ToString()
                 });
             }
 
@@ -63,7 +62,6 @@ namespace DB.overcloud.Repository
             cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
             cmd.Parameters.AddWithValue("@folder", file_info.IsFolder);
             cmd.Parameters.AddWithValue("@count", 0);
-            cmd.Parameters.AddWithValue("@google", file_info.GoogleFileId ?? "");
 
             return cmd.ExecuteNonQuery() > 0;
         }
@@ -122,7 +120,6 @@ namespace DB.overcloud.Repository
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
                     Count = Convert.ToInt32(reader["count"]),
-                    GoogleFileId = reader["google_file_id"]?.ToString()
                 };
             }
 
@@ -155,7 +152,6 @@ namespace DB.overcloud.Repository
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
                     Count = Convert.ToInt32(reader["count"]),
-                    GoogleFileId = reader["google_file_id"]?.ToString()
                 });
             }
 
@@ -184,7 +180,6 @@ namespace DB.overcloud.Repository
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
                     Count = Convert.ToInt32(reader["count"]),
-                    GoogleFileId = reader["google_file_id"]?.ToString()
                 };
             }
 
@@ -226,7 +221,6 @@ namespace DB.overcloud.Repository
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
                     Count = Convert.ToInt32(reader["count"]),
-                    GoogleFileId = reader["google_file_id"]?.ToString()
                 });
             }
 

@@ -34,7 +34,6 @@ namespace OverCloud.Services.FileManager
                 ParentFolderId = target_parent_file_Id,
                 IsFolder = originalFile.IsFolder,
                 Count = 0,
-                GoogleFileId = originalFile.GoogleFileId
             };
 
             // 3. DB에 복제 파일 저장

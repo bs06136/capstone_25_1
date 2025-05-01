@@ -16,6 +16,5 @@ namespace DB.overcloud.Models
         public int Count { get; set; }                      // 파일 다운로드 횟수
         public string cloud_file_id { get; set; }            // 실제 구글 드라이브 파일 ID
 
-        public string GoogleFileId { get; set; }                // 구글 드라이브 파일 ID
     }
 }
