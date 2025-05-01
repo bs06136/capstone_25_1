@@ -14,5 +14,7 @@ namespace DB.overcloud.Repository
         CloudFileInfo specific_file_info(int fileId);
         List<CloudFileInfo> GetAllFileInfo(string file_direc);
         bool add_folder(CloudFileInfo file_info);
+        bool change_name(CloudFileInfo file_info);
+        bool change_dir(CloudFileInfo file_info);
     }
 }

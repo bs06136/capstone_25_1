@@ -245,5 +245,39 @@ namespace DB.overcloud.Repository
 
             return cmd.ExecuteNonQuery() > 0;
         }
+
+        public bool change_name(CloudFileInfo file_info)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                UPDATE CloudFileInfo
+                SET file_name = @name
+                WHERE file_id = @id";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@name", file_info.FileName);
+            cmd.Parameters.AddWithValue("@id", file_info.FileId);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool change_dir(CloudFileInfo file_info)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                UPDATE CloudFileInfo
+                SET parent_folder_id = @parent
+                WHERE file_id = @id";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
+            cmd.Parameters.AddWithValue("@id", file_info.FileId);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
     }
 }
