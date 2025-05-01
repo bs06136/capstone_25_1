@@ -89,7 +89,6 @@ namespace OverCloud.Services.FileManager.DriveManager
         {
             var cloud = accountRepository.GetAllAccounts("admin")
                 .FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
-
             if (cloud == null) return false;
             if (!await EnsureAccessTokenAsync(cloud)) return false;
 

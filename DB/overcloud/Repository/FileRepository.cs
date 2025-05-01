@@ -14,17 +14,18 @@ namespace DB.overcloud.Repository
             connectionString = connStr;
         }
 
-        public List<CloudFileInfo> GetAllFileInfo()
+        public List<CloudFileInfo> GetAllFileInfo(int fileId)
         {
             var list = new List<CloudFileInfo>();
 
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = "SELECT * FROM CloudFileInfo";
+            string query = "SELECT * FROM CloudFileInfo WHERE parent_folder_id = @parent";
             using var cmd = new MySqlCommand(query, conn);
-            using var reader = cmd.ExecuteReader();
+            cmd.Parameters.AddWithValue("@parent", fileId);
 
+            using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
                 list.Add(new CloudFileInfo
@@ -34,10 +35,9 @@ namespace DB.overcloud.Repository
                     FileSize = Convert.ToUInt64(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
-                    ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
+                    ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    Count = Convert.ToInt32(reader["count"]),
-                    GoogleFileId = reader["google_file_id"]?.ToString()
+                    CloudFileId = reader["cloud_file_id"]?.ToString()
                 });
             }
 
@@ -50,38 +50,34 @@ namespace DB.overcloud.Repository
             conn.Open();
 
             string query = @"INSERT INTO CloudFileInfo 
-                (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, count, google_file_id)
+                (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, cloud_file_id)
                 VALUES 
-                (@name, @size, @time, @storage, @parent, @folder, @count, @google)";
+                (@name, @size, @time, @storage, @parent, @folder, @cloud)";
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@name", file_info.FileName);
             cmd.Parameters.AddWithValue("@size", file_info.FileSize);
             cmd.Parameters.AddWithValue("@time", file_info.UploadedAt);
             cmd.Parameters.AddWithValue("@storage", file_info.CloudStorageNum);
-            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId.HasValue ? file_info.ParentFolderId.Value : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
             cmd.Parameters.AddWithValue("@folder", file_info.IsFolder);
-            cmd.Parameters.AddWithValue("@count", 0);
-            cmd.Parameters.AddWithValue("@google", file_info.GoogleFileId ?? "");
+            cmd.Parameters.AddWithValue("@cloud", file_info.CloudFileId ?? "");
 
             return cmd.ExecuteNonQuery() > 0;
         }
 
-        public bool change_file(CloudFileInfo file_info, string newGoogleFileId)
+        public bool change_file(CloudFileInfo file_info, string newCloudFileId)
         {
-            if (file_info.Count < 2)
-                return false; // 다운로드 횟수가 기준 미달
-
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
             string query = @"UPDATE CloudFileInfo 
-                            SET cloud_storage_num = @newStorage, google_file_id = @google 
+                            SET cloud_storage_num = @newStorage, cloud_file_id = @cloud 
                             WHERE file_id = @id";
 
             using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@newStorage", 2); // cloud_storage_num = 2 인 클라우드로 이동
-            cmd.Parameters.AddWithValue("@google", newGoogleFileId); // 새로 배정받은 google_file_id
+            cmd.Parameters.AddWithValue("@newStorage", 2);              // cloud_storage_num = 2 인 클라우드로 이동
+            cmd.Parameters.AddWithValue("@cloud", newCloudFileId);      // 새로 배정받은 cloud_file_id
             cmd.Parameters.AddWithValue("@id", file_info.FileId);
 
             return cmd.ExecuteNonQuery() > 0;
@@ -118,31 +114,27 @@ namespace DB.overcloud.Repository
                     FileSize = Convert.ToUInt64(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
-                    ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
+                    ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    Count = Convert.ToInt32(reader["count"]),
-                    GoogleFileId = reader["google_file_id"]?.ToString()
+                    CloudFileId = reader["cloud_file_id"]?.ToString()
                 };
             }
 
             return null;
         }
 
-        public List<CloudFileInfo> all_file_list(int? fileId)
+        public List<CloudFileInfo> all_file_list(int fileId)
         {
             var list = new List<CloudFileInfo>();
 
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = fileId.HasValue
-                ? "SELECT * FROM CloudFileInfo WHERE parent_folder_id = @parent"
-                : "SELECT * FROM CloudFileInfo WHERE parent_folder_id IS NULL";
+            string query = "SELECT * FROM CloudFileInfo WHERE parent_folder_id = @parent";
 
             using var cmd = new MySqlCommand(query, conn);
 
-            if (fileId.HasValue)
-                cmd.Parameters.AddWithValue("@parent", fileId.Value);
+            cmd.Parameters.AddWithValue("@parent", fileId);
 
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -154,10 +146,9 @@ namespace DB.overcloud.Repository
                     FileSize = Convert.ToUInt64(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
-                    ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
+                    ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    Count = Convert.ToInt32(reader["count"]),
-                    GoogleFileId = reader["google_file_id"]?.ToString()
+                    CloudFileId = reader["cloud_file_id"]?.ToString()
                 });
             }
 
@@ -183,10 +174,9 @@ namespace DB.overcloud.Repository
                     FileSize = Convert.ToUInt64(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
-                    ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
+                    ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    Count = Convert.ToInt32(reader["count"]),
-                    GoogleFileId = reader["google_file_id"]?.ToString()
+                    CloudFileId = reader["cloud_file_id"]?.ToString()
                 };
             }
 
@@ -225,24 +215,67 @@ namespace DB.overcloud.Repository
                     FileSize = Convert.ToUInt64(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
-                    ParentFolderId = reader["parent_folder_id"] == DBNull.Value ? null : Convert.ToInt32(reader["parent_folder_id"]),
+                    ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    Count = Convert.ToInt32(reader["count"]),
-                    GoogleFileId = reader["google_file_id"]?.ToString()
+                    CloudFileId = reader["cloud_file_id"]?.ToString()
                 });
             }
 
             return result;
         }
 
-        public bool IncrementDownloadCount(int fileId)
+        public bool add_folder(CloudFileInfo file_info)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = "UPDATE CloudFileInfo SET count = count + 1 WHERE file_id = @id";
+            string query = @"INSERT INTO CloudFileInfo 
+                (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, cloud_file_id) 
+                VALUES 
+                (@name, @size, @uploaded, @storage, @parent, @isFolder, @cloud)";
+
             using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@id", fileId);
+            cmd.Parameters.AddWithValue("@name", file_info.FileName);
+            cmd.Parameters.AddWithValue("@size", file_info.FileSize);
+            cmd.Parameters.AddWithValue("@uploaded", file_info.UploadedAt);
+            cmd.Parameters.AddWithValue("@storage", file_info.CloudStorageNum);
+            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
+            cmd.Parameters.AddWithValue("@isFolder", file_info.IsFolder);
+            cmd.Parameters.AddWithValue("@cloud", file_info.CloudFileId ?? (object)DBNull.Value);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool change_name(CloudFileInfo file_info)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                UPDATE CloudFileInfo
+                SET file_name = @name
+                WHERE file_id = @id";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@name", file_info.FileName);
+            cmd.Parameters.AddWithValue("@id", file_info.FileId);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool change_dir(CloudFileInfo file_info)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                UPDATE CloudFileInfo
+                SET parent_folder_id = @parent
+                WHERE file_id = @id";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
+            cmd.Parameters.AddWithValue("@id", file_info.FileId);
 
             return cmd.ExecuteNonQuery() > 0;
         }

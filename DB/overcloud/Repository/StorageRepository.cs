@@ -14,41 +14,36 @@ namespace DB.overcloud.Repository
             connectionString = connStr;
         }
 
-        public List<CloudStorageInfo> GetCloudsForUser(string userId)
+        public CloudStorageInfo GetCloud(string accountId)
         {
-            var list = new List<CloudStorageInfo>();
-
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = @"
-                SELECT cs.* 
-                FROM CloudStorageInfo cs
-                JOIN Account a ON cs.user_num = a.user_num
-                WHERE a.ID = @id";          //수정요구
+            string query = @"SELECT * FROM CloudStorageInfo WHERE account_id = @id LIMIT 1";
 
             using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@id", userId);
+            cmd.Parameters.AddWithValue("@id", accountId);
+
             using var reader = cmd.ExecuteReader();
 
-            while (reader.Read())
+            if (reader.Read())
             {
-                list.Add(new CloudStorageInfo
+                return new CloudStorageInfo
                 {
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     UserNum = Convert.ToInt32(reader["user_num"]),
                     CloudType = reader["cloud_type"].ToString(),
                     AccountId = reader["account_id"].ToString(),
                     AccountPassword = reader["account_password"].ToString(),
-                    TotalCapacity = Convert.ToInt32(reader["total_capacity"]),
-                    UsedCapacity = Convert.ToInt32(reader["used_capacity"]),
+                    TotalCapacity = Convert.ToUInt64(reader["total_capacity"]),
+                    UsedCapacity = Convert.ToUInt64(reader["used_capacity"]),
                     RefreshToken = reader["refresh_token"]?.ToString(),
                     ClientId = reader["client_id"]?.ToString(),
                     ClientSecret = reader["client_secret"]?.ToString()
-                });
+                };
             }
 
-            return list;
+            return null;
         }
 
         public bool AddCloudStorage(CloudStorageInfo info)
