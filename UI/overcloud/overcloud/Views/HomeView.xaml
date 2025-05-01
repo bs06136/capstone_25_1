@@ -233,13 +233,6 @@
                 </ListBox>
             </Grid>
 
-            <!-- 스토리지 바 -->
-            <Rectangle Width="240" Height="10" Fill="#D7EDFF"
-                       Canvas.Left="30" Canvas.Top="986" RadiusX="1" RadiusY="1"/>
-            <Rectangle Width="180" Height="10" Fill="#4094F7"
-                       Canvas.Left="30" Canvas.Top="986" RadiusX="1" RadiusY="1"/>
-            <TextBlock Text="1500GB 중 1200GB 사용" FontSize="14"
-                       Canvas.Left="30" Canvas.Top="960"/>
         </Canvas>
     </Viewbox>
 </UserControl>

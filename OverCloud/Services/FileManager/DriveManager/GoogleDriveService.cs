@@ -41,7 +41,7 @@ namespace OverCloud.Services.FileManager.DriveManager
         {
             System.Diagnostics.Debug.WriteLine("UploadFileAsync 1");
             var clouds = accountRepository.GetAllAccounts("admin");
-            var googleCloud = clouds.FirstOrDefault(c => c.CloudType == "GoogleDrive");
+            var googleCloud = clouds.FirstOrDefault(c => c.AccountId == userId);
             if (googleCloud == null) return null;
 
             System.Diagnostics.Debug.WriteLine("UploadFileAsync 2");
@@ -72,8 +72,11 @@ namespace OverCloud.Services.FileManager.DriveManager
         public async Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath)
         {
             var clouds = accountRepository.GetAllAccounts("admin");
-            var googleCloud = clouds.FirstOrDefault(c => c.CloudType == "GoogleDrive");
+            var googleCloud = clouds.FirstOrDefault(c => c.AccountId == userId);
             if (googleCloud == null) return false;
+
+            Console.WriteLine(userId);
+            Console.WriteLine(" gogggle DownloadFileAsync");
 
             var accessToken = await tokenProvider.GetAccessTokenAsync(googleCloud);
             var service = CreateDriveService(accessToken);
@@ -88,7 +91,7 @@ namespace OverCloud.Services.FileManager.DriveManager
         public async Task<bool> DeleteFileAsync(string userId, string fileId)
         {
             var clouds = accountRepository.GetAllAccounts("admin");
-            var googleCloud = clouds.FirstOrDefault(c => c.CloudType == "GoogleDrive");
+            var googleCloud = clouds.FirstOrDefault(c => c.AccountId == userId);
             if (googleCloud == null) return false;
 
             var accessToken = await tokenProvider.GetAccessTokenAsync(googleCloud);

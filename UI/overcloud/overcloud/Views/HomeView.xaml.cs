@@ -523,7 +523,10 @@ namespace overcloud.Views
                 if (!string.IsNullOrEmpty(dir))
                     Directory.CreateDirectory(dir);
 
-                await _fileDownloadManager.DownloadFile("1", file.CloudFileId, file.FileId, localPath);
+                Console.WriteLine(dir);
+                Console.WriteLine(file.CloudFileId + " " + file.CloudStorageNum);
+
+                await _fileDownloadManager.DownloadFile("admin", file.CloudFileId, file.CloudStorageNum, localPath);
             }
         }
 
