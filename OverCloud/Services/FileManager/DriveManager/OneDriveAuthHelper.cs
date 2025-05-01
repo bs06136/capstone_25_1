@@ -61,11 +61,11 @@ namespace OverCloud.Services.FileManager.DriveManager
                 listener.Start();
 
                 // 2. 브라우저 열기
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = authUrl,
-                    UseShellExecute = true
-                });
+                //Process.Start(new ProcessStartInfo
+                //{
+                //    FileName = authUrl,
+                //    UseShellExecute = true
+                //});
 
                 // 3. 리디렉션 대기 후 code 추출
                 var context = await listener.GetContextAsync();

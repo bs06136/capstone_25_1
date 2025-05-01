@@ -25,10 +25,13 @@ namespace OverCloud.Services.FileManager
             this.cloudServices = cloudServices;
         }
 
-        public async Task <bool> DownloadFile(string userId, string cloudFileId, int fileId, string savePath)
+        public async Task <bool> DownloadFile(string userId, string cloudFileId, int CloudStorageNum, string savePath)
         {
+            Console.WriteLine(userId);
+            Console.WriteLine("DownloadFile");
+
             var clouds = acountRepository.GetAllAccounts(userId);
-            var cloudInfo = clouds.FirstOrDefault(c => c.CloudStorageNum == fileId);
+            var cloudInfo = clouds.FirstOrDefault(c => c.CloudStorageNum == CloudStorageNum);
             if (cloudInfo == null)
             {
                 Console.WriteLine("❌ 클라우드 정보 없음");
@@ -36,15 +39,15 @@ namespace OverCloud.Services.FileManager
             }
 
             string cloudType = cloudInfo.CloudType;
-            var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains("GoogleDrive"));
+            var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(cloudType));
             if (service == null)
             {
-                Console.WriteLine($"❌ 지원되지 않는 클라우드: GoogleDrive");
+                Console.WriteLine($"❌ 지원되지 않는 클라우드");
                 return false;
             }
 
 
-            bool result = await service.DownloadFileAsync(userId, cloudFileId, savePath);
+            bool result = await service.DownloadFileAsync(cloudInfo.AccountId, cloudFileId, savePath);
             return result;
         }
 

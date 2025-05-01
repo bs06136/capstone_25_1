@@ -11,6 +11,7 @@ using System.Windows.Data;
 using DB.overcloud.Models;
 using DB.overcloud.Repository;
 using OverCloud.Services;
+using OverCloud.Services.FileManager;
 using OverCloud.Services.FileManager.DriveManager;
 using OverCloud.Services.StorageManager;
 
@@ -19,27 +20,31 @@ namespace overcloud.Views
     public partial class AccountListView : System.Windows.Controls.UserControl
     {
         // Services and managers
-        private readonly AccountService _accountService;
-        private readonly QuotaManager _quotaManager;
+        private AccountService _accountService;
+        private FileUploadManager _fileUploadManager;
+        private FileDownloadManager _fileDownloadManager;
+        private FileDeleteManager _fileDeleteManager;
+        private FileCopyManager _fileCopyManager;
+        private QuotaManager _quotaManager;
+        private IFileRepository _fileRepository;
 
         private ICollectionView _view;
         private ObservableCollection<AccountItemViewModel> _items;
 
-        public AccountListView()
+        public AccountListView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository)
         {
             InitializeComponent();
             Loaded += AccountListView_Loaded;
 
             // 초기 서비스 설정
-            var connStr = DbConfig.ConnectionString;
-            var storageRepo = new StorageRepository(connStr);
-            var accountRepo = new AccountRepository(connStr);
-            var tokenFactory = new TokenProviderFactory();
-            var googleSvc = new GoogleDriveService(tokenFactory.CreateGoogleTokenProvider(), storageRepo, accountRepo);
-            var oneDriveSvc = new OneDriveService(tokenFactory.CreateOneDriveTokenRefresher(), storageRepo, accountRepo);
-            var cloudSvcs = new List<ICloudFileService> { googleSvc, oneDriveSvc };
-            _quotaManager = new QuotaManager(cloudSvcs, storageRepo, accountRepo);
-            _accountService = new AccountService(accountRepo, storageRepo, _quotaManager);
+            _accountService = accountService;
+            _fileUploadManager = fileUploadManager;
+            _fileDownloadManager = fileDownloadManager;
+            _fileDeleteManager = fileDeleteManager;
+            _fileCopyManager = fileCopyManager;
+            _quotaManager = quotaManager;
+            _fileRepository = fileRepository;
+
 
             FilterTab.SelectedIndex = 0;
         }

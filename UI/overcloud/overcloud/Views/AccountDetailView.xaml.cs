@@ -12,33 +12,36 @@ using DB.overcloud.Repository;
 using DB.overcloud.Models;
 using Separator = LiveCharts.Wpf.Separator;
 using System.Diagnostics;
+using OverCloud.Services.FileManager;
 
 namespace overcloud.Views
 {
     public partial class AccountDetailView : System.Windows.Controls.UserControl
     {
-        private readonly AccountService _accountService;
-        private readonly QuotaManager _quotaManager;
+        private AccountService _accountService;
+        private FileUploadManager _fileUploadManager;
+        private FileDownloadManager _fileDownloadManager;
+        private FileDeleteManager _fileDeleteManager;
+        private FileCopyManager _fileCopyManager;
+        private QuotaManager _quotaManager;
+        private IFileRepository _fileRepository;
 
         // true = 막대 차트, false = 파이 차트
         private bool _isBarMode = true;
         private string _currentFilter = "All";
 
-        public AccountDetailView()
+        public AccountDetailView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository)
         {
             InitializeComponent();
 
             // 서비스 초기화
-            var connStr = DbConfig.ConnectionString;
-            var storageRepo = new StorageRepository(connStr);
-            var accountRepo = new AccountRepository(connStr);
-            var tokenFactory = new TokenProviderFactory();
-            var googleSvc = new GoogleDriveService(tokenFactory.CreateGoogleTokenProvider(), storageRepo, accountRepo);
-            var oneDriveSvc = new OneDriveService(tokenFactory.CreateOneDriveTokenRefresher(), storageRepo, accountRepo);
-            var cloudSvcs = new List<ICloudFileService> { googleSvc, oneDriveSvc };
-
-            _quotaManager = new QuotaManager(cloudSvcs, storageRepo, accountRepo);
-            _accountService = new AccountService(accountRepo, storageRepo, _quotaManager);
+            _accountService = accountService;
+            _fileUploadManager = fileUploadManager;
+            _fileDownloadManager = fileDownloadManager;
+            _fileDeleteManager = fileDeleteManager;
+            _fileCopyManager = fileCopyManager;
+            _quotaManager = quotaManager;
+            _fileRepository = fileRepository;
 
             // 초기 탭 선택
             FilterTab.SelectedIndex = 0;
