@@ -130,7 +130,5 @@
                 </StackPanel>
             </Border>
         </Grid>
-
-        </StackPanel>
     </Grid>
 </UserControl>
