@@ -85,11 +85,10 @@ namespace OverCloud.Services.FileManager.DriveManager
             return true;
         }
 
-        public async Task<bool> DeleteFileAsync(string userId, string cloudFileId)
+        public async Task<bool> DeleteFileAsync(int cloudStorageNum, string cloudFileId)
         {
             var cloud = accountRepository.GetAllAccounts("admin")
-                .FirstOrDefault(c => c.AccountId == userId);
-
+                .FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
             if (cloud == null) return false;
             if (!await EnsureAccessTokenAsync(cloud)) return false;
 

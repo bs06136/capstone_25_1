@@ -38,7 +38,7 @@ namespace OverCloud.Services.FileManager
         }
 
         // 파일 ID를 기반으로 삭제
-        public async Task<bool> Delete_File(string userId, int fileId)
+        public async Task<bool> Delete_File(int storageNum, int fileId)
         {
             var file = fileRepository.GetFileById(fileId);
             if (file == null)
@@ -60,7 +60,7 @@ namespace OverCloud.Services.FileManager
             }
 
 
-            bool apiDeleted = await service.DeleteFileAsync(userId, file.CloudFileId);
+            bool apiDeleted = await service.DeleteFileAsync(storageNum, file.CloudFileId);
             if (!apiDeleted)
             {
                 Console.WriteLine("❌ 클라우드 API에서 파일 삭제 실패");
