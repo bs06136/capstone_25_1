@@ -30,7 +30,7 @@ namespace overcloud.Views
                 System.Diagnostics.Debug.WriteLine("계정 불러오기 시작");
                 // 기존: List<CloudStorageInfo> accounts = main.GetAllCloudStatus();
                 // 변경: List<CloudAccountInfo> accounts = main.GetAllAccounts();
-                List<CloudStorageInfo> accounts = _accountService.GetCloudsForUser();
+                List<CloudStorageInfo> accounts = _accountService.Get_Clouds_For_User("1");
                 AccountListBox.ItemsSource = accounts;
                 Debug.WriteLine("list 출력");
             }
@@ -49,7 +49,7 @@ namespace overcloud.Views
             int userNum = selectedAccount.UserNum;
 
             // temp_class의 RemoveAccount 호출
-            bool result = _accountService.DeleteCloudStorage(userNum);
+            bool result = _accountService.Delete_Cloud_Storage(userNum);
 
             System.Windows.MessageBox.Show(result ? "계정 삭제 성공" : "계정 삭제 실패");
             this.Close();

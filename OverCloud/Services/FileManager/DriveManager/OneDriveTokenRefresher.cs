@@ -1,0 +1,43 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System.Net.Http.Headers;
+using DB.overcloud.Models;
+
+namespace OverCloud.Services.FileManager.DriveManager
+{
+    public class OneDriveTokenRefresher
+    {
+       // private const string ClientId = "9be3b88a-60b4-404b-93e7-ace80ff849f2"; // 너가 Azure 등록하면서 받은 Client ID
+        //private const string ClientSecret = "63820dd0-0d33-4d59-abb5-7d639f75fa62";
+
+        public async Task<string> RefreshAccessTokenAsync(CloudStorageInfo cloud)
+        {
+            if (cloud == null) throw new ArgumentNullException(nameof(cloud));
+
+            using var client = new HttpClient();
+            var parameters = new Dictionary<string, string>
+            {
+                { "client_id", cloud.ClientId },
+                { "refresh_token", cloud.RefreshToken },
+                { "redirect_uri", "http://localhost:5000/" },
+                { "grant_type", "refresh_token" },
+                { "scope", "offline_access Files.ReadWrite User.Read" }
+            };
+
+            var response = await client.PostAsync("https://login.microsoftonline.com/consumers/oauth2/v2.0/token", new FormUrlEncodedContent(parameters));
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"❌ OneDrive AccessToken 재발급 실패: {errorContent}");
+                return null;
+            }
+
+            var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+            return json.RootElement.GetProperty("access_token").GetString();
+        }
+
+    }
+}
