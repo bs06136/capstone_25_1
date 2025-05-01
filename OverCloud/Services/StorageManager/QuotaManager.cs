@@ -34,7 +34,7 @@ namespace OverCloud.Services.StorageManager
 
         //계정에 있는 모든 스토리지의 용량 업데이트
 
-        public bool UpdateAggregatedStorageForUser(string userId) //여기서 넘기는 userId는 overcloud계정의 id임요
+        public bool UpdateAggregatedStorageForUser(string userId) //여기서 넘기는 userId는 overcloud계정의 id임요.
         {
             // 1. 해당 계정이 가진 모든 클라우드 가져오기
             var cloudList = accountRepository.GetAllAccounts(userId);
@@ -52,9 +52,11 @@ namespace OverCloud.Services.StorageManager
             return accountRepository.UpdateAccountUsage(userNum, totalSize, usedSize);
         }
 
+      
 
 
-            // 계정에 있는 특정 클라우드 하나만 용량 업데이트 (일단은 구글 드라이브 한정 DB에 업데이트)
+
+        // 계정에 있는 특정 클라우드 하나만 용량 업데이트 (일단은 구글 드라이브 한정 DB에 업데이트)
         public async Task<bool> SaveDriveQuotaToDB(string userEmail, int CloudStorageNum)
         {
 
@@ -154,6 +156,30 @@ namespace OverCloud.Services.StorageManager
                 });
             }
         }
+
+
+        /// <summary>
+        /// 외부에서 호출 가능한 전체 리프레시 API (프론트 UI 연동 또는 서비스 내 자동 호출)
+        /// </summary>
+        public async Task<bool> RefreshQuotaAsync(string userEmail, int cloudStorageNum)
+        {
+            try
+            {
+                Console.WriteLine($"⏳ {userEmail} - 용량 정보 새로고침 시작...");
+                bool result = await SaveDriveQuotaToDB(userEmail, cloudStorageNum);
+                Console.WriteLine(result
+                    ? $"✅ {userEmail} - 용량 새로고침 성공"
+                    : $"❌ {userEmail} - 새로고침 실패");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ 예외 발생: {ex.Message}");
+                return false;
+            }
+        }
+
+
 
 
 

@@ -71,7 +71,7 @@ namespace OverCloud.Services
                 });
 
                          // 전체 합산 용량 업데이트도 할 수 있음
-                quotaManager.UpdateAggregatedStorageForUser(storage.AccountId);
+                quotaManager.UpdateAggregatedStorageForUser("admin");
             }
 
 
@@ -98,7 +98,8 @@ namespace OverCloud.Services
             {
                 StorageSessionManager.RemoveQuota(target.AccountId, target.CloudType);
                 Console.WriteLine($" 클라우드 계정 삭제 성공 : cloudStorageNum {cloudStorageNum}");
-                
+
+                quotaManager.UpdateAggregatedStorageForUser("admin");
                 //메모리 세션에서 해당 계정 제거.
             }
             else
