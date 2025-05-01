@@ -14,44 +14,6 @@ namespace DB.overcloud.Repository
             connectionString = connStr;
         }
 
-        public List<CloudStorageInfo> GetCloudsForUser(string userId)
-        {
-            var list = new List<CloudStorageInfo>();
-
-            using var conn = new MySqlConnection(connectionString);
-            conn.Open();
-
-            string query = @"
-                SELECT cs.*
-                FROM CloudStorageInfo cs
-                WHERE cs.user_num IN (
-                    SELECT user_num FROM Account WHERE ID = @id
-                )";
-
-            using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@id", userId);
-            using var reader = cmd.ExecuteReader();
-
-            while (reader.Read())
-            {
-                list.Add(new CloudStorageInfo
-                {
-                    CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
-                    UserNum = Convert.ToInt32(reader["user_num"]),
-                    CloudType = reader["cloud_type"].ToString(),
-                    AccountId = reader["account_id"].ToString(),
-                    AccountPassword = reader["account_password"].ToString(),
-                    TotalCapacity = Convert.ToUInt64(reader["total_capacity"]),
-                    UsedCapacity = Convert.ToUInt64(reader["used_capacity"]),
-                    RefreshToken = reader["refresh_token"]?.ToString(),
-                    ClientId = reader["client_id"]?.ToString(),
-                    ClientSecret = reader["client_secret"]?.ToString()
-                });
-            }
-
-            return list;
-        }
-
         public CloudStorageInfo GetCloud(string accountId)
         {
             using var conn = new MySqlConnection(connectionString);

@@ -48,7 +48,7 @@ namespace OverCloud.Services.FileManager
             }
 
             var cloudInfo = accountRepository
-               .GetAllAccounts(userId)
+               .GetAllAccounts("admin")
                .FirstOrDefault(c => c.CloudStorageNum == file.CloudStorageNum);
 
             string cloudType = cloudInfo.CloudType;

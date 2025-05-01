@@ -5,7 +5,6 @@ namespace DB.overcloud.Repository
 {
     public interface IStorageRepository
     {
-        List<CloudStorageInfo> GetCloudsForUser(string userId);
         CloudStorageInfo GetCloud(string accountId);
         bool AddCloudStorage(CloudStorageInfo info);
         bool DeleteCloudStorage(int cloudStorageNum);
