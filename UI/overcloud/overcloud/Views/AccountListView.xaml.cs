@@ -1,27 +1,26 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using DB.overcloud.Models;
 using DB.overcloud.Repository;
 using OverCloud.Services;
 using OverCloud.Services.FileManager.DriveManager;
-using OverCloud.Services.FileManager;
 using OverCloud.Services.StorageManager;
-using static overcloud.Views.HomeView;
-using DB.overcloud.Models;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
-using System.Windows.Data;
-using System.Windows.Forms;
 
 namespace overcloud.Views
 {
     public partial class AccountListView : System.Windows.Controls.UserControl
     {
-
         // Services and managers
-        private AccountService _accountService;
-        private QuotaManager _quotaManager;
+        private readonly AccountService _accountService;
+        private readonly QuotaManager _quotaManager;
 
         private ICollectionView _view;
         private ObservableCollection<AccountItemViewModel> _items;
@@ -35,41 +34,51 @@ namespace overcloud.Views
             var connStr = DbConfig.ConnectionString;
             var storageRepo = new StorageRepository(connStr);
             var accountRepo = new AccountRepository(connStr);
-
             var tokenFactory = new TokenProviderFactory();
             var googleSvc = new GoogleDriveService(tokenFactory.CreateGoogleTokenProvider(), storageRepo, accountRepo);
             var oneDriveSvc = new OneDriveService(tokenFactory.CreateOneDriveTokenRefresher(), storageRepo, accountRepo);
             var cloudSvcs = new List<ICloudFileService> { googleSvc, oneDriveSvc };
-
             _quotaManager = new QuotaManager(cloudSvcs, storageRepo, accountRepo);
             _accountService = new AccountService(accountRepo, storageRepo, _quotaManager);
-            var tierMgr = new CloudTierManager(accountRepo);
 
             FilterTab.SelectedIndex = 0;
         }
 
         private void AccountListView_Loaded(object sender, RoutedEventArgs e)
         {
+            RefreshList();
+        }
+
+        private void RefreshList()
+        {
             // (1) 사용자 ID 구하기
-            string currentUserId = /* AuthenticationService.CurrentUserId */ "1";
+            string currentUserId = /* AuthenticationService.CurrentUserId */ "admin";
 
+            // (2) DB에서 계정 목록 조회
             var all = _accountService.Get_Clouds_For_User(currentUserId);
-            var _items = all.Select(a => new AccountItemViewModel
-            {
-                CloudName = a.CloudType,
-                IsActive = true,
-                AccountId = a.AccountId,
-                UsagePercent = (int)(a.UsedCapacity * 100 / a.TotalCapacity),
-                UsageDisplay = $"{a.UsedCapacity}/{a.TotalCapacity } GB",
-                LastLoginDate = DateTime.Now,
-                IsSelected = false
-            }).ToList();
 
+            // (3) 뷰모델 변환
+            _items = new ObservableCollection<AccountItemViewModel>(
+                all.Select(a => new AccountItemViewModel
+                {
+                    CloudName = a.CloudType,
+                    IsActive = true, // 모두 Active로 표시
+                    AccountId = a.AccountId,
+                    UsagePercent = a.TotalCapacity > 0
+                                      ? (int)(a.UsedCapacity * 100.0 / a.TotalCapacity)
+                                      : 0,
+                    UsageDisplay = $"{(a.UsedCapacity / 1024 /1024):F2}/{(a.TotalCapacity / 1024 /1024):F2} GB",
+                    LastLoginDate = DateTime.Now,
+                    IsSelected = false
+                }));
+
+            // (4) CollectionViewSource 준비
             _view = CollectionViewSource.GetDefaultView(_items);
             AccountsGrid.ItemsSource = _view;
 
-            // 최초 필터 적용 (All)
-            ApplyFilter("All");
+            // (5) 현재 탭 필터 다시 적용
+            var header = (FilterTab.SelectedItem as TabItem)?.Header as string;
+            ApplyFilter(header);
         }
 
         public class AccountItemViewModel : INotifyPropertyChanged
@@ -82,33 +91,34 @@ namespace overcloud.Views
             }
 
             public string CloudName { get; set; }
-            public bool IsActive { get; set; }  // "Active"
+            public bool IsActive { get; set; }
             public string AccountId { get; set; }
             public int UsagePercent { get; set; }
             public string UsageDisplay { get; set; }
             public DateTime LastLoginDate { get; set; }
 
             public event PropertyChangedEventHandler PropertyChanged;
-            protected void OnPropertyChanged([CallerMemberName] string propName = null)
-                => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+            protected void OnPropertyChanged([CallerMemberName] string prop = null)
+                => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
-
-
 
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
-            AddAccountWindow window = new AddAccountWindow(_accountService);
+            var window = new AddAccountWindow(_accountService);
+            window.Owner = Window.GetWindow(this);
             window.ShowDialog();
+
+            RefreshList();
         }
 
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("삭제 버튼 누름");
             var window = new DeleteAccountWindow(_accountService);
-            // this(UserControl)가 아니라 이 컨트롤을 호스트하는 Window를 Owner로 지정
             window.Owner = Window.GetWindow(this);
             window.ShowDialog();
-            // 필요하다면 HomeView 쪽 RefreshExplorer() 호출
+
+            RefreshList();
         }
 
         private void FilterTab_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -132,6 +142,7 @@ namespace overcloud.Views
                     _view.Filter = null;
                     break;
             }
+            _view.Refresh();
         }
     }
 }

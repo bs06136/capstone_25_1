@@ -75,7 +75,6 @@ namespace OverCloud.Services.FileManager
                 ParentFolderId = null, // 최상위 업로드라면 -1 ,일단은 파일만처리, 나중에는 폴더까지 
                 IsFolder = false, 
                 Count = 0,
-                GoogleFileId = cloudFileId
             };
 
             // 5. DB 저장

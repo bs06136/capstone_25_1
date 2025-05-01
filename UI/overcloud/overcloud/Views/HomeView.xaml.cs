@@ -149,6 +149,7 @@ namespace overcloud.Views
                 ParentFolderId = moveTargetFolderId, // 여기서만 목적지로 덮어씀
                 IsFolder = vm.IsFolder,
                 CloudFileId = vm.cloud_file_id
+
             };
         }
 

@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
 	<UseWindowsForms>true</UseWindowsForms>
+	<ApplicationIcon>overcloud.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -57,6 +58,10 @@
 	  <None Remove="asset\switch_left.png" />
 	  <None Remove="asset\upload.png" />
 	  <None Remove="asset\Vector.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="overcloud.ico" />
 	</ItemGroup>
 
 	<ItemGroup>
