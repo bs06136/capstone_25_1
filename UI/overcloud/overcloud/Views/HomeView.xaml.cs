@@ -213,7 +213,7 @@ namespace overcloud.Views
             }
         }
 
-        //FileRepository.all_file_list
+        //_fileRepository._fileRepository.all_file_list
 
         private void LoadRootFolders()
         {
@@ -225,7 +225,7 @@ namespace overcloud.Views
             };
 
             // 바로 하위 폴더만 조회해서 추가
-            var rootChildren = all_file_list(-1)
+            var rootChildren = _fileRepository.all_file_list(-1)
                                  .Where(f => f.IsFolder)
                                  .ToList();
 
@@ -254,7 +254,7 @@ namespace overcloud.Views
 
                     int parentId = (int)parentItem.Tag;
 
-                    var children = all_file_list(parentId)
+                    var children = _fileRepository.all_file_list(parentId)
                                     .Where(f => f.IsFolder)
                                     .ToList();
 
@@ -312,7 +312,7 @@ namespace overcloud.Views
                     if (tvi.Items.Count == 1 && tvi.Items[0] is string s && s == "Loading...")
                     {
                         tvi.Items.Clear();
-                        var children = all_file_list(id).Where(f => f.IsFolder);
+                        var children = _fileRepository.all_file_list(id).Where(f => f.IsFolder);
                         foreach (var f in children)
                         {
                             var childTvi = new TreeViewItem
@@ -349,7 +349,7 @@ namespace overcloud.Views
 
         private void LoadFolderContents(int folderId)
         {
-            var contents = all_file_list(folderId)
+            var contents = _fileRepository.all_file_list(folderId)
                 .Select(file => ToViewModel(file))
                 .ToList();
 
@@ -374,7 +374,7 @@ namespace overcloud.Views
 
                 if (iconPath == "asset/folder.png")
                 {
-                    var folder = all_file_list(currentFolderId)
+                    var folder = _fileRepository.all_file_list(currentFolderId)
                                  .FirstOrDefault(f => f.IsFolder && f.FileName == fileName);
 
                     if (folder != null)
@@ -424,7 +424,7 @@ namespace overcloud.Views
                             childItem.Items.Clear();
 
                             // ⚠️ 하위 항목을 중복해서 추가하지 않도록 체크
-                            var children = all_file_list(childId)
+                            var children = _fileRepository.all_file_list(childId)
                                            .Where(f => f.IsFolder && f.FileId != childId) // 자기 자신은 제외
                                            .ToList();
 
@@ -523,7 +523,7 @@ namespace overcloud.Views
             {
                 Directory.CreateDirectory(localPath);
 
-                var children = all_file_list(file.FileId); // 이 폴더의 하위 항목
+                var children = _fileRepository.all_file_list(file.FileId); // 이 폴더의 하위 항목
                 foreach (var child in children)
                 {
                     await DownloadItemRecursive(child.FileId, localBase, current_file_map);
@@ -557,7 +557,7 @@ namespace overcloud.Views
 
             void Traverse(int parentId)
             {
-                var children = all_file_list(parentId);
+                var children = _fileRepository.all_file_list(parentId);
                 foreach (var file in children)
                 {
                     result[file.FileId] = file;
@@ -611,7 +611,7 @@ namespace overcloud.Views
 
             if (file.IsFolder)
             {
-                var children = all_file_list(file.FileId);
+                var children = _fileRepository.all_file_list(file.FileId);
                 foreach (var child in children)
                 {
                     await DeleteItemRecursive(child.FileId, allFileMap);
@@ -743,7 +743,7 @@ namespace overcloud.Views
             List<CloudFileInfo> result;
             try
             {
-                result = add_folder(info);
+                result = _fileRepository.add_folder(info);
             }
             catch (Exception ex)
             {

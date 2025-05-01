@@ -10,7 +10,7 @@ namespace DB.overcloud.Models
         public DateTime UploadedAt { get; set; }            // 업로드된 날짜 및 시간
         
         public int CloudStorageNum { get; set; }            // 연결된 클라우드 계정 ID (FK -> CloudStorageInfo)
-        public int ParentFolderId { get; set; }            // 부모 폴더의 ID (자기참조)
+        public int? ParentFolderId { get; set; }            // 부모 폴더의 ID (자기참조)
 
         public bool IsFolder { get; set; }                  // 폴더 여부
         public int Count { get; set; }                      // 파일 다운로드 횟수
