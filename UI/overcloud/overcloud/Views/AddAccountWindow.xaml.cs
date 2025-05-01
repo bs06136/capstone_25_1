@@ -38,7 +38,7 @@ namespace overcloud.Views
 
             System.Diagnostics.Debug.WriteLine(cloudType);
             // ⭐ 객체 생성 없이 정적 메서드 직접 호출
-            bool result = await _accountService.AddCloudStorage(accountInfo);
+            bool result = await _accountService.Add_Cloud_Storage(accountInfo);
             System.Windows.MessageBox.Show(result ? "계정 추가 성공" : "계정 추가 실패");
 
             this.Close();

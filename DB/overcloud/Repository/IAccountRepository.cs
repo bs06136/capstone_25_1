@@ -6,7 +6,7 @@ namespace DB.overcloud.Repository
     public interface IAccountRepository
     {
         bool InsertAccount(CloudAccountInfo account);
-        List<CloudStorageInfo> GetAllAccounts();
+        List<CloudStorageInfo> GetAllAccounts(string ID);
         bool DeleteAccountByUserNum(int userNum);
         bool UpdateAccountUsage(int userNum, ulong totalSize, ulong usedSize);
     }
