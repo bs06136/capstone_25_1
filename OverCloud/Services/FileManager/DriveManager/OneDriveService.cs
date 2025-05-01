@@ -17,7 +17,6 @@ namespace OverCloud.Services.FileManager.DriveManager
         private string accessToken; // 동적으로 갱신
 
         public OneDriveService(OneDriveTokenRefresher oneDriveTokenRefresher, IStorageRepository storageRepo, IAccountRepository accountRepository)
-
         {
             this.oneDriveTokenRefresher = oneDriveTokenRefresher;
             this.storageRepository = storageRepo;
@@ -33,11 +32,12 @@ namespace OverCloud.Services.FileManager.DriveManager
 
         private async Task<bool> EnsureAccessTokenAsync(CloudStorageInfo cloud)
         {
-            var token = await oneDriveTokenRefresher.RefreshAccessTokenAsync(cloud);
-            if (string.IsNullOrEmpty(token)) return false;
-
-            accessToken = token;
-            return true;
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                accessToken = await oneDriveTokenRefresher.RefreshAccessTokenAsync(cloud);
+                Console.WriteLine($"[OneDrive AccessToken] {accessToken}");
+            }
+            return !string.IsNullOrEmpty(accessToken); ;
         }
 
         public async Task<string> UploadFileAsync(string userId, string filePath)
@@ -49,13 +49,12 @@ namespace OverCloud.Services.FileManager.DriveManager
             if (!await EnsureAccessTokenAsync(cloud)) return null;
 
             var client = CreateClient();
+            
             var fileName = Path.GetFileName(filePath);
+            var uploadUrl = $"https://graph.microsoft.com/v1.0/me/drive/root:/{fileName}:/content";
 
-            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            var content = new StreamContent(stream);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-
-            var response = await client.PutAsync($"https://graph.microsoft.com/v1.0/me/drive/root:/{fileName}:/content", content);
+            using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            var response = await client.PutAsync(uploadUrl, new StreamContent(fileStream));
 
             if (!response.IsSuccessStatusCode) return null;
 
@@ -96,7 +95,7 @@ namespace OverCloud.Services.FileManager.DriveManager
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<(long, long)> GetDriveQuotaAsync(string userId)
+        public async Task<(ulong, ulong)> GetDriveQuotaAsync(string userId)
         {
             var cloud = accountRepository.GetAllAccounts(userId)
                 .FirstOrDefault(c => c.CloudType == "OneDrive");
@@ -107,11 +106,14 @@ namespace OverCloud.Services.FileManager.DriveManager
             var client = CreateClient();
             var response = await client.GetAsync("https://graph.microsoft.com/v1.0/me/drive");
 
+            var rawJson = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"[OneDrive Drive API Raw Response] {rawJson}");
+
             if (!response.IsSuccessStatusCode) return (0, 0);
 
             var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-            long total = json.RootElement.GetProperty("quota").GetProperty("total").GetInt64();
-            long used = json.RootElement.GetProperty("quota").GetProperty("used").GetInt64();
+            ulong total = json.RootElement.GetProperty("quota").GetProperty("total").GetUInt64();
+            ulong used = json.RootElement.GetProperty("quota").GetProperty("used").GetUInt64();
 
             return (total, used);
         }

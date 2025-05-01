@@ -12,6 +12,7 @@ using OverCloud.Services.FileManager.DriveManager;
 using OverCloud.Services.StorageManager;
 
 
+
 namespace OverCloud.Services.FileManager
 {
     public class FileUploadManager
@@ -44,14 +45,14 @@ namespace OverCloud.Services.FileManager
         {
             ulong fileSize = (ulong)new FileInfo(file_name).Length;
 
-            // 1. 업로드 가능한 스토리지 선택
+                // 1. 업로드 가능한 스토리지 선택
             var cloud = cloudTierManager.SelectBestStorage(fileSize);
             if (cloud == null) return false;
 
 
             string cloudType = cloud.CloudType;
 
-            // 2. 클라우드 타입에 맞는 서비스 찾기
+                // 2. 클라우드 타입에 맞는 서비스 찾기
             var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(cloudType));
             if (service == null)
             {
@@ -68,10 +69,10 @@ namespace OverCloud.Services.FileManager
             CloudFileInfo file = new CloudFileInfo
             {
                 FileName = fileInfo.Name,
-                FileSize = (ulong)(fileInfo.Length/1048576),
+                FileSize = (ulong)((fileInfo.Length)/1024),
                 UploadedAt = DateTime.Now,
                 CloudStorageNum = cloud.CloudStorageNum,
-                ParentFolderId = null, // 최상위 업로드라면 null ,일단은 파일만처리, 나중에는 폴더까지 
+                ParentFolderId = null, // 최상위 업로드라면 -1 ,일단은 파일만처리, 나중에는 폴더까지 
                 IsFolder = false, 
                 Count = 0,
                 GoogleFileId = cloudFileId
@@ -82,7 +83,7 @@ namespace OverCloud.Services.FileManager
 
 
             // 6. 업로드 후 용량 갱신
-            quotaManager.UpdateQuotaAfterUploadOrDelete(cloud.CloudStorageNum, (int)(fileInfo.Length / 1048576), true);
+            quotaManager.UpdateQuotaAfterUploadOrDelete(cloud.CloudStorageNum, (ulong)((fileInfo.Length)/1024), true);
 
             return true;
         }

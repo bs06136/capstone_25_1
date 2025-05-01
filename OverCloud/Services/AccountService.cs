@@ -45,6 +45,7 @@ namespace OverCloud.Services
             else if (storage.CloudType == "OneDrive")
             {
                 var (email, refreshToken, clientId, clientSecret) = await OneDriveAuthHelper.AuthorizeAsync(storage.AccountId);
+
                 storage.AccountId = email;
                 storage.RefreshToken = refreshToken;
                 storage.ClientId = clientId;
@@ -52,8 +53,6 @@ namespace OverCloud.Services
                 storage.UserNum = 1;
                 Console.WriteLine("원드라이브 계정 추가중...");
             }
-
-
 
             bool result = storageRepository.AddCloudStorage(storage);
 
@@ -67,12 +66,12 @@ namespace OverCloud.Services
                 {
                     CloudStorageNum = storage.CloudStorageNum,
                     CloudType = storage.CloudType,
-                    TotalCapacityMB = storage.TotalCapacity,
-                    UsedCapacityMB = storage.UsedCapacity
+                    TotalCapacityKB = storage.TotalCapacity,
+                    UsedCapacityKB = storage.UsedCapacity
                 });
 
                          // 전체 합산 용량 업데이트도 할 수 있음
-                quotaManager.UpdateAggregatedStorageForUser(storage.AccountId);
+                quotaManager.UpdateAggregatedStorageForUser("admin");
             }
 
 
@@ -97,7 +96,11 @@ namespace OverCloud.Services
             bool result = storageRepository.DeleteCloudStorage(cloudStorageNum);
             if (result)
             {
+                StorageSessionManager.RemoveQuota(target.AccountId, target.CloudType);
                 Console.WriteLine($" 클라우드 계정 삭제 성공 : cloudStorageNum {cloudStorageNum}");
+
+                quotaManager.UpdateAggregatedStorageForUser("admin");
+                //메모리 세션에서 해당 계정 제거.
             }
             else
             {

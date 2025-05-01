@@ -10,26 +10,24 @@ namespace OverCloud.Services.FileManager.DriveManager
 {
     public class OneDriveTokenRefresher
     {
+       // private const string ClientId = "9be3b88a-60b4-404b-93e7-ace80ff849f2"; // 너가 Azure 등록하면서 받은 Client ID
+        //private const string ClientSecret = "63820dd0-0d33-4d59-abb5-7d639f75fa62";
+
         public async Task<string> RefreshAccessTokenAsync(CloudStorageInfo cloud)
         {
             if (cloud == null) throw new ArgumentNullException(nameof(cloud));
 
             using var client = new HttpClient();
-
             var parameters = new Dictionary<string, string>
             {
                 { "client_id", cloud.ClientId },
-                { "scope", "offline_access Files.ReadWrite User.Read" },
                 { "refresh_token", cloud.RefreshToken },
-                { "grant_type", "refresh_token" },
                 { "redirect_uri", "http://localhost:5000/" },
-                { "client_secret", cloud.ClientSecret }
+                { "grant_type", "refresh_token" },
+                { "scope", "offline_access Files.ReadWrite User.Read" }
             };
 
-            var content = new FormUrlEncodedContent(parameters);
-
-            var response = await client.PostAsync("https://login.microsoftonline.com/consumers/oauth2/v2.0/token", content);
-
+            var response = await client.PostAsync("https://login.microsoftonline.com/consumers/oauth2/v2.0/token", new FormUrlEncodedContent(parameters));
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
@@ -40,5 +38,6 @@ namespace OverCloud.Services.FileManager.DriveManager
             var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
             return json.RootElement.GetProperty("access_token").GetString();
         }
+
     }
 }
