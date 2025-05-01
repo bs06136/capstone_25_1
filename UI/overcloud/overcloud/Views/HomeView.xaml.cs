@@ -180,7 +180,7 @@ namespace overcloud.Views
                     string filePath = fileDialog.FileName;
 
                     // ⭐ temp_class.file_upload 호출
-                    bool result = await _fileUploadManager.file_upload(filePath);
+                    bool result = await _fileUploadManager.file_upload(filePath, currentFolderId);
 
                     System.Windows.MessageBox.Show(result
                         ? $"파일 업로드 성공\n경로: {filePath}"
@@ -730,7 +730,7 @@ namespace overcloud.Views
                 IsFolder = true,
                 UploadedAt = DateTime.Now,
                 FileSize = 0,
-                CloudStorageNum = 0,
+                CloudStorageNum = -1,
                 CloudFileId = string.Empty,
             };
 
@@ -747,7 +747,7 @@ namespace overcloud.Views
                 return;
             }
 
-            if (result == true)
+            if (result == false)
             {
                 System.Windows.MessageBox.Show("폴더 추가에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
