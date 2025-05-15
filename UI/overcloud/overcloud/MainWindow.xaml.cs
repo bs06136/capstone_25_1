@@ -29,5 +29,15 @@ namespace overcloud
             MainFrame.Navigate(new Views.AccountView());
 
         }
+
+        private void SharedAccountMenu_Click(object sender, MouseButtonEventArgs e)
+        {
+            MainFrame.Navigate(new Views.SharedAccountView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository));
+        }
+
+        private void SharedManageMenu_Click(object sender, MouseButtonEventArgs e)
+        {
+            MainFrame.Navigate(new Views.SharedManageView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository));
+        }
     }
 }

@@ -227,14 +227,54 @@ namespace DB.overcloud.Repository
             return result;
         }
 
-        public bool IncrementDownloadCount(int fileId)
+        public bool add_folder(CloudFileInfo file_info)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
             string query = "UPDATE CloudFileInfo SET count = count + 1 WHERE file_id = @id";
             using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@id", fileId);
+            cmd.Parameters.AddWithValue("@name", file_info.FileName);
+            cmd.Parameters.AddWithValue("@size", file_info.FileSize);
+            cmd.Parameters.AddWithValue("@uploaded", file_info.UploadedAt);
+            cmd.Parameters.AddWithValue("@storage", file_info.CloudStorageNum);
+            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
+            cmd.Parameters.AddWithValue("@isFolder", file_info.IsFolder);
+            cmd.Parameters.AddWithValue("@cloud", file_info.CloudFileId ?? (object)DBNull.Value);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool change_name(CloudFileInfo file_info)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                UPDATE CloudFileInfo
+                SET file_name = @name
+                WHERE file_id = @id";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@name", file_info.FileName);
+            cmd.Parameters.AddWithValue("@id", file_info.FileId);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool change_dir(CloudFileInfo file_info)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                UPDATE CloudFileInfo
+                SET parent_folder_id = @parent
+                WHERE file_id = @id";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
+            cmd.Parameters.AddWithValue("@id", file_info.FileId);
 
             return cmd.ExecuteNonQuery() > 0;
         }
