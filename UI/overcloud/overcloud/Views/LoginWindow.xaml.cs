@@ -1,12 +1,51 @@
 ﻿using System.Windows;
+using DB.overcloud.Repository;
+using OverCloud.Services.FileManager;
+using OverCloud.Services.StorageManager;
+using OverCloud.Services;
+using OverCloud.Services.FileManager.DriveManager;
 
 namespace overcloud.Views
 {
     public partial class LoginWindow : Window
     {
+
+        private AccountService _accountService;
+        private FileUploadManager _fileUploadManager;
+        private FileDownloadManager _fileDownloadManager;
+        private FileDeleteManager _fileDeleteManager;
+        private FileCopyManager _fileCopyManager;
+        private QuotaManager _quotaManager;
+        private IFileRepository _fileRepository;
+
+
         public LoginWindow()
         {
             InitializeComponent();
+
+
+            var connStr = DbConfig.ConnectionString;
+            var storageRepo = new StorageRepository(connStr);
+            var accountRepo = new AccountRepository(connStr);
+            _fileRepository = new FileRepository(connStr);
+
+            var tokenFactory = new TokenProviderFactory();
+            var googleSvc = new GoogleDriveService(tokenFactory.CreateGoogleTokenProvider(), storageRepo, accountRepo);
+            var oneDriveSvc = new OneDriveService(tokenFactory.CreateOneDriveTokenRefresher(), storageRepo, accountRepo);
+            var cloudSvcs = new List<ICloudFileService> { googleSvc, oneDriveSvc };
+
+            _quotaManager = new QuotaManager(cloudSvcs, storageRepo, accountRepo);
+            _accountService = new AccountService(accountRepo, storageRepo, _quotaManager);
+            var tierMgr = new CloudTierManager(accountRepo);
+
+            _fileUploadManager = new FileUploadManager(_accountService, _quotaManager, storageRepo, _fileRepository, cloudSvcs, tierMgr);
+            _fileDownloadManager = new FileDownloadManager(accountRepo, cloudSvcs);
+            _fileDeleteManager = new FileDeleteManager(accountRepo, _quotaManager, storageRepo, _fileRepository, cloudSvcs);
+            _fileCopyManager = new FileCopyManager(_fileRepository);
+
+            // 예: 로그인 성공 후 MainWindow 진입 시
+            var storages = accountRepo.GetAllAccounts("admin"); // 현재 로그인된 사용자 기준
+            StorageSessionManager.InitializeFromDatabase(storages);
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -16,11 +55,12 @@ namespace overcloud.Views
             string password = PasswordBox.Password;
 
             // MainWindow 실행
-            var main = new MainWindow();
+            var main = new MainWindow(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository);
             System.Windows.Application.Current.MainWindow = main;
             main.Show();
 
             this.Close();
         }
+
     }
 }
