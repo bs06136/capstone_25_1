@@ -1,26 +1,48 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using OverCloud.Services.FileManager;
+using OverCloud.Services.StorageManager;
+using OverCloud.Services;
+using DB.overcloud.Repository;
 
 namespace overcloud.Views
 {
     public partial class AccountView : System.Windows.Controls.UserControl
     {
-        public AccountView()
+        // 서비스 초기화
+
+        private readonly AccountService _accountService;
+        private readonly FileUploadManager _fileUploadManager;
+        private readonly FileDownloadManager _fileDownloadManager;
+        private readonly FileDeleteManager _fileDeleteManager;
+        private readonly FileCopyManager _fileCopyManager;
+        private readonly QuotaManager _quotaManager;
+        private readonly IFileRepository _fileRepository;
+
+        public AccountView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository)
         {
             InitializeComponent();
+            _accountService = accountService;
+            _fileUploadManager = fileUploadManager;
+            _fileDownloadManager = fileDownloadManager;
+            _fileDeleteManager = fileDeleteManager;
+            _fileCopyManager = fileCopyManager;
+            _quotaManager = quotaManager;
+            _fileRepository = fileRepository;
+
             // 최초 로드 시 “계정 관리” 목록 화면으로
-            SubFrame.Navigate(new AccountListView());
+            SubFrame.Navigate(new AccountListView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository));
         }
 
         private void AccountMenu_Click(object sender, MouseButtonEventArgs e)
         {
-            SubFrame.Navigate(new AccountListView());
+            SubFrame.Navigate(new AccountListView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository));
         }
 
         private void DetailMenu_Click(object sender, MouseButtonEventArgs e)
         {
-            SubFrame.Navigate(new AccountDetailView());
+            SubFrame.Navigate(new AccountDetailView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository));
         }
     }
 }

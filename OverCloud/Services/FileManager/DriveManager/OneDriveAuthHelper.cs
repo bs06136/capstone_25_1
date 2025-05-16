@@ -23,13 +23,9 @@ namespace OverCloud.Services.FileManager.DriveManager
     public static class OneDriveAuthHelper
     {
         private const string CredentialFile = "C:\\key\\onedrive_credential.json";
-
         private const string Authority = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize";// 개인 Microsoft 계정은 "consumers" 
 
-        //private static readonly string[] Scopes = {
-        //"offline_access", "Files.ReadWrite.All", "User.Read"
-        //};
-
+        
         public static async Task<(string email, string refreshToken, string clientId, string clientSecret)> AuthorizeAsync(string dummyId)
         {
 
@@ -39,111 +35,37 @@ namespace OverCloud.Services.FileManager.DriveManager
             string RedirectUri = config.redirect_uri;
             string scopeString = string.Join(" ", config.scopes);
 
-            // 1. 브라우저로 사용자 인증
+            // 1. 브라우저로 사용자 인증 (브라우저 로그인 상태 무시하고 매번 인증)
             string authUrl = $"{Authority}?client_id={ClientId}&response_type=code&redirect_uri={RedirectUri}&response_mode=query&scope={scopeString}&state=12345";
             Console.WriteLine("브라우저 열기: " + authUrl);
-
-            // 1.5  브라우저 열기. 
             Process.Start(new ProcessStartInfo(authUrl) { UseShellExecute = true });
 
-  
 
+            //Process.Start(new ProcessStartInfo //시크릿 모드로 열기
+            //{
+            //    FileName = "chrome.exe",
+            //    Arguments = $"--incognito {authUrl}",
+            //    UseShellExecute = true
+            //});
 
-            // 2. 사용자가 URL에서 code 복사해서 콘솔에 입력
-            Console.Write("🔐 인증 후 받은 code를 입력하세요: ");
-            Console.Write("✏️ code 입력: ");
-
-            string code = null;
-
-            using (var listener = new HttpListener())
-            {
-                listener.Prefixes.Add(RedirectUri);
-                listener.Start();
-
-                // 2. 브라우저 열기
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = authUrl,
-                    UseShellExecute = true
-                });
-
-                // 3. 리디렉션 대기 후 code 추출
-                var context = await listener.GetContextAsync();
-                var req = context.Request;
-                var resp = context.Response;
-
-                code = req.QueryString["code"];
-                string state = req.QueryString["state"];
-
-                const string responseString = "<html><body><h2>\uC778\uC99D \uC644\uB8CC! \uCC3D\uC744 \uB2EB\uC73C\uC138\uC694.</h2></body></html>";
-                byte[] buffer = Encoding.UTF8.GetBytes(responseString);
-                resp.ContentLength64 = buffer.Length;
-                await resp.OutputStream.WriteAsync(buffer, 0, buffer.Length);
-                resp.OutputStream.Close();
-
-                listener.Stop();
-                Console.WriteLine("code: " + code);
-            }
-
+            string code = await GetAuthCodeAsync(RedirectUri);
             if (string.IsNullOrEmpty(code))
             {
                 Console.WriteLine("❌ code가 null 또는 빈 문자열입니다");
-                throw new Exception("Code가 입력되지 않았습니다.");
-            }
-
-            // 4. 토큰 요청
-            using var client = new HttpClient();
-            var parameters = new Dictionary<string, string>
-            {
-                { "client_id", ClientId },
-                { "scope", scopeString },
-                { "code", code },
-                { "redirect_uri", RedirectUri },
-                { "grant_type", "authorization_code" }
-            };
-
-            Console.WriteLine(" 요청 파라미터:");
-            foreach (var kv in parameters)
-            {
-                Console.WriteLine($"{kv.Key} = {kv.Value}");
-            }
-
-            HttpResponseMessage response;
-
-            try
-            {
-                response = await client.PostAsync("https://login.microsoftonline.com/consumers/oauth2/v2.0/token", new FormUrlEncodedContent(parameters));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ HTTP 요청 예외 발생: {ex.Message}");
                 return (null, null, null, null);
             }
 
-            var content = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($" 응답 코드: {response.StatusCode}");
-            Console.WriteLine($" 응답 본문: {content}");
-
-            if (!response.IsSuccessStatusCode)
+            // 3. Access Token, Refresh Token 요청
+            var tokens = await RequestTokensAsync(ClientId, code, RedirectUri, scopeString);
+            if (tokens == (null,null))
             {
-                Console.WriteLine("❌ 토큰 요청 실패 - DB 저장 불가");
+                Console.WriteLine("❌ 토큰 요청 실패");
                 return (null, null, null, null);
             }
 
-            string accessToken, refreshToken;
-            try
-            {
-                var json = JsonDocument.Parse(content);
-                accessToken = json.RootElement.GetProperty("access_token").GetString();
-                refreshToken = json.RootElement.GetProperty("refresh_token").GetString();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("❌ 토큰 파싱 실패: " + ex.Message);
-                return (null, null, null, null);
-            }
 
-            string email = await GetUserEmailAsync(accessToken);
+            //4. 이메일 정보 가져오기
+            string email = await GetUserEmailAsync(tokens.Item1);
             if (string.IsNullOrEmpty(email))
             {
                 Console.WriteLine("❌ 사용자 이메일 조회 실패");
@@ -151,7 +73,73 @@ namespace OverCloud.Services.FileManager.DriveManager
             }
 
             Console.WriteLine("✅ OneDrive 인증 성공: " + email);
-            return (email, refreshToken, ClientId, null);
+            return (email, tokens.Item2, ClientId, null);
+        }
+
+        private static async Task<string> GetAuthCodeAsync(string redirectUri)
+        {
+            using (var listener = new HttpListener())
+            {
+                listener.Prefixes.Add(redirectUri);
+                listener.Start();
+
+
+
+                // 3. 리디렉션 대기 후 code 추출
+                var context = await listener.GetContextAsync();
+                var req = context.Request;
+                var resp = context.Response;
+
+                string code = req.QueryString["code"];
+                const string responseString = "<html><body><h2>인증 성공! 창을 닫아주세요.</h2></body></html>";
+                byte[] buffer = Encoding.UTF8.GetBytes(responseString);
+                resp.ContentLength64 = buffer.Length;
+                await resp.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+                resp.OutputStream.Close();
+
+                listener.Stop();
+                Console.WriteLine("code: " + code);
+                return code;
+            }
+        }
+
+        private static async Task<(string accessToken,string refreshToken)> RequestTokensAsync(string clientId,string code, string redirectUri,string scopeString)
+        {
+            // 4. 토큰 요청
+            using var client = new HttpClient();
+            var parameters = new Dictionary<string, string>
+            {
+                { "client_id", clientId },
+                { "scope", scopeString },
+                { "code", code },
+                { "redirect_uri", redirectUri },
+                { "grant_type", "authorization_code" }
+            };
+  
+            try
+            {
+                var response = await client.PostAsync("https://login.microsoftonline.com/consumers/oauth2/v2.0/token", new FormUrlEncodedContent(parameters));
+                var content = await response.Content.ReadAsStringAsync();
+            
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("❌ 토큰 요청 실패 - DB 저장 불가");
+                    return (null, null);
+                }
+
+                var json = JsonDocument.Parse(content);
+                string accessToken = json.RootElement.GetProperty("access_token").GetString();
+                string refreshToken = json.RootElement.GetProperty("refresh_token").GetString();
+
+                return (accessToken, refreshToken);
+            
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"토큰 요청 중 예외 발생: {ex.Message}");
+                return (null, null);
+            }
+           
         }
 
 
@@ -165,9 +153,9 @@ namespace OverCloud.Services.FileManager.DriveManager
                 var response = await client.GetAsync("https://graph.microsoft.com/v1.0/me");
                 var content = await response.Content.ReadAsStringAsync();
                 Console.WriteLine("📡 OneDrive 사용자 정보 응답: " + content);
-                var doc = JsonDocument.Parse(content);
+                var json = JsonDocument.Parse(content);
 
-                return doc.RootElement.GetProperty("userPrincipalName").GetString();
+                return json.RootElement.GetProperty("userPrincipalName").GetString();
             }
             catch (Exception ex)
             {

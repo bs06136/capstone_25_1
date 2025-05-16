@@ -16,13 +16,13 @@ using OverCloud.Services.FileManager;
 using OverCloud.Services.FileManager.DriveManager;
 using OverCloud.Services.StorageManager;
 using overcloud.Converters;
-using static overcloud.temp_class.TempClass;
+//using static overcloud.temp_class.TempClass;
 
 namespace overcloud.Views
 {
     public partial class HomeView : System.Windows.Controls.UserControl
     {
-        // Services and managers
+
         private AccountService _accountService;
         private FileUploadManager _fileUploadManager;
         private FileDownloadManager _fileDownloadManager;
@@ -31,13 +31,14 @@ namespace overcloud.Views
         private QuotaManager _quotaManager;
         private IFileRepository _fileRepository;
 
+
         // 탐색기 상태
         private int currentFolderId = -1;
         private bool isMoveMode = false;
-        private int moveTargetFolderId = -1;
+        private int moveTargetFolderId = -2;
         private List<FileItemViewModel> moveCandidates = new();
 
-        public HomeView()
+        public HomeView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository)
         {
             try
             {
@@ -49,26 +50,15 @@ namespace overcloud.Views
                 throw;
             }
             Loaded += HomeView_Loaded;
+            _accountService = accountService;
+            _fileUploadManager = fileUploadManager;
+            _fileDownloadManager = fileDownloadManager;
+            _fileDeleteManager = fileDeleteManager;
+            _fileCopyManager = fileCopyManager;
+            _quotaManager = quotaManager;
+            _fileRepository = fileRepository;
 
             // 초기 서비스 설정
-            var connStr = DbConfig.ConnectionString;
-            var storageRepo = new StorageRepository(connStr);
-            var accountRepo = new AccountRepository(connStr);
-            _fileRepository = new FileRepository(connStr);
-
-            var tokenFactory = new TokenProviderFactory();
-            var googleSvc = new GoogleDriveService(tokenFactory.CreateGoogleTokenProvider(), storageRepo, accountRepo);
-            var oneDriveSvc = new OneDriveService(tokenFactory.CreateOneDriveTokenRefresher(), storageRepo, accountRepo);
-            var cloudSvcs = new List<ICloudFileService> { googleSvc, oneDriveSvc };
-
-            _quotaManager = new QuotaManager(cloudSvcs, storageRepo, accountRepo);
-            _accountService = new AccountService(accountRepo, storageRepo, _quotaManager);
-            var tierMgr = new CloudTierManager(accountRepo);
-
-            _fileUploadManager = new FileUploadManager(_accountService, _quotaManager, storageRepo, _fileRepository, cloudSvcs, tierMgr);
-            _fileDownloadManager = new FileDownloadManager(accountRepo, cloudSvcs);
-            _fileDeleteManager = new FileDeleteManager(accountRepo, _quotaManager, storageRepo, _fileRepository, cloudSvcs);
-            _fileCopyManager = new FileCopyManager(_fileRepository);
         }
 
 
@@ -130,8 +120,7 @@ namespace overcloud.Views
                 CloudStorageNum = file.CloudStorageNum,
                 ParentFolderId = file.ParentFolderId,
                 IsFolder = file.IsFolder,
-                Count = file.Count,
-                cloud_file_id = file.cloud_file_id,
+                cloud_file_id = file.CloudFileId,
                 IsChecked = false
             };
         }
@@ -149,8 +138,8 @@ namespace overcloud.Views
                 CloudStorageNum = vm.CloudStorageNum,
                 ParentFolderId = moveTargetFolderId, // 여기서만 목적지로 덮어씀
                 IsFolder = vm.IsFolder,
-                Count = vm.Count,
-                cloud_file_id = vm.cloud_file_id,
+                CloudFileId = vm.cloud_file_id
+
             };
         }
 
@@ -181,7 +170,7 @@ namespace overcloud.Views
                     string filePath = fileDialog.FileName;
 
                     // ⭐ temp_class.file_upload 호출
-                    bool result = await _fileUploadManager.file_upload(filePath);
+                    bool result = await _fileUploadManager.file_upload(filePath, currentFolderId);
 
                     System.Windows.MessageBox.Show(result
                         ? $"파일 업로드 성공\n경로: {filePath}"
@@ -398,6 +387,7 @@ namespace overcloud.Views
                     moveTargetFolderId = folderId;
                 }
             }
+            Console.WriteLine("현제 폴더 위치 변경 : " + currentFolderId);
         }
 
         private void LoadFolderContents(int folderId)
@@ -588,7 +578,10 @@ namespace overcloud.Views
                 if (!string.IsNullOrEmpty(dir))
                     Directory.CreateDirectory(dir);
 
-                await _fileDownloadManager.DownloadFile("1", file.cloud_file_id, file.FileId, localPath);
+                Console.WriteLine(dir);
+                Console.WriteLine(file.CloudFileId + " " + file.CloudStorageNum);
+
+                await _fileDownloadManager.DownloadFile("admin", file.CloudFileId, file.CloudStorageNum, localPath);
             }
         }
 
@@ -596,7 +589,7 @@ namespace overcloud.Views
         {
             var parts = new List<string> { file.FileName };
             var current = file;
-            while (current.ParentFolderId != null && allMap.TryGetValue(current.ParentFolderId.Value, out var parent))
+            while (current.ParentFolderId != null && allMap.TryGetValue(current.ParentFolderId, out var parent))
             {
                 parts.Insert(0, parent.FileName);
                 current = parent;
@@ -672,7 +665,9 @@ namespace overcloud.Views
             }
 
             // 비동기 삭제 호출
+
             bool deleted = await _fileDeleteManager.Delete_File(file.CloudStorageNum, file.FileId);
+
 
             if (!deleted)
             {
@@ -722,7 +717,7 @@ namespace overcloud.Views
         /*
         private void Button_ConfirmMove_Click(object sender, RoutedEventArgs e)
         {
-            if (!isMoveMode || moveTargetFolderId == -1 || moveCandidates.Count == 0)
+            if (!isMoveMode || moveTargetFolderId == -2 || moveCandidates.Count == 0)
             {
                 System.Windows.MessageBox.Show("이동할 항목 또는 대상 폴더가 지정되지 않았습니다.");
                 return;
@@ -731,11 +726,11 @@ namespace overcloud.Views
             foreach (var item in moveCandidates)
             {
                 var cloudInfo = ToCloudFileInfo(item);
-                var result = change_dir(cloudInfo);
+                var result = _fileRepository.change_dir(cloudInfo);
             }
 
             isMoveMode = false;
-            moveTargetFolderId = -1;
+            moveTargetFolderId = -2;
             moveCandidates.Clear();
 
 
@@ -758,7 +753,7 @@ namespace overcloud.Views
         private void Button_CancelMove_Click(object sender, RoutedEventArgs e)
         {
             isMoveMode = false;
-            moveTargetFolderId = -1;
+            moveTargetFolderId = -2;
             moveCandidates.Clear();
 
             UploadButton.Visibility = Visibility.Visible;
@@ -793,25 +788,25 @@ namespace overcloud.Views
                 IsFolder = true,
                 UploadedAt = DateTime.Now,
                 FileSize = 0,
-                CloudStorageNum = 0,
-                Count = 0,
-                cloud_file_id = string.Empty,
+                CloudStorageNum = -1,
+                CloudFileId = string.Empty,
             };
 
             // DB에 삽입
             int result;
+
             try
             {
-                //result = _fileRepository.add_folder(info);
-                result = null;
+                result = _fileRepository.add_folder(info);
+                //result = null;
             }
             catch (Exception ex)
             {
                 System.Windows.MessageBox.Show($"폴더 추가 중 오류: {ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
             if (result == -1)
+
             {
                 System.Windows.MessageBox.Show("폴더 추가에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;

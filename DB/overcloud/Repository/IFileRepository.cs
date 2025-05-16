@@ -13,6 +13,7 @@ namespace DB.overcloud.Repository
         List<CloudFileInfo> all_file_list(int fileId);
         CloudFileInfo specific_file_info(int fileId);
         List<CloudFileInfo> GetAllFileInfo(string file_direc);
+
         int add_folder(CloudFileInfo file_info);
 
         bool change_name(CloudFileInfo file_info);

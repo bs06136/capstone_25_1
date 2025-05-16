@@ -33,7 +33,7 @@ namespace OverCloud.Services.FileManager
                 CloudStorageNum = originalFile.CloudStorageNum,
                 ParentFolderId = target_parent_file_Id,
                 IsFolder = originalFile.IsFolder,
-                Count = 0,
+                CloudFileId = originalFile.CloudFileId, // 클라우드 파일 ID는 원본과 동일하게 설정
             };
 
             // 3. DB에 복제 파일 저장

@@ -18,7 +18,7 @@ namespace OverCloud.Services
             this.accountRepository = accountRepository;
         }
 
-        public CloudStorageInfo SelectBestStorage(ulong fileSize)
+        public CloudStorageInfo SelectBestStorage(ulong fileSizeKB) //kb단위로 호출
         {
 
             var clouds = accountRepository.GetAllAccounts("admin");
@@ -35,10 +35,10 @@ namespace OverCloud.Services
 
             foreach (var cloud in ordered)
             {
-                var remaining = (ulong)(cloud.TotalCapacity - cloud.UsedCapacity);
+                var remaining = (long)cloud.TotalCapacity - (long)cloud.UsedCapacity;
                 Console.WriteLine($"🧪 클라우드: {cloud.CloudType}, 잔여용량: {remaining}KB");
 
-                if (remaining >= fileSize / 1024) // KB 단위 맞추기
+                if (remaining >= (long)fileSizeKB) // KB 단위 맞추기
                     return cloud;
             }
 
@@ -56,6 +56,74 @@ namespace OverCloud.Services
                 _ => 99 // 기타 클라우드
             };
         }
+
+        public List<CloudStorageInfo> GetStoragePlan(ulong totalFileSizeKB)
+        {
+            var clouds = accountRepository.GetAllAccounts("admin");
+            if (clouds == null || clouds.Count == 0)
+            {
+                Console.WriteLine("❌ 등록된 클라우드 계정이 없습니다.");
+                return null;
+            }
+
+            // 1. 티어 순 + 여유 공간 많은 순으로 정렬
+            var ordered = clouds
+                .OrderBy(c => GetTierValue(c.CloudType))
+                .ThenByDescending(c => c.TotalCapacity - c.UsedCapacity)
+                .ToList();
+
+            // 2. 분산 저장이 가능한지 확인하며 누적
+            List<CloudStorageInfo> selected = new();
+            ulong totalAvailableBytes = 0;
+
+            foreach (var cloud in ordered)
+            {
+                long remainingKB = (long)cloud.TotalCapacity - (long)cloud.UsedCapacity;
+
+
+                if (remainingKB <= 0) continue;
+
+                ulong remainingBytes = (ulong)(remainingKB * 1024);
+
+                selected.Add(cloud);
+                totalAvailableBytes += remainingBytes;
+
+                Console.WriteLine($"선택된 클라우드: {cloud.CloudType}, 잔여: {remainingKB} KB");
+
+                if (totalAvailableBytes >= totalFileSizeKB*1024)
+                    break;
+            }
+
+            // 3. 최종 확인
+            if (totalAvailableBytes < totalFileSizeKB* 1024 )
+            {
+                Console.WriteLine(" 분산 저장 불가: 전체 클라우드 용량 부족");
+                return null;
+            }
+
+
+            return selected;
+        }
+
+        
+        //계정 추가한 스토리지들의 남은 용량 총합 리턴( 바이트)
+        public ulong GetTotalRemainingQuotaInBytes(string userId)
+        {
+            var clouds = accountRepository.GetAllAccounts(userId);
+            if (clouds == null || clouds.Count == 0)
+                return 0;
+
+            ulong totalAvailableBytes = 0;
+
+            foreach (var cloud in clouds)
+            {
+                ulong remainingKB = (ulong)(cloud.TotalCapacity - cloud.UsedCapacity);
+                totalAvailableBytes += remainingKB * 1024; // KB → byte
+            }
+
+            return totalAvailableBytes;
+        }
+
     }
 
 
