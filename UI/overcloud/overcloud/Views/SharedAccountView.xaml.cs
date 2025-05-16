@@ -20,7 +20,7 @@ using overcloud.Converters;
 
 namespace overcloud.Views
 {
-    public partial class HomeView : System.Windows.Controls.UserControl
+    public partial class SharedAccountView : System.Windows.Controls.UserControl
     {
 
         private AccountService _accountService;
@@ -38,7 +38,7 @@ namespace overcloud.Views
         private int moveTargetFolderId = -2;
         private List<FileItemViewModel> moveCandidates = new();
 
-        public HomeView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository)
+        public SharedAccountView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository)
         {
             try
             {
@@ -665,9 +665,7 @@ namespace overcloud.Views
             }
 
             // 비동기 삭제 호출
-
             bool deleted = await _fileDeleteManager.Delete_File(file.CloudStorageNum, file.FileId);
-
 
             if (!deleted)
             {
@@ -794,7 +792,6 @@ namespace overcloud.Views
 
             // DB에 삽입
             int result;
-
             try
             {
                 result = _fileRepository.add_folder(info);
@@ -805,8 +802,8 @@ namespace overcloud.Views
                 System.Windows.MessageBox.Show($"폴더 추가 중 오류: {ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            if (result == -1)
 
+            if (result == -1)
             {
                 System.Windows.MessageBox.Show("폴더 추가에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;

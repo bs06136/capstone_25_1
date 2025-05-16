@@ -47,6 +47,8 @@
 	  <None Remove="asset\arrow_right.png" />
 	  <None Remove="asset\box.png" />
 	  <None Remove="asset\cancel.png" />
+	  <None Remove="asset\co.png" />
+	  <None Remove="asset\co_manage.png" />
 	  <None Remove="asset\delete.png" />
 	  <None Remove="asset\download.png" />
 	  <None Remove="asset\folder.png" />
@@ -84,6 +86,12 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Resource>
 	  <Resource Include="asset\cancel.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\co.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\co_manage.png">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Resource>
 	  <Resource Include="asset\delete.png">

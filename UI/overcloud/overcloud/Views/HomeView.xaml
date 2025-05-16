@@ -154,36 +154,6 @@
                 </StackPanel>
             </Button>
 
-            <StackPanel x:Name="MoveModePanel" Orientation="Horizontal"
-                        Canvas.Left="1582" Canvas.Top="178"
-                        Visibility="Collapsed">
-                <Button Width="90" Height="31" Background="#B0E0E6"
-                        Click="Button_ConfirmMove_Click">
-                    <Button.Resources>
-                        <Style TargetType="{x:Type Border}">
-                            <Setter Property="CornerRadius" Value="5"/>
-                        </Style>
-                    </Button.Resources>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Image Source="pack://application:,,,/overcloud;component/asset/Icon.png" Width="16" Height="16" Margin="0,0,5,0"/>
-                        <TextBlock Text="여기로 이동" FontSize="12"/>
-                    </StackPanel>
-                </Button>
-                
-                <Button Width="60" Height="31" Background="#FFC0CB"
-                        Margin="10,0,0,0"
-                        Canvas.Left="10" Click="Button_CancelMove_Click">
-                    <Button.Resources>
-                        <Style TargetType="{x:Type Border}">
-                            <Setter Property="CornerRadius" Value="5"/>
-                        </Style>
-                    </Button.Resources>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Image Source="pack://application:,,,/overcloud;component/asset/delete.png" Width="16" Height="16" Margin="0,0,5,0"/>
-                        <TextBlock Text="취소" FontSize="12"/>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
 
             <!-- 파일 리스트 헤더 -->
             <TextBlock Text="이름" FontSize="14" FontWeight="Bold"
