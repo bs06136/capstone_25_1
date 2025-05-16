@@ -81,11 +81,11 @@ namespace OverCloud.Services.StorageManager
                 return false;
             }
 
-                  // 3. 해당 클라우드에 API 호출
+            // 3. 해당 클라우드에 API 호출
             var (total, used) = await service.GetDriveQuotaAsync(userEmail);
 
 
-            // 5. TotalCapacity, UsedCapacity만 업데이트
+            // 5. TotalCapacity, UsedCapacity만 업데이트 (KB단위)
             cloudInfo.TotalCapacity = (total / 1024);
             cloudInfo.UsedCapacity = (used / 1024);
 
@@ -108,7 +108,8 @@ namespace OverCloud.Services.StorageManager
         public void UpdateQuotaAfterUploadOrDelete(int cloudStorageNum, ulong fileSizeKB, bool isUpload)
         {
             var quota = StorageSessionManager.Quotas.FirstOrDefault(q => q.CloudStorageNum == cloudStorageNum);
-            Console.WriteLine($"🛠 업로드 반영 전: quota.Used = {quota.UsedCapacityKB}");
+            Console.WriteLine($" 업로드 반영 전: quota.Total = {quota.TotalCapacityKB}");
+            Console.WriteLine($" 업로드 반영 전: quota.Used = {quota.UsedCapacityKB}");
             if (quota == null)
             {
                 Console.WriteLine($"❌ quota not found for CloudStorageNum: {cloudStorageNum}");
@@ -120,7 +121,9 @@ namespace OverCloud.Services.StorageManager
             else
                 quota.UsedCapacityKB -= fileSizeKB;
 
-            Console.WriteLine($"✅ 업로드 반영 후: quota.Used = {quota.UsedCapacityKB}");
+            Console.WriteLine($" 업로드 반영 전: quota.Total = {quota.TotalCapacityKB}");
+
+            Console.WriteLine($" 업로드 반영 후: quota.Used = {quota.UsedCapacityKB}");
 
             var cloudInfo = new CloudStorageInfo
             {
@@ -176,43 +179,6 @@ namespace OverCloud.Services.StorageManager
                 return false;
             }
         }
-
-
-
-
-
-        ////새로고침 버튼이 있다면 버튼 누를때만 호출.
-        //public async Task<bool> SyncAllCloudQuota()
-        //{
-        //    var success = true;
-
-        //    foreach (var quota in StorageSessionManager.Quotas)
-        //    {
-        //        var cloudInfo = storageRepository.GetCloudByStorageNum(quota.CloudStorageNum);
-        //        if (cloudInfo == null) continue;
-
-        //        var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(cloudInfo.CloudType));
-        //        if (service == null) continue;
-
-        //        var (total, used) = await service.GetDriveQuotaAsync(cloudInfo.AccountId);
-
-        //        quota.TotalCapacityMB = (int)(total / 1048576);
-        //        quota.UsedCapacityMB = (int)(used / 1048576);
-
-        //        // DB에도 반영
-        //        var updatedCloud = new CloudStorageInfo
-        //        {
-        //            CloudStorageNum = cloudInfo.CloudStorageNum,
-        //            TotalCapacity = quota.TotalCapacityMB,
-        //            UsedCapacity = quota.UsedCapacityMB
-        //        };
-        //        storageRepository.account_save(updatedCloud);
-        //    }
-
-        //    return success;
-        //}
-
-
 
 
     }
