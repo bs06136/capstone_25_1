@@ -78,6 +78,80 @@ namespace OverCloud.Services.FileManager
             return dbDeleted;
         }
 
+
+        public async Task<bool> Delete_DistributedFile(int logicalFileId)
+        {
+            var logicalFile = fileRepository.GetFileById(logicalFileId);
+            if (logicalFile == null || !logicalFile.IsDistributed)
+            {
+                Console.WriteLine("❌ 유효한 논리 파일이 아닙니다.");
+                return false;
+            }
+
+            // 1. 조각 파일들 가져오기
+            var chunks = fileRepository.GetChunksByRootFileId(logicalFileId);
+            if (chunks == null || chunks.Count == 0)
+            {
+                Console.WriteLine("❌ 조각 파일이 존재하지 않습니다.");
+                return false;
+            }
+
+            bool allSuccess = true;
+
+            foreach (var chunk in chunks)
+            {
+                var cloudInfo = accountRepository
+                    .GetAllAccounts("admin")
+                    .FirstOrDefault(c => c.CloudStorageNum == chunk.CloudStorageNum);
+
+                if (cloudInfo == null)
+                {
+                    Console.WriteLine($"❌ 클라우드 정보 없음: {chunk.CloudStorageNum}");
+                    allSuccess = false;
+                    continue;
+                }
+
+                var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(cloudInfo.CloudType));
+                if (service == null)
+                {
+                    Console.WriteLine($"❌ 클라우드 서비스 없음: {cloudInfo.CloudType}");
+                    allSuccess = false;
+                    continue;
+                }
+
+                // 2. 클라우드 API로 삭제
+                bool apiDeleted = await service.DeleteFileAsync(cloudInfo.CloudStorageNum, chunk.CloudFileId);
+                if (!apiDeleted)
+                {
+                    Console.WriteLine($"❌ 조각 삭제 실패: {chunk.FileName}");
+                    allSuccess = false;
+                    continue;
+                }
+
+                // 3. DB에서 삭제
+                bool dbDeleted = fileRepository.DeleteFile(chunk.FileId);
+                if (!dbDeleted)
+                {
+                    Console.WriteLine($"❌ DB 삭제 실패: {chunk.FileName}");
+                    allSuccess = false;
+                }
+
+                // 4. 용량 회복
+                quotaManager.UpdateQuotaAfterUploadOrDelete(chunk.CloudStorageNum, chunk.FileSize / 1024 , false);
+            }
+
+            // 5. 논리 파일 메타데이터 삭제
+            bool logicalDeleted = fileRepository.DeleteFile(logicalFileId);
+            if (!logicalDeleted)
+            {
+                Console.WriteLine("❌ 논리 파일 삭제 실패");
+                allSuccess = false;
+            }
+
+            return allSuccess;
+        }
+
+
         //// (선택) 폴더 전체 삭제 등 확장 가능
         //public bool DeleteFolderRecursively(int folderId)
         //{

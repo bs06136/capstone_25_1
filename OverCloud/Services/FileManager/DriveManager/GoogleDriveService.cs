@@ -76,7 +76,7 @@ namespace OverCloud.Services.FileManager.DriveManager
             if (googleCloud == null) return false;
 
             Console.WriteLine(userId);
-            Console.WriteLine(" gogggle DownloadFileAsync");
+            Console.WriteLine(" google DownloadFileAsync");
 
             var accessToken = await tokenProvider.GetAccessTokenAsync(googleCloud);
             var service = CreateDriveService(accessToken);
