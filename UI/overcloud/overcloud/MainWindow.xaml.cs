@@ -18,9 +18,10 @@ namespace overcloud
         private FileCopyManager _fileCopyManager;
         private QuotaManager _quotaManager;
         private IFileRepository _fileRepository;
+        private CloudTierManager _cloudTierManager;
 
 
-        public MainWindow(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository)
+        public MainWindow(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, CloudTierManager cloudTierManager)
         {
             InitializeComponent();
             _accountService = accountService;
@@ -30,24 +31,25 @@ namespace overcloud
             _fileCopyManager = fileCopyManager;
             _quotaManager = quotaManager;
             _fileRepository = fileRepository;
+            _cloudTierManager = cloudTierManager;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // 앱 시작 시 HomeView 로드
-            MainFrame.Navigate(new Views.HomeView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository));
+            MainFrame.Navigate(new Views.HomeView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository,_cloudTierManager));
         }
 
         // 왼쪽 “홈” 메뉴 클릭 시
         private void HomeMenu_Click(object sender, MouseButtonEventArgs e)
         {
-            MainFrame.Navigate(new Views.HomeView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository));
+            MainFrame.Navigate(new Views.HomeView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _cloudTierManager));
         }
 
         // 왼쪽 “계정 관리” 메뉴 클릭 시
         private void AccountMenu_Click(object sender, MouseButtonEventArgs e)
         {
-            MainFrame.Navigate(new Views.AccountView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository));
+            MainFrame.Navigate(new Views.AccountView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _cloudTierManager));
 
         }
 

@@ -126,7 +126,8 @@
             </Button>
             <Button x:Name="CopyButton" Width="77" Height="31"
                     Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
-                    Canvas.Left="1563" Canvas.Top="178">
+                    Canvas.Left="1563" Canvas.Top="178"
+                    Click="Button_Copy_Click">
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="5"/>

@@ -30,6 +30,7 @@ namespace overcloud.Views
         private FileCopyManager _fileCopyManager;
         private QuotaManager _quotaManager;
         private IFileRepository _fileRepository;
+        private CloudTierManager _cloudTierManager;
 
 
         // 탐색기 상태
@@ -38,7 +39,15 @@ namespace overcloud.Views
         private int moveTargetFolderId = -2;
         private List<FileItemViewModel> moveCandidates = new();
 
-        public HomeView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository)
+        public HomeView(AccountService accountService,
+            FileUploadManager fileUploadManager,
+            FileDownloadManager fileDownloadManager,
+            FileDeleteManager fileDeleteManager,
+            FileCopyManager fileCopyManager,
+            QuotaManager quotaManager,
+            IFileRepository fileRepository,
+            CloudTierManager cloudTierManager)
+
         {
             try
             {
@@ -57,6 +66,7 @@ namespace overcloud.Views
             _fileCopyManager = fileCopyManager;
             _quotaManager = quotaManager;
             _fileRepository = fileRepository;
+            _cloudTierManager = cloudTierManager;
 
             // 초기 서비스 설정
         }
@@ -168,12 +178,32 @@ namespace overcloud.Views
                 if (fileDialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     string filePath = fileDialog.FileName;
+                    ulong fileSize = (ulong)new FileInfo(filePath).Length;
 
-                    // ⭐ temp_class.file_upload 호출
-                    bool result = await _fileUploadManager.file_upload(filePath, currentFolderId);
+                    // 1. 먼저 전체 용량 부족한지 확인
+                    ulong totalRemainingByte = _cloudTierManager.GetTotalRemainingQuotaInBytes("admin");
+                    if (totalRemainingByte < fileSize)
+                    {
+                        System.Windows.MessageBox.Show("❌ 전체 클라우드 용량이 부족합니다.");
+                        return;
+                    }
 
+                    // 2. 단일 업로드 가능한 클라우드 찾기.
+                    var bestStorage = _cloudTierManager.SelectBestStorage(fileSize / 1024); //byte -> kb단위로 전달
+
+                    bool result;
+
+                    if (bestStorage != null)
+                    {
+                        result = await _fileUploadManager.file_upload(filePath, currentFolderId);
+
+                    }
+                    else
+                    {
+                        result = await _fileUploadManager.Upload_Distributed(filePath, currentFolderId);
+                    }
                     System.Windows.MessageBox.Show(result
-                        ? $"파일 업로드 성공\n경로: {filePath}"
+                        ? $"파일 업로드 성공\\n경로: {filePath}"
                         : "파일 업로드 실패");
                 }
             }
@@ -653,6 +683,7 @@ namespace overcloud.Views
 
         private async Task DeleteItemRecursive(int fileId, Dictionary<int, CloudFileInfo> allFileMap)
         {
+            bool deleted;
             if (!allFileMap.TryGetValue(fileId, out var file)) return;
 
             if (file.IsFolder)
@@ -663,16 +694,25 @@ namespace overcloud.Views
                     await DeleteItemRecursive(child.FileId, allFileMap);
                 }
             }
-
-            // 비동기 삭제 호출
-
-            bool deleted = await _fileDeleteManager.Delete_File(file.CloudStorageNum, file.FileId);
-
-
-            if (!deleted)
+            else
             {
-                System.Windows.MessageBox.Show($"{file.FileName} 삭제 실패");
+                if (file.IsDistributed)
+                {
+                    deleted = await _fileDeleteManager.Delete_DistributedFile(file.FileId);
+                }
+                else
+                {
+                    deleted = await _fileDeleteManager.Delete_File(file.CloudStorageNum, file.FileId);
+                }
+
+                // 비동기 삭제 호출
+                if (!deleted)
+                {
+                    System.Windows.MessageBox.Show($"{file.FileName} 삭제 실패");
+                }
+
             }
+
         }
 
 
