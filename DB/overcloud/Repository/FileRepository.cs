@@ -1,4 +1,5 @@
 using DB.overcloud.Models;
+using Google.Protobuf.WellKnownTypes;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -37,7 +38,11 @@ namespace DB.overcloud.Repository
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    CloudFileId = reader["cloud_file_id"]?.ToString()
+                    CloudFileId = reader["cloud_file_id"]?.ToString(),
+                    RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
+                    ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
+                    ChunkSize = reader["chunk_size"] is DBNull ? 0 : Convert.ToUInt64(reader["chunk_size"]),
+                    IsDistributed = reader["is_distributed"] is DBNull ? false : Convert.ToBoolean(reader["is_distributed"])
                 });
             }
 
@@ -50,9 +55,9 @@ namespace DB.overcloud.Repository
             conn.Open();
 
             string query = @"INSERT INTO CloudFileInfo 
-                (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, cloud_file_id)
+                (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, cloud_file_id, root_file_id, chunk_index, chunk_size, is_distributed)
                 VALUES 
-                (@name, @size, @time, @storage, @parent, @folder, @cloud)";
+                (@name, @size, @time, @storage, @parent, @folder, @cloud, @rootId, @chunkIndex, @chunkSize, @isDistributed)";
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@name", file_info.FileName);
@@ -63,22 +68,10 @@ namespace DB.overcloud.Repository
             cmd.Parameters.AddWithValue("@folder", file_info.IsFolder);
             cmd.Parameters.AddWithValue("@cloud", file_info.CloudFileId ?? "");
 
-            return cmd.ExecuteNonQuery() > 0;
-        }
-
-        public bool change_file(CloudFileInfo file_info, string newCloudFileId)
-        {
-            using var conn = new MySqlConnection(connectionString);
-            conn.Open();
-
-            string query = @"UPDATE CloudFileInfo 
-                            SET cloud_storage_num = @newStorage, cloud_file_id = @cloud 
-                            WHERE file_id = @id";
-
-            using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@newStorage", 2);              // cloud_storage_num = 2 인 클라우드로 이동
-            cmd.Parameters.AddWithValue("@cloud", newCloudFileId);      // 새로 배정받은 cloud_file_id
-            cmd.Parameters.AddWithValue("@id", file_info.FileId);
+            cmd.Parameters.AddWithValue("@rootId", file_info.RootFileId.HasValue ? file_info.RootFileId : DBNull.Value);
+            cmd.Parameters.AddWithValue("@chunkIndex", file_info.ChunkIndex.HasValue ? file_info.ChunkIndex : DBNull.Value);
+            cmd.Parameters.AddWithValue("@chunkSize", file_info.ChunkSize);
+            cmd.Parameters.AddWithValue("@isDistributed", file_info.IsDistributed);
 
             return cmd.ExecuteNonQuery() > 0;
         }
@@ -116,7 +109,11 @@ namespace DB.overcloud.Repository
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    CloudFileId = reader["cloud_file_id"]?.ToString()
+                    CloudFileId = reader["cloud_file_id"]?.ToString(),
+                    RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
+                    ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
+                    ChunkSize = reader["chunk_size"] is DBNull ? 0 : Convert.ToUInt64(reader["chunk_size"]),
+                    IsDistributed = reader["is_distributed"] is DBNull ? false : Convert.ToBoolean(reader["is_distributed"])
                 };
             }
 
@@ -148,7 +145,11 @@ namespace DB.overcloud.Repository
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    CloudFileId = reader["cloud_file_id"]?.ToString()
+                    CloudFileId = reader["cloud_file_id"]?.ToString(),
+                    RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
+                    ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
+                    ChunkSize = reader["chunk_size"] is DBNull ? 0 : Convert.ToUInt64(reader["chunk_size"]),
+                    IsDistributed = reader["is_distributed"] is DBNull ? false : Convert.ToBoolean(reader["is_distributed"])
                 });
             }
 
@@ -176,7 +177,11 @@ namespace DB.overcloud.Repository
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    CloudFileId = reader["cloud_file_id"]?.ToString()
+                    CloudFileId = reader["cloud_file_id"]?.ToString(),
+                    RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
+                    ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
+                    ChunkSize = reader["chunk_size"] is DBNull ? 0 : Convert.ToUInt64(reader["chunk_size"]),
+                    IsDistributed = reader["is_distributed"] is DBNull ? false : Convert.ToBoolean(reader["is_distributed"])
                 };
             }
 
@@ -217,7 +222,11 @@ namespace DB.overcloud.Repository
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
-                    CloudFileId = reader["cloud_file_id"]?.ToString()
+                    CloudFileId = reader["cloud_file_id"]?.ToString(),
+                    RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
+                    ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
+                    ChunkSize = reader["chunk_size"] is DBNull ? 0 : Convert.ToUInt64(reader["chunk_size"]),
+                    IsDistributed = reader["is_distributed"] is DBNull ? false : Convert.ToBoolean(reader["is_distributed"])
                 });
             }
 
@@ -279,5 +288,104 @@ namespace DB.overcloud.Repository
 
             return cmd.ExecuteNonQuery() > 0;
         }
+
+        public int AddFileAndReturnId(CloudFileInfo file_info)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"INSERT INTO CloudFileInfo 
+                (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, cloud_file_id, root_file_id, chunk_index, chunk_size, is_distributed) 
+                VALUES 
+                (@name, @size, @time, @storage, @parent, @folder, @cloud, @rootId, @chunkIndex, @chunkSize, @isDistributed);
+                SELECT LAST_INSERT_ID();";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@name", file_info.FileName);
+            cmd.Parameters.AddWithValue("@size", file_info.FileSize);
+            cmd.Parameters.AddWithValue("@time", file_info.UploadedAt);
+            cmd.Parameters.AddWithValue("@storage", file_info.CloudStorageNum);
+            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
+            cmd.Parameters.AddWithValue("@folder", file_info.IsFolder);
+            cmd.Parameters.AddWithValue("@cloud", file_info.CloudFileId ?? "");
+           
+            cmd.Parameters.AddWithValue("@rootId", file_info.RootFileId.HasValue ? file_info.RootFileId : DBNull.Value);
+            cmd.Parameters.AddWithValue("@chunkIndex", file_info.ChunkIndex.HasValue ? file_info.ChunkIndex : DBNull.Value);
+            cmd.Parameters.AddWithValue("@chunkSize", file_info.ChunkSize);
+            cmd.Parameters.AddWithValue("@isDistributed", file_info.IsDistributed); //예외 Parameter '@isDistributed' has already been defined'
+
+            int insertedId = Convert.ToInt32(cmd.ExecuteScalar());
+            return insertedId;
+        }
+
+        public List<CloudFileInfo> GetChunksByRootFileId(int rootFileId)
+        {
+            var result = new List<CloudFileInfo>();
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "SELECT * FROM CloudFileInfo WHERE root_file_id = @root ORDER BY chunk_index";
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@root", rootFileId);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                result.Add(new CloudFileInfo
+                {
+                    FileId = Convert.ToInt32(reader["file_id"]),
+                    FileName = reader["file_name"].ToString(),
+                    FileSize = Convert.ToUInt64(reader["file_size"]),
+                    UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
+                    CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
+                    IsFolder = Convert.ToBoolean(reader["is_folder"]),
+                    CloudFileId = reader["cloud_file_id"]?.ToString(),
+                    RootFileId = Convert.ToInt32(reader["root_file_id"]),
+                    ChunkIndex = Convert.ToInt32(reader["chunk_index"]),
+                    ChunkSize = Convert.ToUInt64(reader["chunk_size"])
+                });
+            }
+
+            return result;
+        }
+
+        
+        public List<CloudFileInfo> GetFilesByStorageNum(int cloudStorageNum)
+        {
+            var files = new List<CloudFileInfo>();
+
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "SELECT * FROM CloudFileInfo WHERE cloud_storage_num = @storage";
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@storage", cloudStorageNum);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                files.Add(new CloudFileInfo
+                {
+                    FileId = Convert.ToInt32(reader["file_id"]),
+                    FileName = reader["file_name"].ToString(),
+                    FileSize = Convert.ToUInt64(reader["file_size"]),
+                    UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
+                    CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
+                    IsFolder = Convert.ToBoolean(reader["is_folder"]),
+                    CloudFileId = reader["cloud_file_id"]?.ToString(),
+                    RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
+                    ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
+                    ChunkSize = reader["chunk_size"] is DBNull ? 0 : Convert.ToUInt64(reader["chunk_size"]),
+                    IsDistributed = reader["is_distributed"] is DBNull ? false : Convert.ToBoolean(reader["is_distributed"])
+                });
+            }
+
+            return files;
+        }
+
+
+
     }
 }

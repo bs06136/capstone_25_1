@@ -40,6 +40,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Remove="..\..\..\DB\overcloud\Models\FileChunkInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="asset\accounts.png" />
 	  <None Remove="asset\active.png" />
 	  <None Remove="asset\add_circle.png" />

@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using DB.overcloud.Models;
 using DB.overcloud.Repository;
+using static Google.Apis.Requests.BatchRequest;
 
 namespace OverCloud.Services.FileManager.DriveManager
 {
@@ -115,7 +116,7 @@ namespace OverCloud.Services.FileManager.DriveManager
             var sessionJson = JsonDocument.Parse(await sessionResponse.Content.ReadAsStringAsync());
             string uploadUrl = sessionJson.RootElement.GetProperty("uploadUrl").GetString();
 
-            Console.WriteLine($"Upload URL: {uploadUrl}");
+          //  Console.WriteLine($"Upload URL: {uploadUrl}");
 
             // 2. 조각 업로드( Authorization절대 붙이지않음)
             const int chunkSize = 60 * 1024 * 1024; // 320KB (microsoft 권장 크기)
@@ -124,9 +125,15 @@ namespace OverCloud.Services.FileManager.DriveManager
             long uploaded = 0;
 
             var uploadHandler = new HttpClientHandler { AllowAutoRedirect = false };
-            var uploadClient = new HttpClient(uploadHandler);
+            var uploadClient = new HttpClient(uploadHandler)
+            {
+                Timeout =TimeSpan.FromMinutes(10) //필요 시 더 늘려서 사용 가능.
+            };
 
             using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+
+            HttpResponseMessage finalResponse = null;
+
             while (uploaded < fileSize)
             {
                 int thisChunkSize = (int)Math.Min(chunkSize, fileSize - uploaded);
@@ -143,8 +150,10 @@ namespace OverCloud.Services.FileManager.DriveManager
                     Content = byteArrayContent
                 };
 
+           
                 var chunkResponse = await uploadClient.SendAsync(request);
                 Console.WriteLine($" 조각 업로드: {uploaded}-{uploaded + read - 1}/{fileSize} → {chunkResponse.StatusCode}");
+                finalResponse = chunkResponse;
 
                 if (!chunkResponse.IsSuccessStatusCode &&
                     chunkResponse.StatusCode != HttpStatusCode.Accepted &&
@@ -160,15 +169,26 @@ namespace OverCloud.Services.FileManager.DriveManager
                 uploaded += read;
             }
 
-            // 3. 완료 후 응답 (일부 경우 생략 가능)
-            Console.WriteLine("✅ 모든 조각 업로드 완료");
-            return "Uploaded"; // 실제 fileId 응답이 없으므로 성공 시 "Uploaded" 반환
+
+            // 3. 완료 후 응답 처리
+            if (finalResponse != null && finalResponse.IsSuccessStatusCode)
+            {
+                var resultJson = JsonDocument.Parse(await finalResponse.Content.ReadAsStringAsync());
+                if (resultJson.RootElement.TryGetProperty("id", out var idProperty))
+                {
+                    Console.WriteLine("모든 조각 업로드 완료");
+                    return idProperty.GetString();
+                }
+            }
+
+            Console.WriteLine("모든 조각 업로드 완료했지만 ID를 찾을 수 없음");
+            return null; 
         }
 
 
         public async Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath)
-        {
-            Console.WriteLine(userId);
+        {   
+            Console.WriteLine(userId); //여기서 userID는 구글게정, 원드 계정, 드롭계정 id
             Console.WriteLine("one DownloadFileAsync");
 
             var cloud = accountRepository.GetAllAccounts("admin")
@@ -178,12 +198,16 @@ namespace OverCloud.Services.FileManager.DriveManager
             if (!await EnsureAccessTokenAsync(cloud)) return false;
 
             var client = CreateClient();
-            var response = await client.GetAsync($"https://graph.microsoft.com/v1.0/me/drive/items/{cloudFileId}/content");
+            client.Timeout = TimeSpan.FromMinutes(10);
 
+            var response = await client.GetAsync($"https://graph.microsoft.com/v1.0/me/drive/items/{cloudFileId}/content");
             if (!response.IsSuccessStatusCode) return false;
 
-            using var stream = new FileStream(savePath, FileMode.Create, FileAccess.Write);
-            await response.Content.CopyToAsync(stream);
+            using (var httpStream = await response.Content.ReadAsStreamAsync())
+            using (var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, 81920, true)) //기본 버퍼 크기 ->80kb
+            {
+                await httpStream.CopyToAsync(fileStream);
+            }
 
             return true;
         }
