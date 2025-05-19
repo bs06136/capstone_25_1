@@ -1,0 +1,22 @@
+<UserControl x:Class="overcloud.Views.CompletedTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <ListView ItemsSource="{Binding Completed}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="파일명" DisplayMemberBinding="{Binding FileName}" Width="300"/>
+                    <GridViewColumn Header="상태" DisplayMemberBinding="{Binding Status}" Width="100"/>
+                    <GridViewColumn Header="진행률">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <ProgressBar Value="{Binding Progress}" Maximum="100" Height="10"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="경로" DisplayMemberBinding="{Binding LocalPath}" Width="400"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</UserControl>

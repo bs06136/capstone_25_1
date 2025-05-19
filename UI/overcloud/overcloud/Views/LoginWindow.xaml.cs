@@ -4,6 +4,7 @@ using OverCloud.Services.FileManager;
 using OverCloud.Services.StorageManager;
 using OverCloud.Services;
 using OverCloud.Services.FileManager.DriveManager;
+using OverCloud.transfer_manager;
 
 namespace overcloud.Views
 {
@@ -18,7 +19,6 @@ namespace overcloud.Views
         private QuotaManager _quotaManager;
         private IFileRepository _fileRepository;
         private CloudTierManager _cloudTierManager;
-
 
         public LoginWindow()
         {
@@ -44,6 +44,7 @@ namespace overcloud.Views
             _fileDeleteManager = new FileDeleteManager(accountRepo, _quotaManager, storageRepo, _fileRepository, cloudSvcs);
             _fileCopyManager = new FileCopyManager(_fileRepository);
 
+
             // 예: 로그인 성공 후 MainWindow 진입 시
             var storages = accountRepo.GetAllAccounts("admin"); // 현재 로그인된 사용자 기준
             StorageSessionManager.InitializeFromDatabase(storages);
@@ -54,6 +55,8 @@ namespace overcloud.Views
             // 아이디, 비밀번호는 나중에 사용할 수 있도록 받아두기만 함
             string userId = IdBox.Text;
             string password = PasswordBox.Password;
+
+            App.TransferManager = new TransferManager(_fileUploadManager, _fileDownloadManager);
 
             // MainWindow 실행
             var main = new MainWindow(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _cloudTierManager);
