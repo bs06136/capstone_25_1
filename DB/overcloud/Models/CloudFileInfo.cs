@@ -2,7 +2,7 @@ namespace DB.overcloud.Models
 {
     public class CloudFileInfo
     {
-        internal int count;
+       // internal int count;
 
         public int FileId { get; set; }                     // 파일 또는 폴더의 고유 ID (PK)
         public string FileName { get; set; }                // 이름 (파일명 or 폴더명)
@@ -11,7 +11,12 @@ namespace DB.overcloud.Models
         public int CloudStorageNum { get; set; }            // 연결된 클라우드 계정 ID (FK -> CloudStorageInfo)
         public int ParentFolderId { get; set; }            // 부모 폴더의 ID (자기참조)
         public bool IsFolder { get; set; }                  // 폴더 여부
-        public string? CloudFileId { get; set; }            // 실제 구글 드라이브 파일 ID
+        public string? CloudFileId { get; set; }            // 실제 구글 ,원드라이브 파일 ID
 
+        //새롭게 추가.
+        public bool IsDistributed { get; set; }             // 분산 저장 여부
+        public int? RootFileId { get; set; }                // 조각일 경우, 논리 파일 ID (자기참조)
+        public int? ChunkIndex { get; set; }                // 조각 순서
+        public ulong? ChunkSize { get; set; }               // 조각 실제 크기
     }
 }

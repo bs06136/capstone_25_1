@@ -17,6 +17,7 @@ namespace overcloud.Views
         private FileCopyManager _fileCopyManager;
         private QuotaManager _quotaManager;
         private IFileRepository _fileRepository;
+        private CloudTierManager _cloudTierManager;
 
 
         public LoginWindow()
@@ -36,10 +37,10 @@ namespace overcloud.Views
 
             _quotaManager = new QuotaManager(cloudSvcs, storageRepo, accountRepo);
             _accountService = new AccountService(accountRepo, storageRepo, _quotaManager);
-            var tierMgr = new CloudTierManager(accountRepo);
+            _cloudTierManager = new CloudTierManager(accountRepo);
 
-            _fileUploadManager = new FileUploadManager(_accountService, _quotaManager, storageRepo, _fileRepository, cloudSvcs, tierMgr);
-            _fileDownloadManager = new FileDownloadManager(accountRepo, cloudSvcs);
+            _fileUploadManager = new FileUploadManager(_accountService, _quotaManager, storageRepo, _fileRepository, cloudSvcs, _cloudTierManager);
+            _fileDownloadManager = new FileDownloadManager(_fileRepository, accountRepo, cloudSvcs);
             _fileDeleteManager = new FileDeleteManager(accountRepo, _quotaManager, storageRepo, _fileRepository, cloudSvcs);
             _fileCopyManager = new FileCopyManager(_fileRepository);
 
@@ -55,7 +56,7 @@ namespace overcloud.Views
             string password = PasswordBox.Password;
 
             // MainWindow 실행
-            var main = new MainWindow(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository);
+            var main = new MainWindow(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _cloudTierManager);
             System.Windows.Application.Current.MainWindow = main;
             main.Show();
 
