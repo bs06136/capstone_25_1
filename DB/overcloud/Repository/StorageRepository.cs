@@ -14,15 +14,15 @@ namespace DB.overcloud.Repository
             connectionString = connStr;
         }
 
-        public CloudStorageInfo GetCloud(string accountId)
+        public CloudStorageInfo GetCloud(int cloudStorageNum)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = @"SELECT * FROM CloudStorageInfo WHERE account_id = @id LIMIT 1";
+            string query = @"string query = SELECT * FROM CloudStorageInfo WHERE cloud_storage_num = @cloudStorageNum";
 
             using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@id", accountId);
+            cmd.Parameters.AddWithValue("@cloudStorageNum", cloudStorageNum);
 
             using var reader = cmd.ExecuteReader();
 
