@@ -11,6 +11,7 @@ using System.Net.Http;
 using DB.overcloud.Repository;
 using Google.Apis.Upload;
 using System.Diagnostics;
+using MySqlX.XDevAPI.Common;
 
 namespace OverCloud.Services.FileManager.DriveManager
 {

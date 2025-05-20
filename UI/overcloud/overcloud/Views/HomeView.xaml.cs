@@ -698,9 +698,9 @@ namespace overcloud.Views
 
         private async Task DeleteItemRecursive(int fileId, Dictionary<int, CloudFileInfo> allFileMap)
         {
-            bool deleted;
             if (!allFileMap.TryGetValue(fileId, out var file)) return;
 
+            // 1. 폴더인 경우 자식 먼저 삭제
             if (file.IsFolder)
             {
                 var children = _fileRepository.all_file_list(file.FileId);
@@ -709,26 +709,24 @@ namespace overcloud.Views
                     await DeleteItemRecursive(child.FileId, allFileMap);
                 }
             }
+
+            // 2. 마지막에 자기 자신 삭제 (파일이든 폴더든)
+            bool deleted;
+            if (file.IsDistributed)
+            {
+                deleted = await _fileDeleteManager.Delete_DistributedFile(file.FileId, _user_id);
+            }
             else
             {
-                if (file.IsDistributed)
-                {
-                    deleted = await _fileDeleteManager.Delete_DistributedFile(file.FileId, _user_id);
-                }
-                else
-                {
-                    deleted = await _fileDeleteManager.Delete_File(file.CloudStorageNum, file.FileId, _user_id);
-                }
-
-                // 비동기 삭제 호출
-                if (!deleted)
-                {
-                    System.Windows.MessageBox.Show($"{file.FileName} 삭제 실패");
-                }
-
+                deleted = await _fileDeleteManager.Delete_File(file.CloudStorageNum, file.FileId, _user_id);
             }
 
+            if (!deleted)
+            {
+                System.Windows.MessageBox.Show($"{file.FileName} 삭제 실패");
+            }
         }
+
 
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////

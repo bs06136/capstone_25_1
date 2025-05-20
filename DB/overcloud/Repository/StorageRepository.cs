@@ -16,6 +16,7 @@ namespace DB.overcloud.Repository
 
         public CloudStorageInfo GetCloud(int cloudStorageNum)
         {
+            Console.WriteLine(cloudStorageNum); 
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
