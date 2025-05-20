@@ -247,9 +247,9 @@ namespace DB.overcloud.Repository
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
-                    cmd.Parameters.AddWithValue("@file_name", file_info.file_name);
-                    cmd.Parameters.AddWithValue("@cloud_storage_num", file_info.cloud_storage_num);
-                    cmd.Parameters.AddWithValue("@parent_folder_id", file_info.parent_folder_id);
+                    cmd.Parameters.AddWithValue("@file_name", file_info.FileName);
+                    cmd.Parameters.AddWithValue("@cloud_storage_num", file_info.CloudStorageNum);
+                    cmd.Parameters.AddWithValue("@parent_folder_id", file_info.ParentFolderId);
 
                     object result = cmd.ExecuteScalar();
 
