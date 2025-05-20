@@ -11,6 +11,7 @@
 !Services/AccountService.cs
 !Services/CloudTierManager.cs
 !Services/TokenProviderFactory.cs
+!Services/CooperationManager.cs
 
 !Services/FileManager/FileCopyManager.cs
 !Services/FileManager/FileDeleteManager.cs
