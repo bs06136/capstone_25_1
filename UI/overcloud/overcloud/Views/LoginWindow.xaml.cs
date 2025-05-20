@@ -20,6 +20,8 @@ namespace overcloud.Views
         private IFileRepository _fileRepository;
         private CloudTierManager _cloudTierManager;
 
+        private AccountRepository accountRepository;
+
         public LoginWindow()
         {
             InitializeComponent();
@@ -27,27 +29,25 @@ namespace overcloud.Views
 
             var connStr = DbConfig.ConnectionString;
             var storageRepo = new StorageRepository(connStr);
-            var accountRepo = new AccountRepository(connStr);
+            //var accountRepo = new AccountRepository(connStr);
+            accountRepository = new AccountRepository(DbConfig.ConnectionString);
             _fileRepository = new FileRepository(connStr);
 
             var tokenFactory = new TokenProviderFactory();
-            var googleSvc = new GoogleDriveService(tokenFactory.CreateGoogleTokenProvider(), storageRepo, accountRepo);
-            var oneDriveSvc = new OneDriveService(tokenFactory.CreateOneDriveTokenRefresher(), storageRepo, accountRepo);
+            var googleSvc = new GoogleDriveService(tokenFactory.CreateGoogleTokenProvider(), storageRepo, accountRepository);
+            var oneDriveSvc = new OneDriveService(tokenFactory.CreateOneDriveTokenRefresher(), storageRepo, accountRepository);
             var cloudSvcs = new List<ICloudFileService> { googleSvc, oneDriveSvc };
 
-            _quotaManager = new QuotaManager(cloudSvcs, storageRepo, accountRepo);
-            _accountService = new AccountService(accountRepo, storageRepo, _quotaManager);
-            _cloudTierManager = new CloudTierManager(accountRepo);
+            _quotaManager = new QuotaManager(cloudSvcs, storageRepo, accountRepository);
+            _accountService = new AccountService(accountRepository, storageRepo, _quotaManager);
+            _cloudTierManager = new CloudTierManager(accountRepository);
 
             _fileUploadManager = new FileUploadManager(_accountService, _quotaManager, storageRepo, _fileRepository, cloudSvcs, _cloudTierManager);
-            _fileDownloadManager = new FileDownloadManager(_fileRepository, accountRepo, cloudSvcs);
-            _fileDeleteManager = new FileDeleteManager(accountRepo, _quotaManager, storageRepo, _fileRepository, cloudSvcs);
-            _fileCopyManager = new FileCopyManager(_fileRepository, _cloudTierManager, cloudSvcs, _quotaManager, accountRepo, _fileUploadManager);
+            _fileDownloadManager = new FileDownloadManager(_fileRepository, accountRepository, cloudSvcs);
+            _fileDeleteManager = new FileDeleteManager(accountRepository, _quotaManager, storageRepo, _fileRepository, cloudSvcs);
+            _fileCopyManager = new FileCopyManager(_fileRepository, _cloudTierManager, cloudSvcs, _quotaManager, accountRepository, _fileUploadManager);
 
 
-            // 예: 로그인 성공 후 MainWindow 진입 시
-            var storages = accountRepo.GetAllAccounts("admin"); // 현재 로그인된 사용자 기준
-            StorageSessionManager.InitializeFromDatabase(storages);
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -55,8 +55,8 @@ namespace overcloud.Views
             // 아이디, 비밀번호는 나중에 사용할 수 있도록 받아두기만 함
             string userId = IdBox.Text;
             string password = PasswordBox.Password;
-            /*
-            string loginResult = login_overcloud(userId, password);
+            
+            string loginResult = accountRepository.login_overcloud(userId, password);
 
             if (string.IsNullOrEmpty(loginResult))
             {
@@ -66,7 +66,7 @@ namespace overcloud.Views
 
             var storages = new AccountRepository(DbConfig.ConnectionString).GetAllAccounts(userId);
     StorageSessionManager.InitializeFromDatabase(storages);
-            */
+            
 
             App.TransferManager = new TransferManager(_fileUploadManager, _fileDownloadManager);
 
@@ -76,6 +76,14 @@ namespace overcloud.Views
             main.Show();
 
             this.Close();
+        }
+
+        private void RegisterButton_Click(object sender, RoutedEventArgs e)
+        {
+            // 예시: 회원가입 창 띄우기
+            var registerWindow = new RegisterWindow(accountRepository); // 따로 만들어진 회원가입 창
+            registerWindow.Owner = this;
+            registerWindow.ShowDialog();
         }
 
     }

@@ -16,7 +16,7 @@ namespace DB.overcloud.Repository
             cloudService = new StorageRepository(connStr);
         }
 
-        public bool InsertAccount(CloudAccountInfo account)
+        public bool InsertAccount(CloudAccountInfo account, string user_id)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
