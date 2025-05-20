@@ -129,11 +129,15 @@ namespace OverCloud.Services.FileManager.DriveManager
         }
 
 
-        public async Task<(ulong, ulong)> GetDriveQuotaAsync(string userId)
+        public async Task<(ulong, ulong)> GetDriveQuotaAsync(string userId) //admin
         {
             var clouds = accountRepository.GetAllAccounts(userId);
-            var googleCloud = clouds.FirstOrDefault(c => c.AccountId == userId);
-            if (googleCloud == null) return (0, 0);
+            var googleCloud = clouds.FirstOrDefault(c => c.ID == userId);
+            if (googleCloud == null)
+            {
+                Console.WriteLine(googleCloud);
+                return (0, 0);
+            }
 
             var accessToken = await tokenProvider.GetAccessTokenAsync(googleCloud);
             var service = CreateDriveService(accessToken);
@@ -144,6 +148,8 @@ namespace OverCloud.Services.FileManager.DriveManager
 
             ulong total = ulong.Parse(result.StorageQuota.Limit?.ToString() ?? "0");
             ulong used = ulong.Parse(result.StorageQuota.Usage?.ToString() ?? "0");
+          
+
             return (total, used);
         }
 

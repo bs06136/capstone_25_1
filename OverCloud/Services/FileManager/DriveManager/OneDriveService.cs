@@ -228,7 +228,7 @@ namespace OverCloud.Services.FileManager.DriveManager
         public async Task<(ulong, ulong)> GetDriveQuotaAsync(string userId)
         {
             var cloud = accountRepository.GetAllAccounts(userId)
-                .FirstOrDefault(c => c.AccountId == userId);
+                .FirstOrDefault(c => c.ID == userId);
 
             if (cloud == null) return (0, 0);
             if (!await EnsureAccessTokenAsync(cloud)) return (0, 0);

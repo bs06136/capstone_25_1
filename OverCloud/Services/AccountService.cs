@@ -59,7 +59,7 @@ namespace OverCloud.Services
             if (result)
             {
                 //계정 추가 성공시 바로 용량 업데이트 호출
-                await quotaManager.SaveDriveQuotaToDB(storage.AccountId, storage.CloudStorageNum);
+                await quotaManager.SaveDriveQuotaToDB(userId, storage.CloudStorageNum);
 
                 // ⭐ StorageSessionManager에도 반영 (옵션)
                 StorageSessionManager.Quotas.Add(new CloudQuotaInfo
