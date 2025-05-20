@@ -2,18 +2,15 @@ namespace DB.overcloud.Models
 {
     public class CloudStorageInfo
     {
-        public int CloudStorageNum { get; set; }        // 클라우드 계정 고유 번호 (PK)
-        public int UserNum { get; set; }                // 소유 사용자 (Account.user_num) (FK -> CloudAccountInfo)
-
-        public string CloudType { get; set; }           // 클라우드 종류 (예: GoogleDrive)
-        public string AccountId { get; set; }           // 클라우드 로그인 ID
-        public string AccountPassword { get; set; }     // 클라우드 로그인 비밀번호 (필요시)
-
-        public ulong TotalCapacity { get; set; }        // 계정 한 개의 전체 용량
-        public ulong UsedCapacity { get; set; }         // 계정 한 개의 사용 중인 용량
-
-        public string RefreshToken { get; set; }        // 클라우드 API Refresh Token
-        public string ClientId { get; set; }            // credential.json 의 client_id 값
-        public string ClientSecret { get; set; }        // credential.json 의 client_secret 값
+        public int CloudStorageNum { get; set; }              // PK
+        public string ID { get; set; }                        // FK: Account.ID
+        public string CloudType { get; set; }                 // 클라우드 종류
+        public string AccountId { get; set; }                 // 클라우드 계정 ID
+        public string AccountPassword { get; set; }           // 클라우드 계정 PW
+        public ulong? TotalCapacity { get; set; }             // 단일 클라우드 총 용량
+        public ulong? UsedCapacity { get; set; }              // 단일 클라우드 사용 용량
+        public string? RefreshToken { get; set; }             // OAuth 토큰
+        public string? ClientId { get; set; }                 // 클라이언트 ID
+        public string? ClientSecret { get; set; }             // 클라이언트 Secret
     }
 }
