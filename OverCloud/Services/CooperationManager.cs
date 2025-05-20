@@ -10,21 +10,23 @@ using OverCloud.Services.FileManager.DriveManager;
 
 namespace OverCloud.Services
 {
-    public class TokenProviderFactory
+    public class CooperationManager
     {
-      //  private readonly Dictionary<string, ICloudTokenProvider> providers;
-
-        public GoogleTokenProvider CreateGoogleTokenProvider()
+        private bool Join_cooperation_Cloud_Storage(string user_id, string password)
         {
-            return new GoogleTokenProvider();
+
+            return true;
         }
 
-        public OneDriveTokenRefresher CreateOneDriveTokenRefresher()
+        private bool Add_cooperation_Cloud_Storage_UI_to_pro(string user_id_insert, string password, string user_id_mine)
         {
-            return new OneDriveTokenRefresher();
+            return true;
         }
 
-
+        private bool Delete_cooperation_Cloud_Storage_UI_to_pro(string user_id_insert, string user_id_mine)
+        {
+            return true;
+        }
     }
 
 }
