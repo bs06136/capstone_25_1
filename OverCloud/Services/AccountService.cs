@@ -28,17 +28,17 @@ namespace OverCloud.Services
         }
 
         // 오버클라우드 계정에 새로운 계정 추가 (UI에서 호출)
-        public async Task<bool> Add_Cloud_Storage(CloudStorageInfo storage)
+        public async Task<bool> Add_Cloud_Storage(CloudStorageInfo storage, string userId)
         {
             
             if (storage.CloudType == "GoogleDrive")
             {
                 var (email, refreshToken, clientId, clientSecret) = await GoogleAuthHelper.AuthorizeAsync(storage.AccountId);
+                storage.ID = userId;
                 storage.AccountId = email;
                 storage.RefreshToken = refreshToken;
                 storage.ClientId = clientId;
                 storage.ClientSecret = clientSecret;
-                storage.UserNum = 1;                //자동으로 넣는 로직 필요함
                 Console.WriteLine("구글 계정 추가중...");
 
             }
@@ -46,11 +46,11 @@ namespace OverCloud.Services
             {
                 var (email, refreshToken, clientId, clientSecret) = await OneDriveAuthHelper.AuthorizeAsync(storage.AccountId);
 
+                storage.ID = userId;
                 storage.AccountId = email;
                 storage.RefreshToken = refreshToken;
                 storage.ClientId = clientId;
                 storage.ClientSecret = clientSecret;
-                storage.UserNum = 1;
                 Console.WriteLine("원드라이브 계정 추가중...");
             }
 
@@ -71,7 +71,7 @@ namespace OverCloud.Services
                 });
 
                          // 전체 합산 용량 업데이트도 할 수 있음
-                quotaManager.UpdateAggregatedStorageForUser("admin");
+                quotaManager.UpdateAggregatedStorageForUser(userId);
             }
 
 
@@ -81,10 +81,10 @@ namespace OverCloud.Services
         }
 
         // 오버클라우드 계정에 있던 클라우드 하나 삭제 (UI에서 호출)
-        public bool Delete_Cloud_Storage(int cloudStorageNum)
+        public bool Delete_Cloud_Storage(int cloudStorageNum,string userId)
         {
 
-            var clouds = accountRepository.GetAllAccounts("admin");
+            var clouds = accountRepository.GetAllAccounts(userId);
             var target = clouds.FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
             
             if (target == null)
@@ -99,7 +99,7 @@ namespace OverCloud.Services
                 StorageSessionManager.RemoveQuota(target.AccountId, target.CloudType);
                 Console.WriteLine($" 클라우드 계정 삭제 성공 : cloudStorageNum {cloudStorageNum}");
 
-                quotaManager.UpdateAggregatedStorageForUser("admin");
+                quotaManager.UpdateAggregatedStorageForUser(userId);
                 //메모리 세션에서 해당 계정 제거.
             }
             else

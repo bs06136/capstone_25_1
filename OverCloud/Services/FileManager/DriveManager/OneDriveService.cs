@@ -46,7 +46,7 @@ namespace OverCloud.Services.FileManager.DriveManager
 
         public async Task<string> UploadFileAsync(string userId, string filePath)
         {
-            var cloud = accountRepository.GetAllAccounts("admin")
+            var cloud = accountRepository.GetAllAccounts(userId)
                 .FirstOrDefault(c => c.AccountId == userId);
 
             if (cloud == null)
@@ -191,7 +191,7 @@ namespace OverCloud.Services.FileManager.DriveManager
             Console.WriteLine(userId); //여기서 userID는 구글게정, 원드 계정, 드롭계정 id
             Console.WriteLine("one DownloadFileAsync");
 
-            var cloud = accountRepository.GetAllAccounts("admin")
+            var cloud = accountRepository.GetAllAccounts(userId)
                 .FirstOrDefault(c => c.AccountId == userId);
 
             if (cloud == null) return false;
@@ -212,23 +212,22 @@ namespace OverCloud.Services.FileManager.DriveManager
             return true;
         }
 
-        public async Task<bool> DeleteFileAsync(int cloudStorageNum, string cloudFileId)
+        public async Task<bool> DeleteFileAsync(int cloudStorageNum, string cloudFileId, string userId)
         {
-            var cloud = accountRepository.GetAllAccounts("admin")
+            var cloud = accountRepository.GetAllAccounts(userId)
                 .FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
             if (cloud == null) return false;
             if (!await EnsureAccessTokenAsync(cloud)) return false;
 
             var client = CreateClient();
             var response = await client.DeleteAsync($"https://graph.microsoft.com/v1.0/me/drive/items/{cloudFileId}");
-            response = await client.DeleteAsync($"https://graph.microsoft.com/v1.0/me/drive/items/{cloudFileId}");
 
             return response.IsSuccessStatusCode;
         }
 
         public async Task<(ulong, ulong)> GetDriveQuotaAsync(string userId)
         {
-            var cloud = accountRepository.GetAllAccounts("admin")
+            var cloud = accountRepository.GetAllAccounts(userId)
                 .FirstOrDefault(c => c.AccountId == userId);
 
             if (cloud == null) return (0, 0);

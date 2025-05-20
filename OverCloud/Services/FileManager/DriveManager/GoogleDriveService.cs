@@ -40,7 +40,7 @@ namespace OverCloud.Services.FileManager.DriveManager
 
         public async Task<string> UploadFileAsync(string userId, string file_name)
         {
-            var clouds = accountRepository.GetAllAccounts("admin");
+            var clouds = accountRepository.GetAllAccounts(userId);
             var googleCloud = clouds.FirstOrDefault(c => c.AccountId == userId);
             if (googleCloud == null) return null;
 
@@ -90,7 +90,7 @@ namespace OverCloud.Services.FileManager.DriveManager
 
         public async Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath)
         {
-            var clouds = accountRepository.GetAllAccounts("admin");
+            var clouds = accountRepository.GetAllAccounts(userId);
             var googleCloud = clouds.FirstOrDefault(c => c.AccountId == userId);
             if (googleCloud == null) return false;
 
@@ -107,9 +107,9 @@ namespace OverCloud.Services.FileManager.DriveManager
             return true;
         }
 
-        public async Task<bool> DeleteFileAsync(int cloudStorageNum, string fileId)
+        public async Task<bool> DeleteFileAsync(int cloudStorageNum, string fileId,string userId)
         {
-            var clouds = accountRepository.GetAllAccounts("admin");
+            var clouds = accountRepository.GetAllAccounts(userId);
             var googleCloud = clouds.FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
             if (googleCloud == null) return false;
 
@@ -131,7 +131,7 @@ namespace OverCloud.Services.FileManager.DriveManager
 
         public async Task<(ulong, ulong)> GetDriveQuotaAsync(string userId)
         {
-            var clouds = accountRepository.GetAllAccounts("admin");
+            var clouds = accountRepository.GetAllAccounts(userId);
             var googleCloud = clouds.FirstOrDefault(c => c.AccountId == userId);
             if (googleCloud == null) return (0, 0);
 

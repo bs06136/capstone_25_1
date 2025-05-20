@@ -54,7 +54,7 @@ namespace OverCloud.Services.FileManager
             return result;
         }
 
-        public async Task<bool> DownloadAndMergeFile(int logicalFileId, string finalsavePath)
+        public async Task<bool> DownloadAndMergeFile(int logicalFileId, string finalsavePath,string userId)
         {
             // 1. 논리 파일 정보 불러오기
             var logicalFile = fileRepo.GetFileById(logicalFileId);
@@ -82,7 +82,7 @@ namespace OverCloud.Services.FileManager
             foreach (var chunk in chunks)
             {
                 // 클라우드 계정 정보 가져오기
-                var account = acountRepository.GetAllAccounts("admin")
+                var account = acountRepository.GetAllAccounts(userId)
                     .FirstOrDefault(a => a.CloudStorageNum == chunk.CloudStorageNum);
 
                 if (account == null)
