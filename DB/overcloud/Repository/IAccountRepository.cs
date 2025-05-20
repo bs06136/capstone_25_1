@@ -7,7 +7,7 @@ namespace DB.overcloud.Repository
     {
         bool InsertAccount(CloudAccountInfo account);
         List<CloudStorageInfo> GetAllAccounts(string ID);
-        bool DeleteAccountByUserNum(int userNum);
-        bool UpdateAccountUsage(int userNum, ulong totalSize, ulong usedSize);
+        bool DeleteAccountById(string id);
+        bool UpdateAccountUsage(string id, ulong totalSize, ulong usedSize);
     }
 }

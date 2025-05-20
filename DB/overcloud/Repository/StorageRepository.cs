@@ -31,12 +31,12 @@ namespace DB.overcloud.Repository
                 return new CloudStorageInfo
                 {
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
-                    UserNum = Convert.ToInt32(reader["user_num"]),
+                    ID = reader["ID"].ToString(),
                     CloudType = reader["cloud_type"].ToString(),
                     AccountId = reader["account_id"].ToString(),
                     AccountPassword = reader["account_password"].ToString(),
-                    TotalCapacity = Convert.ToUInt64(reader["total_capacity"]),
-                    UsedCapacity = Convert.ToUInt64(reader["used_capacity"]),
+                    TotalCapacity = reader["total_capacity"] != DBNull.Value ? Convert.ToUInt64(reader["total_capacity"]) : 0,
+                    UsedCapacity = reader["used_capacity"] != DBNull.Value ? Convert.ToUInt64(reader["used_capacity"]) : 0,
                     RefreshToken = reader["refresh_token"]?.ToString(),
                     ClientId = reader["client_id"]?.ToString(),
                     ClientSecret = reader["client_secret"]?.ToString()
@@ -52,21 +52,20 @@ namespace DB.overcloud.Repository
             conn.Open();
 
             string query = @"INSERT INTO CloudStorageInfo 
-                (user_num, cloud_type, account_id, account_password, total_capacity, used_capacity, refresh_token, client_id, client_secret)
+                (ID, cloud_type, account_id, account_password, total_capacity, used_capacity, refresh_token, client_id, client_secret)
                 VALUES 
-                (@user, @type, @id, @pw, @total, @used, @refresh, @clientId, @clientSecret)";
+                (@id, @type, @accountId, @accountPw, @total, @used, @refresh, @clientId, @clientSecret)";
 
             using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@user", info.UserNum);
+            cmd.Parameters.AddWithValue("@id", info.ID);
             cmd.Parameters.AddWithValue("@type", info.CloudType);
-            cmd.Parameters.AddWithValue("@id", info.AccountId);
-            cmd.Parameters.AddWithValue("@pw", info.AccountPassword);
+            cmd.Parameters.AddWithValue("@accountId", info.AccountId);
+            cmd.Parameters.AddWithValue("@accountPw", info.AccountPassword);
             cmd.Parameters.AddWithValue("@total", info.TotalCapacity);
             cmd.Parameters.AddWithValue("@used", info.UsedCapacity);
             cmd.Parameters.AddWithValue("@refresh", info.RefreshToken ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@clientId", info.ClientId ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@clientSecret", info.ClientSecret ?? (object)DBNull.Value);
-
 
             return cmd.ExecuteNonQuery() > 0;
         }
