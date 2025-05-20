@@ -39,15 +39,13 @@ namespace OverCloud.Services.FileManager.DriveManager
             });
         }
 
-        public async Task<string> UploadFileAsync(string userId, string file_name)
+        public async Task<string> UploadFileAsync(CloudStorageInfo bestStorage, string file_name)
         {
-            Console.WriteLine($"userId = {userId}");
-            var clouds = accountRepository.GetAllAccounts(userId);
-            var googleCloud = clouds.FirstOrDefault(c => c.AccountId == userId);
-            Console.WriteLine($"googleCloud = {googleCloud}");
-            if (googleCloud == null) return null;
+            var oneCloud = storageRepo.GetCloud(bestStorage.CloudStorageNum);
+            //var googleCloud = clouds.FirstOrDefault(c => c.ID == userId);
+            if (oneCloud == null) return null;
 
-            var accessToken = await tokenProvider.GetAccessTokenAsync(googleCloud);
+            var accessToken = await tokenProvider.GetAccessTokenAsync(oneCloud);
             var service = CreateDriveService(accessToken);
 
             var fileInfo = new FileInfo(file_name);

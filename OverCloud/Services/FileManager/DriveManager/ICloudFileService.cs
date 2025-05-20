@@ -19,7 +19,7 @@ namespace OverCloud.Services.FileManager.DriveManager
 
         Task<bool> DeleteFileAsync(int cloudStorageNum, string fileId, string userId);
 
-        Task<string> UploadFileAsync(string userId, string filePath);
+        Task<string> UploadFileAsync(CloudStorageInfo bestStorage, string filePath);
 
         Task<(ulong total, ulong used)> GetDriveQuotaAsync(string userId);
 
