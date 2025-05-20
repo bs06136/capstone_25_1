@@ -27,7 +27,6 @@ namespace OverCloud.Services.FileManager
             IAccountRepository accountRepository,
             FileUploadManager fileUploadManager
             )
-
         {
             this.fileRepository = fileRepository;
             this.cloudTierManager = cloudTierManager;
