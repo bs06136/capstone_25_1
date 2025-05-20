@@ -176,7 +176,7 @@ namespace OverCloud.Services.FileManager
             string renamedPath = Path.Combine(Path.GetTempPath(), fileName);
             File.Move(tempMergePath, renamedPath, true);
 
-            bool uploadResult = await fileUploadManager.Upload_Distributed(renamedPath, targetParentFolderId);
+            bool uploadResult = await fileUploadManager.Upload_Distributed(renamedPath, targetParentFolderId, userId);
             File.Delete(renamedPath);
 
             return uploadResult;
