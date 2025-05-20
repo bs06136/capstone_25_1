@@ -41,7 +41,7 @@ namespace OverCloud.Services.StorageManager
             if (cloudList == null || cloudList.Count == 0)
                 return false;
 
-            int userNum = cloudList.First().UserNum;
+//            int userNum = cloudList.First().UserNum;
 
             // 2. 합산
             ulong totalSize = cloudList.Aggregate(0UL, (acc, c) => acc + c.TotalCapacity);
@@ -49,7 +49,7 @@ namespace OverCloud.Services.StorageManager
 
 
             // 3. DB 업데이트
-            return accountRepository.UpdateAccountUsage(userNum, totalSize, usedSize);
+            return accountRepository.UpdateAccountUsage(userId, totalSize, usedSize);
         }
 
       
