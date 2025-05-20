@@ -36,6 +36,8 @@ namespace overcloud.Views
 
         private static TransferManagerWindow _transferWindow;
 
+        private int _user_id;
+
 
         // 탐색기 상태
         private int currentFolderId = -1;
@@ -50,7 +52,8 @@ namespace overcloud.Views
             FileCopyManager fileCopyManager,
             QuotaManager quotaManager,
             IFileRepository fileRepository,
-            CloudTierManager cloudTierManager)
+            CloudTierManager cloudTierManager,
+            int user_id)
 
         {
             try
@@ -71,6 +74,7 @@ namespace overcloud.Views
             _quotaManager = quotaManager;
             _fileRepository = fileRepository;
             _cloudTierManager = cloudTierManager;
+            _user_id = user_id;
 
             // 초기 서비스 설정
         }

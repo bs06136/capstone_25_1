@@ -27,11 +27,12 @@ namespace overcloud.Views
         private FileCopyManager _fileCopyManager;
         private QuotaManager _quotaManager;
         private IFileRepository _fileRepository;
+        private int _user_id;
 
         private ICollectionView _view;
         private ObservableCollection<AccountItemViewModel> _items;
 
-        public AccountListView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository)
+        public AccountListView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, int user_id)
         {
             InitializeComponent();
             Loaded += AccountListView_Loaded;
@@ -44,6 +45,7 @@ namespace overcloud.Views
             _fileCopyManager = fileCopyManager;
             _quotaManager = quotaManager;
             _fileRepository = fileRepository;
+            _user_id = user_id;
 
 
             FilterTab.SelectedIndex = 0;

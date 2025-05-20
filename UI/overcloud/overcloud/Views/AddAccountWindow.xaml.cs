@@ -32,8 +32,7 @@ namespace overcloud.Views
                 AccountPassword = password,
                 CloudType = cloudType,
 				TotalCapacity = 0,
-				UsedCapacity = 0,
-                UserNum = 1
+				UsedCapacity = 0
             };
 
             System.Diagnostics.Debug.WriteLine(cloudType);

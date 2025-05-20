@@ -30,6 +30,7 @@ namespace overcloud.Views
         private FileCopyManager _fileCopyManager;
         private QuotaManager _quotaManager;
         private IFileRepository _fileRepository;
+        private int _user_id;
 
 
         // 탐색기 상태
@@ -38,7 +39,7 @@ namespace overcloud.Views
         private int moveTargetFolderId = -2;
         private List<FileItemViewModel> moveCandidates = new();
 
-        public SharedAccountView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository)
+        public SharedAccountView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, int user_id)
         {
             try
             {
@@ -57,6 +58,7 @@ namespace overcloud.Views
             _fileCopyManager = fileCopyManager;
             _quotaManager = quotaManager;
             _fileRepository = fileRepository;
+            _user_id = user_id;
 
             // 초기 서비스 설정
         }

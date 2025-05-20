@@ -60,7 +60,7 @@ namespace OverCloud.Services.FileManager
             }
 
 
-            bool apiDeleted = await service.DeleteFileAsync(storageNum, file.CloudFileId);
+            bool apiDeleted = await service.DeleteFileAsync(storageNum, file.CloudFileId, userId);
             if (!apiDeleted)
             {
                 Console.WriteLine("❌ 클라우드 API에서 파일 삭제 실패");
@@ -120,7 +120,7 @@ namespace OverCloud.Services.FileManager
                 }
 
                 // 2. 클라우드 API로 삭제
-                bool apiDeleted = await service.DeleteFileAsync(cloudInfo.CloudStorageNum, chunk.CloudFileId);
+                bool apiDeleted = await service.DeleteFileAsync(cloudInfo.CloudStorageNum, chunk.CloudFileId,userId);
                 if (!apiDeleted)
                 {
                     Console.WriteLine($"❌ 조각 삭제 실패: {chunk.FileName}");

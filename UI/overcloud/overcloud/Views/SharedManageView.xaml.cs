@@ -18,8 +18,9 @@ namespace overcloud.Views
         private readonly FileCopyManager _fileCopyManager;
         private readonly QuotaManager _quotaManager;
         private readonly IFileRepository _fileRepository;
+        private int _user_id;
 
-        public SharedManageView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository)
+        public SharedManageView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, int user_id)
         {
             InitializeComponent();
             _accountService = accountService;
@@ -29,6 +30,7 @@ namespace overcloud.Views
             _fileCopyManager = fileCopyManager;
             _quotaManager = quotaManager;
             _fileRepository = fileRepository;
+            _user_id = user_id;
 
             // 최초 로드 시 “공유 계정” 목록 화면으로
             SubFrame.Navigate(new SharedAccountListView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository));

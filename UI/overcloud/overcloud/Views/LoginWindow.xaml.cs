@@ -42,7 +42,7 @@ namespace overcloud.Views
             _fileUploadManager = new FileUploadManager(_accountService, _quotaManager, storageRepo, _fileRepository, cloudSvcs, _cloudTierManager);
             _fileDownloadManager = new FileDownloadManager(_fileRepository, accountRepo, cloudSvcs);
             _fileDeleteManager = new FileDeleteManager(accountRepo, _quotaManager, storageRepo, _fileRepository, cloudSvcs);
-            _fileCopyManager = new FileCopyManager(_fileRepository);
+            _fileCopyManager = new FileCopyManager(_fileRepository, _cloudTierManager, cloudSvcs, _quotaManager, accountRepo, _fileUploadManager);
 
 
             // 예: 로그인 성공 후 MainWindow 진입 시
@@ -55,11 +55,23 @@ namespace overcloud.Views
             // 아이디, 비밀번호는 나중에 사용할 수 있도록 받아두기만 함
             string userId = IdBox.Text;
             string password = PasswordBox.Password;
+            /*
+            string loginResult = login_overcloud(userId, password);
+
+            if (string.IsNullOrEmpty(loginResult))
+            {
+                System.Windows.MessageBox.Show("아이디 또는 비밀번호가 올바르지 않습니다. 다시 시도해주세요.", "로그인 실패", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return; // 창은 닫지 않고 다시 입력 가능
+            }
+
+            var storages = new AccountRepository(DbConfig.ConnectionString).GetAllAccounts(userId);
+    StorageSessionManager.InitializeFromDatabase(storages);
+            */
 
             App.TransferManager = new TransferManager(_fileUploadManager, _fileDownloadManager);
 
             // MainWindow 실행
-            var main = new MainWindow(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _cloudTierManager);
+            var main = new MainWindow(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _cloudTierManager, user_id);
             System.Windows.Application.Current.MainWindow = main;
             main.Show();
 

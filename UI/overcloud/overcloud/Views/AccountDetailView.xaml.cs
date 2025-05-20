@@ -25,12 +25,13 @@ namespace overcloud.Views
         private FileCopyManager _fileCopyManager;
         private QuotaManager _quotaManager;
         private IFileRepository _fileRepository;
+        private int _user_id;
 
         // true = 막대 차트, false = 파이 차트
         private bool _isBarMode = true;
         private string _currentFilter = "All";
 
-        public AccountDetailView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository)
+        public AccountDetailView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, int user_id)
         {
             InitializeComponent();
 
@@ -42,6 +43,7 @@ namespace overcloud.Views
             _fileCopyManager = fileCopyManager;
             _quotaManager = quotaManager;
             _fileRepository = fileRepository;
+            _user_id = user_id;
 
             // 초기 탭 선택
             FilterTab.SelectedIndex = 0;
