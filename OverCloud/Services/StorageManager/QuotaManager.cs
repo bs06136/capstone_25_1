@@ -57,11 +57,11 @@ namespace OverCloud.Services.StorageManager
 
 
         // 계정에 있는 특정 클라우드 하나만 용량 업데이트 (일단은 구글 드라이브 한정 DB에 업데이트)
-        public async Task<bool> SaveDriveQuotaToDB(string userEmail, int CloudStorageNum)
+        public async Task<bool> SaveDriveQuotaToDB(string userId, int CloudStorageNum) //오버클라우드 userid를 넘겨줌.
         {
-
-                 // 1. userEmail에 맞는 클라우드 타입 찾기
-            var cloudInfo = storageRepository.GetCloud(userEmail);
+           
+            // 1. userEmail에 맞는 클라우드 타입 찾기
+            var cloudInfo = storageRepository.GetCloud(CloudStorageNum);
             if (cloudInfo == null)
             {
                 Console.WriteLine("❌ 해당 이메일에 맞는 클라우드 정보를 찾을 수 없습니다.");
@@ -82,7 +82,7 @@ namespace OverCloud.Services.StorageManager
             }
 
             // 3. 해당 클라우드에 API 호출
-            var (total, used) = await service.GetDriveQuotaAsync(userEmail);
+            var (total, used) = await service.GetDriveQuotaAsync(userId);
 
 
             // 5. TotalCapacity, UsedCapacity만 업데이트 (KB단위)
@@ -156,29 +156,6 @@ namespace OverCloud.Services.StorageManager
                 });
             }
         }
-
-
-        /// <summary>
-        /// 외부에서 호출 가능한 전체 리프레시 API (프론트 UI 연동 또는 서비스 내 자동 호출)
-        /// </summary>
-        public async Task<bool> RefreshQuotaAsync(string userEmail, int cloudStorageNum)
-        {
-            try
-            {
-                Console.WriteLine($"⏳ {userEmail} - 용량 정보 새로고침 시작...");
-                bool result = await SaveDriveQuotaToDB(userEmail, cloudStorageNum);
-                Console.WriteLine(result
-                    ? $"✅ {userEmail} - 용량 새로고침 성공"
-                    : $"❌ {userEmail} - 새로고침 실패");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ 예외 발생: {ex.Message}");
-                return false;
-            }
-        }
-
 
     }
 
