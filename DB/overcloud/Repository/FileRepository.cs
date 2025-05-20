@@ -33,7 +33,7 @@ namespace DB.overcloud.Repository
                 {
                     FileId = Convert.ToInt32(reader["file_id"]),
                     FileName = reader["file_name"].ToString(),
-                    FileSize = Convert.ToUInt64(reader["file_size"]),
+                    FileSize = Convert.ToUInt32(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
@@ -41,8 +41,8 @@ namespace DB.overcloud.Repository
                     CloudFileId = reader["cloud_file_id"]?.ToString(),
                     RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
                     ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
-                    ChunkSize = reader["chunk_size"] is DBNull ? 0 : Convert.ToUInt64(reader["chunk_size"]),
-                    IsDistributed = reader["is_distributed"] is DBNull ? false : Convert.ToBoolean(reader["is_distributed"])
+                    ChunkSize = reader["chunk_size"] is DBNull ? null : Convert.ToUInt64(reader["chunk_size"]),
+                    IsDistributed = Convert.ToBoolean(reader["is_distributed"])
                 });
             }
 
@@ -68,9 +68,9 @@ namespace DB.overcloud.Repository
             cmd.Parameters.AddWithValue("@folder", file_info.IsFolder);
             cmd.Parameters.AddWithValue("@cloud", file_info.CloudFileId ?? "");
 
-            cmd.Parameters.AddWithValue("@rootId", file_info.RootFileId.HasValue ? file_info.RootFileId : DBNull.Value);
-            cmd.Parameters.AddWithValue("@chunkIndex", file_info.ChunkIndex.HasValue ? file_info.ChunkIndex : DBNull.Value);
-            cmd.Parameters.AddWithValue("@chunkSize", file_info.ChunkSize);
+            cmd.Parameters.AddWithValue("@rootId", file_info.RootFileId.HasValue ? file_info.RootFileId : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@chunkIndex", file_info.ChunkIndex.HasValue ? file_info.ChunkIndex : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@chunkSize", file_info.ChunkSize.HasValue ? file_info.ChunkSize : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@isDistributed", file_info.IsDistributed);
 
             return cmd.ExecuteNonQuery() > 0;
@@ -104,7 +104,7 @@ namespace DB.overcloud.Repository
                 {
                     FileId = Convert.ToInt32(reader["file_id"]),
                     FileName = reader["file_name"].ToString(),
-                    FileSize = Convert.ToUInt64(reader["file_size"]),
+                    FileSize = Convert.ToUInt32(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
@@ -112,8 +112,8 @@ namespace DB.overcloud.Repository
                     CloudFileId = reader["cloud_file_id"]?.ToString(),
                     RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
                     ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
-                    ChunkSize = reader["chunk_size"] is DBNull ? 0 : Convert.ToUInt64(reader["chunk_size"]),
-                    IsDistributed = reader["is_distributed"] is DBNull ? false : Convert.ToBoolean(reader["is_distributed"])
+                    ChunkSize = reader["chunk_size"] is DBNull ? (ulong?)null : Convert.ToUInt64(reader["chunk_size"]),
+                    IsDistributed = Convert.ToBoolean(reader["is_distributed"])
                 };
             }
 
@@ -130,7 +130,6 @@ namespace DB.overcloud.Repository
             string query = "SELECT * FROM CloudFileInfo WHERE parent_folder_id = @parent";
 
             using var cmd = new MySqlCommand(query, conn);
-
             cmd.Parameters.AddWithValue("@parent", fileId);
 
             using var reader = cmd.ExecuteReader();
@@ -140,7 +139,7 @@ namespace DB.overcloud.Repository
                 {
                     FileId = Convert.ToInt32(reader["file_id"]),
                     FileName = reader["file_name"].ToString(),
-                    FileSize = Convert.ToUInt64(reader["file_size"]),
+                    FileSize = Convert.ToUInt32(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
@@ -148,8 +147,8 @@ namespace DB.overcloud.Repository
                     CloudFileId = reader["cloud_file_id"]?.ToString(),
                     RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
                     ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
-                    ChunkSize = reader["chunk_size"] is DBNull ? 0 : Convert.ToUInt64(reader["chunk_size"]),
-                    IsDistributed = reader["is_distributed"] is DBNull ? false : Convert.ToBoolean(reader["is_distributed"])
+                    ChunkSize = reader["chunk_size"] is DBNull ? (ulong?)null : Convert.ToUInt64(reader["chunk_size"]),
+                    IsDistributed = Convert.ToBoolean(reader["is_distributed"])
                 });
             }
 
@@ -172,7 +171,7 @@ namespace DB.overcloud.Repository
                 {
                     FileId = Convert.ToInt32(reader["file_id"]),
                     FileName = reader["file_name"].ToString(),
-                    FileSize = Convert.ToUInt64(reader["file_size"]),
+                    FileSize = Convert.ToUInt32(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
@@ -180,8 +179,8 @@ namespace DB.overcloud.Repository
                     CloudFileId = reader["cloud_file_id"]?.ToString(),
                     RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
                     ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
-                    ChunkSize = reader["chunk_size"] is DBNull ? 0 : Convert.ToUInt64(reader["chunk_size"]),
-                    IsDistributed = reader["is_distributed"] is DBNull ? false : Convert.ToBoolean(reader["is_distributed"])
+                    ChunkSize = reader["chunk_size"] is DBNull ? (ulong?)null : Convert.ToUInt64(reader["chunk_size"]),
+                    IsDistributed = Convert.ToBoolean(reader["is_distributed"])
                 };
             }
 
@@ -217,7 +216,7 @@ namespace DB.overcloud.Repository
                 {
                     FileId = Convert.ToInt32(reader["file_id"]),
                     FileName = reader["file_name"].ToString(),
-                    FileSize = Convert.ToUInt64(reader["file_size"]),
+                    FileSize = Convert.ToUInt32(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
@@ -225,8 +224,8 @@ namespace DB.overcloud.Repository
                     CloudFileId = reader["cloud_file_id"]?.ToString(),
                     RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
                     ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
-                    ChunkSize = reader["chunk_size"] is DBNull ? 0 : Convert.ToUInt64(reader["chunk_size"]),
-                    IsDistributed = reader["is_distributed"] is DBNull ? false : Convert.ToBoolean(reader["is_distributed"])
+                    ChunkSize = reader["chunk_size"] is DBNull ? (ulong?)null : Convert.ToUInt64(reader["chunk_size"]),
+                    IsDistributed = Convert.ToBoolean(reader["is_distributed"])
                 });
             }
 
@@ -245,7 +244,7 @@ namespace DB.overcloud.Repository
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@name", file_info.FileName);
-            cmd.Parameters.AddWithValue("@size", file_info.FileSize);
+            cmd.Parameters.AddWithValue("@size", Convert.ToUInt32(file_info.FileSize));
             cmd.Parameters.AddWithValue("@uploaded", file_info.UploadedAt);
             cmd.Parameters.AddWithValue("@storage", file_info.CloudStorageNum);
             cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
@@ -294,7 +293,8 @@ namespace DB.overcloud.Repository
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = @"INSERT INTO CloudFileInfo 
+            string query = @"
+                INSERT INTO CloudFileInfo 
                 (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, cloud_file_id, root_file_id, chunk_index, chunk_size, is_distributed) 
                 VALUES 
                 (@name, @size, @time, @storage, @parent, @folder, @cloud, @rootId, @chunkIndex, @chunkSize, @isDistributed);
@@ -302,20 +302,18 @@ namespace DB.overcloud.Repository
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@name", file_info.FileName);
-            cmd.Parameters.AddWithValue("@size", file_info.FileSize);
+            cmd.Parameters.AddWithValue("@size", Convert.ToUInt32(file_info.FileSize));
             cmd.Parameters.AddWithValue("@time", file_info.UploadedAt);
             cmd.Parameters.AddWithValue("@storage", file_info.CloudStorageNum);
             cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
             cmd.Parameters.AddWithValue("@folder", file_info.IsFolder);
-            cmd.Parameters.AddWithValue("@cloud", file_info.CloudFileId ?? "");
-           
-            cmd.Parameters.AddWithValue("@rootId", file_info.RootFileId.HasValue ? file_info.RootFileId : DBNull.Value);
-            cmd.Parameters.AddWithValue("@chunkIndex", file_info.ChunkIndex.HasValue ? file_info.ChunkIndex : DBNull.Value);
-            cmd.Parameters.AddWithValue("@chunkSize", file_info.ChunkSize);
-            cmd.Parameters.AddWithValue("@isDistributed", file_info.IsDistributed); //예외 Parameter '@isDistributed' has already been defined'
+            cmd.Parameters.AddWithValue("@cloud", file_info.CloudFileId ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@rootId", file_info.RootFileId.HasValue ? file_info.RootFileId : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@chunkIndex", file_info.ChunkIndex.HasValue ? file_info.ChunkIndex : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@chunkSize", file_info.ChunkSize.HasValue ? file_info.ChunkSize : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@isDistributed", file_info.IsDistributed);
 
-            int insertedId = Convert.ToInt32(cmd.ExecuteScalar());
-            return insertedId;
+            return Convert.ToInt32(cmd.ExecuteScalar());
         }
 
         public List<CloudFileInfo> GetChunksByRootFileId(int rootFileId)
@@ -335,22 +333,21 @@ namespace DB.overcloud.Repository
                 {
                     FileId = Convert.ToInt32(reader["file_id"]),
                     FileName = reader["file_name"].ToString(),
-                    FileSize = Convert.ToUInt64(reader["file_size"]),
+                    FileSize = Convert.ToUInt32(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
                     CloudFileId = reader["cloud_file_id"]?.ToString(),
-                    RootFileId = Convert.ToInt32(reader["root_file_id"]),
-                    ChunkIndex = Convert.ToInt32(reader["chunk_index"]),
-                    ChunkSize = Convert.ToUInt64(reader["chunk_size"])
+                    RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
+                    ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
+                    ChunkSize = reader["chunk_size"] is DBNull ? (ulong?)null : Convert.ToUInt64(reader["chunk_size"])
                 });
             }
 
             return result;
         }
 
-        
         public List<CloudFileInfo> GetFilesByStorageNum(int cloudStorageNum)
         {
             var files = new List<CloudFileInfo>();
@@ -369,7 +366,7 @@ namespace DB.overcloud.Repository
                 {
                     FileId = Convert.ToInt32(reader["file_id"]),
                     FileName = reader["file_name"].ToString(),
-                    FileSize = Convert.ToUInt64(reader["file_size"]),
+                    FileSize = Convert.ToUInt32(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
@@ -377,15 +374,12 @@ namespace DB.overcloud.Repository
                     CloudFileId = reader["cloud_file_id"]?.ToString(),
                     RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
                     ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
-                    ChunkSize = reader["chunk_size"] is DBNull ? 0 : Convert.ToUInt64(reader["chunk_size"]),
-                    IsDistributed = reader["is_distributed"] is DBNull ? false : Convert.ToBoolean(reader["is_distributed"])
+                    ChunkSize = reader["chunk_size"] is DBNull ? (ulong?)null : Convert.ToUInt64(reader["chunk_size"]),
+                    IsDistributed = Convert.ToBoolean(reader["is_distributed"])
                 });
             }
 
             return files;
         }
-
-
-
     }
 }
