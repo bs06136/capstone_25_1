@@ -19,7 +19,7 @@ namespace DB.overcloud.Repository
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = @"string query = SELECT * FROM CloudStorageInfo WHERE cloud_storage_num = @cloudStorageNum";
+            string query = "SELECT * FROM CloudStorageInfo WHERE cloud_storage_num = @cloudStorageNum";
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@cloudStorageNum", cloudStorageNum);
