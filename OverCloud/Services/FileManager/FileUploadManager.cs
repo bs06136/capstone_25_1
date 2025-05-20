@@ -43,6 +43,7 @@ namespace OverCloud.Services.FileManager
 
         public async Task<bool> file_upload(string file_name, int target_parent_file_id,string userId)
         {
+            Console.WriteLine($"file_upload: {userId}");
             ulong fileSize = (ulong)new FileInfo(file_name).Length;
 
             // 1. 업로드 가능한 스토리지 선택
