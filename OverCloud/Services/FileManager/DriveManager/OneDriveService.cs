@@ -221,6 +221,7 @@ namespace OverCloud.Services.FileManager.DriveManager
 
             var client = CreateClient();
             var response = await client.DeleteAsync($"https://graph.microsoft.com/v1.0/me/drive/items/{cloudFileId}");
+            response = await client.DeleteAsync($"https://graph.microsoft.com/v1.0/me/drive/items/{cloudFileId}");
 
             return response.IsSuccessStatusCode;
         }
