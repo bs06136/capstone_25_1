@@ -109,7 +109,7 @@ namespace OverCloud.Services.FileManager
                 ParentFolderId = parentFolderId,
                 IsFolder = false,
                 IsDistributed = true,
-                CloudStorageNum= -2
+                CloudStorageNum= -1
             };
             int logicalFileId = repo_file.AddFileAndReturnId(logical);
 
@@ -149,7 +149,7 @@ namespace OverCloud.Services.FileManager
                     FileSize = (ulong)(read / 1024), //kb단위
                     UploadedAt = DateTime.Now,
                     CloudStorageNum = cloud.CloudStorageNum,
-                    ParentFolderId = parentFolderId,
+                    ParentFolderId = -2,
                     IsFolder = false,
                     CloudFileId = cloudFileId,
                     RootFileId = logicalFileId,
