@@ -40,6 +40,18 @@
                 <TextBlock Text="계정 관리" FontSize="14" HorizontalAlignment="Center"/>
             </StackPanel>
 
+            <!-- 공유 계정 메뉴 -->
+            <StackPanel Canvas.Left="20" Canvas.Top="258" MouseLeftButtonUp="SharedAccountMenu_Click">
+                <Image Source="pack://application:,,,/overcloud;component/asset/co.png" Width="36" Height="36"/>
+                <TextBlock Text="공유 계정" FontSize="14" HorizontalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- 공유 관리 메뉴 -->
+            <StackPanel Canvas.Left="20" Canvas.Top="327" MouseLeftButtonUp="SharedManageMenu_Click">
+                <Image Source="pack://application:,,,/overcloud;component/asset/co_manage.png" Width="36" Height="36"/>
+                <TextBlock Text="공유 관리" FontSize="14" HorizontalAlignment="Center"/>
+            </StackPanel>
+
             <!-- 콘텐츠 영역: HomeView / AccountView를 로드하는 Frame -->
             <Frame x:Name="MainFrame"
                    Canvas.Left="100" Canvas.Top="0"

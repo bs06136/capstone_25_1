@@ -1,0 +1,134 @@
+<UserControl x:Class="overcloud.Views.SharedAccountDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Loaded="UserControl_Loaded"
+             Padding="16"
+             d:DesignHeight="1080" d:DesignWidth="1820">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 1. 검색창 -->
+        <Grid Grid.Row="0" Margin="0,32,16,12">
+            <Border CornerRadius="10"
+                Background="White"
+                BorderBrush="#D4D2D0"
+                BorderThickness="1"
+                Height="40"
+                VerticalAlignment="Center">
+                <Grid Margin="8,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Source="pack://application:,,,/overcloud;component/asset/search.png"
+                       Width="20" Height="20" VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="1"
+                         Margin="8,0,0,0"
+                         VerticalAlignment="Center"
+                         FontSize="14"
+                         Foreground="Gray"
+                         Text="검색"
+                         BorderThickness="0"
+                         Background="Transparent"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- 2. 제목 + 탭 -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,12">
+            <TextBlock Text="상세 정보"
+                   FontSize="20"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"/>
+            <TabControl x:Name="FilterTab"
+                    Margin="24,0,0,0"
+                    VerticalAlignment="Center"
+                    SelectionChanged="FilterTab_SelectionChanged">
+                <TabItem Header="All"       Tag="All"   />
+                <TabItem Header="Google"    Tag="GoogleDrive"/>
+                <TabItem Header="Onedrive"  Tag="OneDrive"/>
+                <TabItem Header="Dropbox"   Tag="Dropbox"/>
+            </TabControl>
+        </StackPanel>
+
+        <!-- 3. 액션 버튼 -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,16,12">
+            <Button x:Name="ToggleChartButton"
+                Width="100" Height="32"
+                Margin="0,0,8,0"
+                Click="ToggleChart_Click">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Image Source="pack://application:,,,/overcloud;component/asset/switch_left.png"
+                       Width="16" Height="16" Margin="0,0,5,0"/>
+                    <TextBlock Text="파이 차트"/>
+                </StackPanel>
+            </Button>
+            <Button Width="100" Height="32" Margin="0,0,8,0" Click="Button_Add_Click">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Image Source="pack://application:,,,/overcloud;component/asset/add_circle.png"
+                       Width="16" Height="16" Margin="0,0,5,0"/>
+                    <TextBlock Text="계정 추가"/>
+                </StackPanel>
+            </Button>
+            <Button Width="100" Height="32" Click="Button_Delete_Click">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Image Source="pack://application:,,,/overcloud;component/asset/delete.png"
+                       Width="16" Height="16" Margin="0,0,5,0"/>
+                    <TextBlock Text="계정 삭제"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <!-- 4. 차트 + 우측 사용량 리스트 -->
+        <Grid Grid.Row="3" Margin="0,0,16,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="16">
+                <ContentControl x:Name="ChartContainer"/>
+            </Border>
+
+            <Border Grid.Column="1" Background="White" CornerRadius="8" Padding="16" Margin="24,0,0,0">
+                <StackPanel>
+                    <TextBlock Text="용량" FontSize="16" FontWeight="Bold" Margin="0,0,0,12"/>
+                    <ItemsControl x:Name="UsageList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding DriveName}" Width="80"/>
+                                    <ProgressBar Grid.Column="1"
+                                             Value="{Binding UsedPercent}"
+                                             Maximum="100"
+                                             Height="4"
+                                             VerticalAlignment="Center"
+                                             Margin="12,0"/>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="12,0,0,0">
+                                        <TextBlock Text="{Binding TotalDisplay}" Margin="0,0,8,0"/>
+                                        <TextBlock Text="{Binding UsedDisplay}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
