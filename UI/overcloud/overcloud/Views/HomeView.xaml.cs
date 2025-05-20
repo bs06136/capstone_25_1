@@ -36,7 +36,7 @@ namespace overcloud.Views
 
         private static TransferManagerWindow _transferWindow;
 
-        private int _user_id;
+        private string _user_id;
 
 
         // 탐색기 상태
@@ -53,7 +53,7 @@ namespace overcloud.Views
             QuotaManager quotaManager,
             IFileRepository fileRepository,
             CloudTierManager cloudTierManager,
-            int user_id)
+            string user_id)
 
         {
             try
@@ -216,7 +216,7 @@ namespace overcloud.Views
                     App.TransferManager.UploadManager.EnqueueUploads(new List<(string FileName, string FilePath, int ParentFolderId)>
                     {
                         (Path.GetFileName(filePath), filePath, currentFolderId)
-                    });
+                    }, _user_id);
                 }
             }
             else if (choice == MessageBoxResult.No)
@@ -270,7 +270,7 @@ namespace overcloud.Views
                 {
                     LocalPath = file,
                     FolderId = newFolderId
-                });
+                }, _user_id);
             }
 
             // 3. 하위 폴더 재귀
@@ -713,11 +713,11 @@ namespace overcloud.Views
             {
                 if (file.IsDistributed)
                 {
-                    deleted = await _fileDeleteManager.Delete_DistributedFile(file.FileId);
+                    deleted = await _fileDeleteManager.Delete_DistributedFile(file.FileId, _user_id);
                 }
                 else
                 {
-                    deleted = await _fileDeleteManager.Delete_File(file.CloudStorageNum, file.FileId);
+                    deleted = await _fileDeleteManager.Delete_File(file.CloudStorageNum, file.FileId, _user_id);
                 }
 
                 // 비동기 삭제 호출
@@ -899,7 +899,7 @@ namespace overcloud.Views
 
                 foreach (var item in selected)
                 {
-                    bool result = await _fileCopyManager.Copy_File(item.FileId, targetFolderId);
+                    bool result = await _fileCopyManager.Copy_File(item.FileId, targetFolderId, _user_id);
                     if (!result)
                     {
                         System.Windows.MessageBox.Show($"파일/폴더 '{item.FileName}' 복사 실패");
@@ -950,7 +950,7 @@ namespace overcloud.Views
                 else
                 {
                     // 파일이면 파일 복사 (Copy_File 호출)
-                    await _fileCopyManager.Copy_File(child.FileId, newFolderId);
+                    await _fileCopyManager.Copy_File(child.FileId, newFolderId, _user_id);
                 }
             }
 

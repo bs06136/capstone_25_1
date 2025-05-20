@@ -71,7 +71,7 @@ namespace overcloud.Views
             App.TransferManager = new TransferManager(_fileUploadManager, _fileDownloadManager);
 
             // MainWindow 실행
-            var main = new MainWindow(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _cloudTierManager, user_id);
+            var main = new MainWindow(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _cloudTierManager, userId);
             System.Windows.Application.Current.MainWindow = main;
             main.Show();
 

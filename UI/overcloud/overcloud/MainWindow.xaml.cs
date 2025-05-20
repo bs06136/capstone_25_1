@@ -20,10 +20,10 @@ namespace overcloud
         private IFileRepository _fileRepository;
         private CloudTierManager _cloudTierManager;
 
-        private int _user_id;
+        private string _user_id;
 
 
-        public MainWindow(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, CloudTierManager cloudTierManager, int user_id)
+        public MainWindow(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, CloudTierManager cloudTierManager, string user_id)
         {
             InitializeComponent();
             _accountService = accountService;
