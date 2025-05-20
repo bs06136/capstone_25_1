@@ -16,16 +16,16 @@ namespace DB.overcloud.Repository
             cloudService = new StorageRepository(connStr);
         }
 
-        public bool InsertAccount(CloudAccountInfo account)
+        public bool InsertAccount(CloudAccountInfo account, string user_id)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = "INSERT INTO Account (username, ID, password, total_size, used_size) VALUES (@username, @id, @pw, 0, 0)";
+            string query = "INSERT INTO Account (ID, password, total_size, used_size, is_shared) VALUES (@id, @pw, 0, 0, @is_shared)";
             using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@username", account.Username);
             cmd.Parameters.AddWithValue("@id", account.ID);
             cmd.Parameters.AddWithValue("@pw", account.Password);
+            cmd.Parameters.AddWithValue("@is_shared", account.IsShared ? 1 : 0);
 
             return cmd.ExecuteNonQuery() > 0;
         }
@@ -37,39 +37,23 @@ namespace DB.overcloud.Repository
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            // 1. 사용자 ID 로 user_num 조회
-            string userQuery = "SELECT user_num FROM Account WHERE id = @id";
-            int userNum;
+            string storageQuery = "SELECT * FROM CloudStorageInfo WHERE ID = @id";
 
-            using (var cmd = new MySqlCommand(userQuery, conn))
-            {
-                cmd.Parameters.AddWithValue("@id", ID);
-                object userNumObj = cmd.ExecuteScalar();
+            using var cmd = new MySqlCommand(storageQuery, conn);
+            cmd.Parameters.AddWithValue("@id", ID);
 
-                if (userNumObj == null)
-                    return result; // 해당 ID 없음 -> 빈 리스트 반환
-
-                userNum = Convert.ToInt32(userNumObj);
-            }
-
-            // 2. user_num 으로 CloudStorageInfo 조회
-            string storageQuery = "SELECT * FROM CloudStorageInfo WHERE user_num = @userNum";
-
-            using var storageCmd = new MySqlCommand(storageQuery, conn);
-            storageCmd.Parameters.AddWithValue("@userNum", userNum);
-
-            using var reader = storageCmd.ExecuteReader();
+            using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
                 result.Add(new CloudStorageInfo
                 {
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
-                    UserNum = Convert.ToInt32(reader["user_num"]),
+                    ID = reader["ID"].ToString(),
                     CloudType = reader["cloud_type"].ToString(),
                     AccountId = reader["account_id"].ToString(),
                     AccountPassword = reader["account_password"].ToString(),
-                    TotalCapacity = Convert.ToUInt64(reader["total_capacity"]),
-                    UsedCapacity = Convert.ToUInt64(reader["used_capacity"]),
+                    TotalCapacity = reader["total_capacity"] != DBNull.Value ? Convert.ToUInt64(reader["total_capacity"]) : 0,
+                    UsedCapacity = reader["used_capacity"] != DBNull.Value ? Convert.ToUInt64(reader["used_capacity"]) : 0,
                     RefreshToken = reader["refresh_token"]?.ToString(),
                     ClientId = reader["client_id"]?.ToString(),
                     ClientSecret = reader["client_secret"]?.ToString()
@@ -79,43 +63,61 @@ namespace DB.overcloud.Repository
             return result;
         }
 
-        public bool DeleteAccountByUserNum(int userNum)
+        public bool DeleteAccountById(string ID)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string getIdQuery = "SELECT ID FROM Account WHERE user_num = @user_num";
-            using var getIdCmd = new MySqlCommand(getIdQuery, conn);
-            getIdCmd.Parameters.AddWithValue("@user_num", userNum);
-            var id = getIdCmd.ExecuteScalar()?.ToString();
-            if (id == null) return false;
+            string query = "DELETE FROM Account WHERE ID = @id";
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@id", ID);
 
-            string deleteQuery = "DELETE FROM Account WHERE user_num = @user_num";
-            using var deleteCmd = new MySqlCommand(deleteQuery, conn);
-            deleteCmd.Parameters.AddWithValue("@user_num", userNum);
-            bool result = deleteCmd.ExecuteNonQuery() > 0;
+            return cmd.ExecuteNonQuery() > 0;
+        }
 
-            if (result)
-            {
-                //cloudService.DeleteAllCloudsForAccount(id);
-            }
-
-            return result;
-            }
-
-        public bool UpdateAccountUsage(int userNum, ulong totalSize, ulong usedSize)
+        public bool UpdateAccountUsage(string ID, ulong totalSize, ulong usedSize)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = "UPDATE Account SET total_size = @total_size, used_size = @used_size WHERE user_num = @user_num";
+            string query = "UPDATE Account SET total_size = @total_size, used_size = @used_size WHERE ID = @id";
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@total_size", totalSize);
             cmd.Parameters.AddWithValue("@used_size", usedSize);
-            cmd.Parameters.AddWithValue("@user_num", userNum);
+            cmd.Parameters.AddWithValue("@id", ID);
 
             return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool assign_overcloud(string ID, string password)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                INSERT INTO Account (ID, password, total_size, used_size, is_shared)
+                VALUES (@id, @pw, 0, 0, 0);";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@id", ID);
+            cmd.Parameters.AddWithValue("@pw", password);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
+        
+        public string login_overcloud(string ID, string password)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "SELECT ID FROM Account WHERE ID = @id AND password = @pw LIMIT 1";
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@id", ID);
+            cmd.Parameters.AddWithValue("@pw", password);
+
+            var result = cmd.ExecuteScalar();
+            return result != null ? result.ToString() : null;
         }
     }
 }

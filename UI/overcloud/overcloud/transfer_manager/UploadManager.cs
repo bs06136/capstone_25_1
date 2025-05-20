@@ -23,7 +23,7 @@ namespace OverCloud.transfer_manager
             _fileUploadManager = fileUploadManager;
         }
 
-        public void EnqueueUploads(List<(string FileName, string FilePath, int ParentFolderId)> files)
+        public void EnqueueUploads(List<(string FileName, string FilePath, int ParentFolderId)> files, string user_id)
         {
             foreach (var file in files)
             {
@@ -52,7 +52,7 @@ namespace OverCloud.transfer_manager
                             item.Progress = 0;
                         });
 
-                        bool result = await _fileUploadManager.file_upload(file.FilePath, file.ParentFolderId);
+                        bool result = await _fileUploadManager.file_upload(file.FilePath, file.ParentFolderId, user_id);
 
                         System.Windows.Application.Current.Dispatcher.Invoke(() =>
                         {
@@ -74,12 +74,12 @@ namespace OverCloud.transfer_manager
             }
         }
 
-        public void EnqueueUpload(UploadTaskInfo task)
+        public void EnqueueUpload(UploadTaskInfo task, string user_id)
         {
             EnqueueUploads(new List<(string FileName, string FilePath, int ParentFolderId)>
             {
                 (Path.GetFileName(task.LocalPath), task.LocalPath, task.FolderId)
-            });
+            }, user_id);
         }
     }
 }
