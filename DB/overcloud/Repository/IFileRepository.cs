@@ -17,6 +17,7 @@ namespace DB.overcloud.Repository
 
         bool change_name(CloudFileInfo file_info);
         bool change_dir(CloudFileInfo file_info);
+
         int AddFileAndReturnId(CloudFileInfo file_info);
         public List<CloudFileInfo> GetChunksByRootFileId(int rootFileId);
         public List<CloudFileInfo> GetFilesByStorageNum(int cloudStorageNum);

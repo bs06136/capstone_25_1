@@ -10,6 +10,7 @@ using System.IO;
 using System.Net.Http;
 using DB.overcloud.Repository;
 using Google.Apis.Upload;
+using System.Diagnostics;
 
 namespace OverCloud.Services.FileManager.DriveManager
 {
@@ -39,34 +40,52 @@ namespace OverCloud.Services.FileManager.DriveManager
 
         public async Task<string> UploadFileAsync(string userId, string file_name)
         {
-            System.Diagnostics.Debug.WriteLine("UploadFileAsync 1");
             var clouds = accountRepository.GetAllAccounts("admin");
             var googleCloud = clouds.FirstOrDefault(c => c.AccountId == userId);
             if (googleCloud == null) return null;
 
-            System.Diagnostics.Debug.WriteLine("UploadFileAsync 2");
             var accessToken = await tokenProvider.GetAccessTokenAsync(googleCloud);
             var service = CreateDriveService(accessToken);
 
-            System.Diagnostics.Debug.WriteLine("UploadFileAsync 3");
+            var fileInfo = new FileInfo(file_name);
             var fileMetadata = new Google.Apis.Drive.v3.Data.File()
             {
-                Name = Path.GetFileName(file_name)
+                Name = fileInfo.Name
             };
 
-            System.Diagnostics.Debug.WriteLine("UploadFileAsync 4");
-            using var stream = new FileStream(file_name, FileMode.Open);
-            var request = service.Files.Create(fileMetadata, stream, "application/octet-stream");
-            var result = await request.UploadAsync();
+            using var stream = new FileStream(file_name,FileMode.Open,FileAccess.Read);
 
-            System.Diagnostics.Debug.WriteLine("UploadFileAsync 5");
-            if (result.Status == Google.Apis.Upload.UploadStatus.Completed)
-            {
-                return request.ResponseBody.Id; // Google Drive 파일 ID 반환
+            if (fileMetadata.Name.Length <= 256*1024*1024) 
+            {        
+                var request = service.Files.Create(fileMetadata, stream, "application/octet-stream");
+                request.Fields = "id";
+                var result = await request.UploadAsync();
+                if (result.Status == Google.Apis.Upload.UploadStatus.Completed)
+                {
+                    return request.ResponseBody.Id; // Google Drive 파일 ID 반환
+                }
+
+                Console.WriteLine($"일반 업로드 실패: {result.Exception}");
+                return null;
             }
+            else //256MB초과 업로드 -> resumable upload
+            {
+                var request = service.Files.Create(fileMetadata, stream, "application/octet-stream");
+                request.Fields = "id";
 
-            System.Diagnostics.Debug.WriteLine("UploadFileAsync 6");
-            return null;
+                request.ChunkSize = ResumableUpload.MinimumChunkSize * 640; //256kb * 640 = 163MB
+
+                var result = await request.UploadAsync();
+
+                if (result.Status == Google.Apis.Upload.UploadStatus.Completed)
+                {
+                    return request.ResponseBody.Id;
+                }
+
+                Console.WriteLine($"❌ 업로드 실패: {result.Exception}");
+                return null;
+
+            }
         }
 
         public async Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath)

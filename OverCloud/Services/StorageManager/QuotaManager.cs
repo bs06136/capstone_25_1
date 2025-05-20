@@ -41,7 +41,7 @@ namespace OverCloud.Services.StorageManager
             if (cloudList == null || cloudList.Count == 0)
                 return false;
 
-            int userNum = cloudList.First().UserNum;
+//            int userNum = cloudList.First().UserNum;
 
             // 2. 합산
             ulong totalSize = cloudList.Aggregate(0UL, (acc, c) => acc + c.TotalCapacity);
@@ -49,7 +49,7 @@ namespace OverCloud.Services.StorageManager
 
 
             // 3. DB 업데이트
-            return accountRepository.UpdateAccountUsage(userNum, totalSize, usedSize);
+            return accountRepository.UpdateAccountUsage(userId, totalSize, usedSize);
         }
 
       
@@ -108,8 +108,8 @@ namespace OverCloud.Services.StorageManager
         public void UpdateQuotaAfterUploadOrDelete(int cloudStorageNum, ulong fileSizeKB, bool isUpload)
         {
             var quota = StorageSessionManager.Quotas.FirstOrDefault(q => q.CloudStorageNum == cloudStorageNum);
-            Console.WriteLine($" 업로드 반영 전: quota.Total = {quota.TotalCapacityKB}");
-            Console.WriteLine($" 업로드 반영 전: quota.Used = {quota.UsedCapacityKB}");
+            Console.WriteLine($" 업로드 or 삭제 반영 전: quota.Total = {quota.TotalCapacityKB}");
+            Console.WriteLine($" 업로드 or 삭제 반영 전: quota.Used = {quota.UsedCapacityKB}");
             if (quota == null)
             {
                 Console.WriteLine($"❌ quota not found for CloudStorageNum: {cloudStorageNum}");
@@ -121,9 +121,8 @@ namespace OverCloud.Services.StorageManager
             else
                 quota.UsedCapacityKB -= fileSizeKB;
 
-            Console.WriteLine($" 업로드 반영 전: quota.Total = {quota.TotalCapacityKB}");
 
-            Console.WriteLine($" 업로드 반영 후: quota.Used = {quota.UsedCapacityKB}");
+            Console.WriteLine($" 업로드 or 삭제 반영 후: quota.Used = {quota.UsedCapacityKB}");
 
             var cloudInfo = new CloudStorageInfo
             {
