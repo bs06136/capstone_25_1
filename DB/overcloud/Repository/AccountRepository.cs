@@ -63,25 +63,19 @@ namespace DB.overcloud.Repository
             return result;
         }
 
-        public bool DeleteAccountById(string id)
+        public bool DeleteAccountById(string ID)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string deleteQuery = "DELETE FROM Account WHERE ID = @id";
-            using var deleteCmd = new MySqlCommand(deleteQuery, conn);
-            deleteCmd.Parameters.AddWithValue("@id", id);
-            bool result = deleteCmd.ExecuteNonQuery() > 0;
+            string query = "DELETE FROM Account WHERE ID = @id";
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@id", ID);
 
-            if (result)
-            {
-                // cloudService.DeleteAllCloudsForAccount(id);  // 협업 클라우드 동기화 시 사용
-            }
-
-            return result;
+            return cmd.ExecuteNonQuery() > 0;
         }
-        
-        public bool UpdateAccountUsage(string id, ulong totalSize, ulong usedSize)
+
+        public bool UpdateAccountUsage(string ID, ulong totalSize, ulong usedSize)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
@@ -91,9 +85,39 @@ namespace DB.overcloud.Repository
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@total_size", totalSize);
             cmd.Parameters.AddWithValue("@used_size", usedSize);
-            cmd.Parameters.AddWithValue("@id", id);
+            cmd.Parameters.AddWithValue("@id", ID);
 
             return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool assign_overcloud(string ID, string password)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                INSERT INTO Account (ID, password, total_size, used_size, is_shared)
+                VALUES (@id, @pw, 0, 0, 0);";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@id", ID);
+            cmd.Parameters.AddWithValue("@pw", password);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
+        
+        public string login_overcloud(string ID, string password)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "SELECT ID FROM Account WHERE ID = @id AND password = @pw LIMIT 1";
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@id", ID);
+            cmd.Parameters.AddWithValue("@pw", password);
+
+            var result = cmd.ExecuteScalar();
+            return result != null ? result.ToString() : null;
         }
     }
 }
