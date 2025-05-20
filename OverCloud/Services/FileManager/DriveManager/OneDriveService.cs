@@ -44,15 +44,16 @@ namespace OverCloud.Services.FileManager.DriveManager
             return !string.IsNullOrEmpty(accessToken); ;
         }
 
-        public async Task<string> UploadFileAsync(string userId, string filePath)
+        public async Task<string> UploadFileAsync(CloudStorageInfo bestStorage, string filePath)
         {
-            var cloud = accountRepository.GetAllAccounts(userId)
-                .FirstOrDefault(c => c.AccountId == userId);
+            //var cloud = accountRepository.GetAllAccounts(userId)
+            //    .FirstOrDefault(c => c.AccountId == userId);
+            var oneCloud = storageRepository.GetCloud(bestStorage.CloudStorageNum);
 
-            if (cloud == null)
+            if (oneCloud == null)
                 return null;
 
-            string accessToken = await oneDriveTokenRefresher.RefreshAccessTokenAsync(cloud);
+            string accessToken = await oneDriveTokenRefresher.RefreshAccessTokenAsync(oneCloud);
             if (string.IsNullOrEmpty(accessToken)) return null;
 
 

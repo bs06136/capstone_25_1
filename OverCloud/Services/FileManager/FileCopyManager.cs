@@ -86,7 +86,7 @@ namespace OverCloud.Services.FileManager
             }
 
             // ✅ 4. 재업로드
-            string newCloudFileId = await targetService.UploadFileAsync(bestStorage.AccountId, tempPath);
+            string newCloudFileId = await targetService.UploadFileAsync(bestStorage , tempPath);
             if (string.IsNullOrEmpty(newCloudFileId))
             {
                 Console.WriteLine(" 업로드 실패");
