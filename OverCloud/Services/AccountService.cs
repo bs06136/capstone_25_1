@@ -57,7 +57,7 @@ namespace OverCloud.Services
             bool result = storageRepository.AddCloudStorage(storage);
 
             var clouds = accountRepository.GetAllAccounts(userId);
-            var OneCloud = clouds.FirstOrDefault(c => c.ID == userId);
+            var OneCloud = clouds.FirstOrDefault(c => c.AccountId == storage.AccountId);
 
 
             //cloudStorageNum을 넘겨주는 부분이 없음.
