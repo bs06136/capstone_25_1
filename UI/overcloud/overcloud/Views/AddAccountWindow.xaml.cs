@@ -10,12 +10,14 @@ namespace overcloud.Views
     public partial class AddAccountWindow : Window
     {
         private AccountService _accountService;     //수정 필요
+        private string _user_id;                    //수정 필요
 
-        public AddAccountWindow(AccountService accountService)
+        public AddAccountWindow(AccountService accountService, string user_id)
         {
 
             InitializeComponent();
-            _accountService = accountService;                                   //
+            _accountService = accountService;
+            _user_id = user_id;                   //수정 필요
 
         }
 
@@ -32,13 +34,12 @@ namespace overcloud.Views
                 AccountPassword = password,
                 CloudType = cloudType,
 				TotalCapacity = 0,
-				UsedCapacity = 0,
-                UserNum = 1
+				UsedCapacity = 0
             };
 
             System.Diagnostics.Debug.WriteLine(cloudType);
             // ⭐ 객체 생성 없이 정적 메서드 직접 호출
-            bool result = await _accountService.Add_Cloud_Storage(accountInfo);
+            bool result = await _accountService.Add_Cloud_Storage(accountInfo, _user_id);
             System.Windows.MessageBox.Show(result ? "계정 추가 성공" : "계정 추가 실패");
 
             this.Close();
