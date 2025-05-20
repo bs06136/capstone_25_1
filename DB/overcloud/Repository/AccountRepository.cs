@@ -16,7 +16,7 @@ namespace DB.overcloud.Repository
             cloudService = new StorageRepository(connStr);
         }
 
-        public bool InsertAccount(CloudAccountInfo account)
+        public bool InsertAccount(CloudAccountInfo account, string user_id)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
@@ -51,7 +51,7 @@ namespace DB.overcloud.Repository
                     ID = reader["ID"].ToString(),
                     CloudType = reader["cloud_type"].ToString(),
                     AccountId = reader["account_id"].ToString(),
-                    AccountPw = reader["account_pw"].ToString(),
+                    AccountPassword = reader["account_pw"].ToString(),
                     TotalCapacity = reader["total_capacity"] != DBNull.Value ? Convert.ToUInt64(reader["total_capacity"]) : 0,
                     UsedCapacity = reader["used_capacity"] != DBNull.Value ? Convert.ToUInt64(reader["used_capacity"]) : 0,
                     RefreshToken = reader["refresh_token"]?.ToString(),

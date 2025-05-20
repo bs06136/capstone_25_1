@@ -16,13 +16,11 @@ using OverCloud.Services.FileManager;
 using OverCloud.Services.FileManager.DriveManager;
 using OverCloud.Services.StorageManager;
 using overcloud.Converters;
-using overcloud.Windows;
-using overcloud.transfer_manager;
-
+//using static overcloud.temp_class.TempClass;
 
 namespace overcloud.Views
 {
-    public partial class HomeView : System.Windows.Controls.UserControl
+    public partial class SharedAccountView : System.Windows.Controls.UserControl
     {
 
         private AccountService _accountService;
@@ -32,10 +30,6 @@ namespace overcloud.Views
         private FileCopyManager _fileCopyManager;
         private QuotaManager _quotaManager;
         private IFileRepository _fileRepository;
-        private CloudTierManager _cloudTierManager;
-
-        private static TransferManagerWindow _transferWindow;
-
         private string _user_id;
 
 
@@ -45,16 +39,7 @@ namespace overcloud.Views
         private int moveTargetFolderId = -2;
         private List<FileItemViewModel> moveCandidates = new();
 
-        public HomeView(AccountService accountService,
-            FileUploadManager fileUploadManager,
-            FileDownloadManager fileDownloadManager,
-            FileDeleteManager fileDeleteManager,
-            FileCopyManager fileCopyManager,
-            QuotaManager quotaManager,
-            IFileRepository fileRepository,
-            CloudTierManager cloudTierManager,
-            string user_id)
-
+        public SharedAccountView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, string user_id)
         {
             try
             {
@@ -73,7 +58,6 @@ namespace overcloud.Views
             _fileCopyManager = fileCopyManager;
             _quotaManager = quotaManager;
             _fileRepository = fileRepository;
-            _cloudTierManager = cloudTierManager;
             _user_id = user_id;
 
             // 초기 서비스 설정
@@ -160,29 +144,13 @@ namespace overcloud.Views
 
             };
         }
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///전송관리자 창
-        private void ShowTransferWindow()
-        {
-            if (_transferWindow == null || !_transferWindow.IsVisible)
-            {
-                _transferWindow = new TransferManagerWindow();
-                _transferWindow.Owner = System.Windows.Application.Current.MainWindow;
-                _transferWindow.Show();
-            }
-            else
-            {
-                _transferWindow.Activate();
-            }
-        }
+
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
         private async void Button_Save_Click(object sender, RoutedEventArgs e)
         {
-            ShowTransferWindow();
-
             var choice = System.Windows.MessageBox.Show(
                 "파일을 선택하려면 [예], 폴더를 선택하려면 [아니오]를 클릭하세요.",
                 "선택 방식",
@@ -192,7 +160,7 @@ namespace overcloud.Views
             if (choice == MessageBoxResult.Yes)
             {
                 // 파일 선택
-                var fileDialog = new CommonOpenFileDialog
+                var fileDialog = new CommonOpenFileDialog()
                 {
                     IsFolderPicker = false,
                     Multiselect = false,
@@ -202,84 +170,90 @@ namespace overcloud.Views
                 if (fileDialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     string filePath = fileDialog.FileName;
-                    ulong fileSize = (ulong)new FileInfo(filePath).Length;
 
-                    // 용량 체크
-                    ulong totalRemainingByte = _cloudTierManager.GetTotalRemainingQuotaInBytes("admin");
-                    if (totalRemainingByte < fileSize)
-                    {
-                        System.Windows.MessageBox.Show("❌ 전체 클라우드 용량이 부족합니다.");
-                        return;
-                    }
+                    // ⭐ temp_class.file_upload 호출
+                    bool result = await _fileUploadManager.file_upload(filePath, currentFolderId, _user_id);
 
-                    // 전송 큐에 추가
-                    App.TransferManager.UploadManager.EnqueueUploads(new List<(string FileName, string FilePath, int ParentFolderId)>
-                    {
-                        (Path.GetFileName(filePath), filePath, currentFolderId)
-                    }, _user_id);
+                    System.Windows.MessageBox.Show(result
+                        ? $"파일 업로드 성공\n경로: {filePath}"
+                        : "파일 업로드 실패");
                 }
             }
             else if (choice == MessageBoxResult.No)
             {
                 // 폴더 선택
-                using var folderDialog = new FolderBrowserDialog
+                using (var folderDialog = new FolderBrowserDialog())
                 {
-                    Description = "폴더 선택",
-                    RootFolder = Environment.SpecialFolder.MyComputer
-                };
+                    folderDialog.Description = "폴더 선택";
+                    folderDialog.RootFolder = System.Environment.SpecialFolder.MyComputer;
 
-                if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    string rootPath = folderDialog.SelectedPath;
+                    if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        string folderPath = folderDialog.SelectedPath;
 
-                    await CollectAllFilesFromFolder(rootPath, currentFolderId);  // 리스트 반환 X, 내부에서 큐 등록됨
+                        bool result = await UploadFolderRecursive(folderPath, currentFolderId);
 
-                    LoadFolderContents(currentFolderId);
-                    RefreshExplorer();
+                        System.Windows.MessageBox.Show(result
+                            ? $"폴더 업로드 성공\n경로: {folderPath}"
+                            : "폴더 업로드 실패");
+
+                        LoadFolderContents(currentFolderId);
+                        RefreshExplorer();
+                    }
                 }
             }
         }
 
 
-
-        private async Task CollectAllFilesFromFolder(string folderPath, int parentFolderId)
+        private async Task<bool> UploadFolderRecursive(string folderPath, int parentFolderId)
         {
-            // 1. DB에 폴더 등록
-            var folderInfo = new CloudFileInfo
+            try
             {
-                FileName = Path.GetFileName(folderPath),
-                ParentFolderId = parentFolderId,
-                IsFolder = true,
-                UploadedAt = DateTime.Now,
-                FileSize = 0,
-                CloudStorageNum = -1,
-                CloudFileId = string.Empty,
-            };
-
-            int newFolderId = _fileRepository.add_folder(folderInfo);
-            if (newFolderId == -1)
-            {
-                System.Windows.MessageBox.Show($"폴더 '{folderInfo.FileName}' 등록 실패");
-                return;
-            }
-
-            // 2. 파일 수집 및 업로드 큐 등록
-            foreach (var file in Directory.GetFiles(folderPath))
-            {
-                App.TransferManager.UploadManager.EnqueueUpload(new UploadTaskInfo
+                // 1. 현재 폴더를 DB에 등록
+                var folderInfo = new CloudFileInfo
                 {
-                    LocalPath = file,
-                    FolderId = newFolderId
-                }, _user_id);
-            }
+                    FileName = Path.GetFileName(folderPath),
+                    ParentFolderId = parentFolderId,
+                    IsFolder = true,
+                    UploadedAt = DateTime.Now,
+                    FileSize = 0,
+                    CloudStorageNum = -1,
+                    CloudFileId = string.Empty,
+                };
 
-            // 3. 하위 폴더 재귀
-            foreach (var dir in Directory.GetDirectories(folderPath))
+                int newFolderId = _fileRepository.add_folder(folderInfo);
+                if (newFolderId == -1)
+                {
+                    System.Windows.MessageBox.Show($"폴더 '{folderInfo.FileName}' 등록 실패");
+                    return false;
+                }
+
+                // 2. 현재 폴더 내 파일 업로드
+                var files = Directory.GetFiles(folderPath);
+                foreach (var filePath in files)
+                {
+                    bool uploadResult = await _fileUploadManager.file_upload(filePath, newFolderId, _user_id);
+                    if (!uploadResult)
+                    {
+                        System.Windows.MessageBox.Show($"파일 '{Path.GetFileName(filePath)}' 업로드 실패");
+                    }
+                }
+
+                // 3. 하위 폴더 재귀 처리
+                var subfolders = Directory.GetDirectories(folderPath);
+                foreach (var subfolderPath in subfolders)
+                {
+                    await UploadFolderRecursive(subfolderPath, newFolderId);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
             {
-                await CollectAllFilesFromFolder(dir, newFolderId);
+                System.Windows.MessageBox.Show($"오류 발생: {ex.Message}");
+                return false;
             }
         }
-
 
         /// //////////////////////////////////////////////////////////////////////////////////
 
@@ -546,8 +520,6 @@ namespace overcloud.Views
 
         private async void Button_Down_Click(object sender, RoutedEventArgs e)
         {
-            ShowTransferWindow();
-
             var selectedFiles = GetCheckedFiles();
             if (selectedFiles.Count == 0)
             {
@@ -568,36 +540,22 @@ namespace overcloud.Views
                 }
             }
 
-            var allMap = GetAllFilesFromCurrentFolder();
+            var allMap = GetAllFilesFromCurrentFolder(); // 현제 디렉토리 하위의 모든 트리 정보 { fileId → 정보 }
 
             try
             {
-                // 1. 파일은 비동기 큐에 추가
-                var enqueueList = selectedFiles
-                    .Where(f => !f.IsFolder)
-                    .Select(f => (
-                        FileName: f.FileName,
-                        CloudFileId: f.cloud_file_id,
-                        CloudStorageNum: f.CloudStorageNum,
-                        LocalPath: Path.Combine(localBase, f.FileName)
-                    )).ToList();
-
-                App.TransferManager.DownloadManager.EnqueueDownloads(enqueueList);
-
-                // 2. 폴더는 기존 재귀 다운로드
-                foreach (var item in selectedFiles.Where(f => f.IsFolder))
+                foreach (var item in selectedFiles)
                 {
                     await DownloadItemRecursive(item.FileId, localBase, allMap);
                 }
 
-                System.Windows.MessageBox.Show("다운로드 요청 완료");
+                System.Windows.MessageBox.Show("다운로드 완료");
             }
             catch (Exception ex)
             {
                 System.Windows.MessageBox.Show($"다운로드 중 오류 발생: {ex.Message}");
             }
         }
-
 
         private async Task DownloadItemRecursive(int fileId, string localBase, Dictionary<int, CloudFileInfo> current_file_map)
         {
@@ -613,7 +571,7 @@ namespace overcloud.Views
                 var children = _fileRepository.all_file_list(file.FileId); // 이 폴더의 하위 항목
                 foreach (var child in children)
                 {
-                    DownloadItemRecursive(child.FileId, localBase, current_file_map);
+                    await DownloadItemRecursive(child.FileId, localBase, current_file_map);
                 }
             }
             else
@@ -622,13 +580,12 @@ namespace overcloud.Views
                 if (!string.IsNullOrEmpty(dir))
                     Directory.CreateDirectory(dir);
 
-                App.TransferManager.DownloadManager.EnqueueDownloads(new List<(string FileName, string CloudFileId, int CloudStorageNum, string LocalPath)>
-                    {
-                        (file.FileName, file.CloudFileId, file.CloudStorageNum, localPath)
-                    });
+                Console.WriteLine(dir);
+                Console.WriteLine(file.CloudFileId + " " + file.CloudStorageNum);
+
+                await _fileDownloadManager.DownloadFile("admin", file.CloudFileId, file.CloudStorageNum, localPath);
             }
         }
-
 
         private string GetCloudPath(CloudFileInfo file, Dictionary<int, CloudFileInfo> allMap)
         {
@@ -698,7 +655,6 @@ namespace overcloud.Views
 
         private async Task DeleteItemRecursive(int fileId, Dictionary<int, CloudFileInfo> allFileMap)
         {
-            bool deleted;
             if (!allFileMap.TryGetValue(fileId, out var file)) return;
 
             if (file.IsFolder)
@@ -709,25 +665,14 @@ namespace overcloud.Views
                     await DeleteItemRecursive(child.FileId, allFileMap);
                 }
             }
-            else
+
+            // 비동기 삭제 호출
+            bool deleted = await _fileDeleteManager.Delete_File(file.CloudStorageNum, file.FileId, _user_id);
+
+            if (!deleted)
             {
-                if (file.IsDistributed)
-                {
-                    deleted = await _fileDeleteManager.Delete_DistributedFile(file.FileId, _user_id);
-                }
-                else
-                {
-                    deleted = await _fileDeleteManager.Delete_File(file.CloudStorageNum, file.FileId, _user_id);
-                }
-
-                // 비동기 삭제 호출
-                if (!deleted)
-                {
-                    System.Windows.MessageBox.Show($"{file.FileName} 삭제 실패");
-                }
-
+                System.Windows.MessageBox.Show($"{file.FileName} 삭제 실패");
             }
-
         }
 
 
@@ -849,7 +794,6 @@ namespace overcloud.Views
 
             // DB에 삽입
             int result;
-
             try
             {
                 result = _fileRepository.add_folder(info);
@@ -860,8 +804,8 @@ namespace overcloud.Views
                 System.Windows.MessageBox.Show($"폴더 추가 중 오류: {ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            if (result == -1)
 
+            if (result == -1)
             {
                 System.Windows.MessageBox.Show("폴더 추가에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;

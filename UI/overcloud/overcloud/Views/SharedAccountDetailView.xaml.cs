@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using LiveCharts;
-using LiveCharts.Wpf;
-using OverCloud.Services;
-using OverCloud.Services.FileManager.DriveManager;
-using OverCloud.Services.StorageManager;
-using DB.overcloud.Repository;
-using DB.overcloud.Models;
-using Separator = LiveCharts.Wpf.Separator;
-using System.Diagnostics;
+﻿using DB.overcloud.Repository;
 using OverCloud.Services.FileManager;
+using OverCloud.Services.StorageManager;
+using OverCloud.Services;
+using System.Windows.Controls;
+using System.Windows;
+using LiveCharts.Wpf;
+using LiveCharts;
+using System.Diagnostics;
+using Separator = LiveCharts.Wpf.Separator;
 
 namespace overcloud.Views
 {
-    public partial class AccountDetailView : System.Windows.Controls.UserControl
+    public partial class SharedAccountDetailView : System.Windows.Controls.UserControl
     {
         private AccountService _accountService;
         private FileUploadManager _fileUploadManager;
@@ -27,15 +22,13 @@ namespace overcloud.Views
         private IFileRepository _fileRepository;
         private string _user_id;
 
-        // true = 막대 차트, false = 파이 차트
         private bool _isBarMode = true;
         private string _currentFilter = "All";
 
-        public AccountDetailView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, string user_id)
+        public SharedAccountDetailView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, string user_id)
         {
             InitializeComponent();
 
-            // 서비스 초기화
             _accountService = accountService;
             _fileUploadManager = fileUploadManager;
             _fileDownloadManager = fileDownloadManager;
@@ -45,12 +38,9 @@ namespace overcloud.Views
             _fileRepository = fileRepository;
             _user_id = user_id;
 
-            // 초기 탭 선택
-            FilterTab.SelectedIndex = 0;
-            // 초기 토글 버튼 텍스트
-            ToggleChartButton.Content = "파이 차트";
+            // 초기화
+            _currentFilter = "All";
         }
-
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             // 첫 로드 시
@@ -84,8 +74,8 @@ namespace overcloud.Views
                 .Select(g => new
                 {
                     CloudType = g.Key,
-                    Total = g.Sum(x => (double)x.TotalCapacity) / 1024/1024,
-                    Used = g.Sum(x => (double)x.UsedCapacity)/1024/1024
+                    Total = g.Sum(x => (double)x.TotalCapacity) / 1024 / 1024,
+                    Used = g.Sum(x => (double)x.UsedCapacity) / 1024 / 1024
                 })
                 .ToList();
 
@@ -136,7 +126,7 @@ namespace overcloud.Views
                 .Select(g => new
                 {
                     CloudType = g.Key,
-                    Total = g.Sum(x => (double)x.TotalCapacity) /1024 /1024,
+                    Total = g.Sum(x => (double)x.TotalCapacity) / 1024 / 1024,
                     Used = g.Sum(x => (double)x.UsedCapacity) / 1024 / 1024
                 })
                 .ToList();
@@ -236,11 +226,4 @@ namespace overcloud.Views
         }
     }
 
-    public class UsageItemViewModel
-    {
-        public string DriveName { get; set; }
-        public string TotalDisplay { get; set; }
-        public string UsedDisplay { get; set; }
-        public int UsedPercent { get; set; }
-    }
 }

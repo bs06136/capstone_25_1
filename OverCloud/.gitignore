@@ -11,11 +11,13 @@
 !Services/AccountService.cs
 !Services/CloudTierManager.cs
 !Services/TokenProviderFactory.cs
+!Services/CooperationManager.cs
 
 !Services/FileManager/FileCopyManager.cs
 !Services/FileManager/FileDeleteManager.cs
 !Services/FileManager/FileDownloadManager.cs
 !Services/FileManager/FileUploadManager.cs
+
 
 !Services/FileManager/DriveManager/DropboxService.cs
 !Services/FileManager/DriveManager/GoogleAuthHelper.cs

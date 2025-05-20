@@ -17,7 +17,7 @@ namespace OverCloud.Services.FileManager.DriveManager
         
         Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath);
 
-        Task<bool> DeleteFileAsync(string userId, string fileId);
+        Task<bool> DeleteFileAsync(int cloudStorageNum, string fileId, string userId);
 
         Task<string> UploadFileAsync(string userId, string filePath);
 

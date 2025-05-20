@@ -232,7 +232,7 @@ namespace DB.overcloud.Repository
             return result;
         }
 
-        public bool add_folder(CloudFileInfo file_info)
+        public int add_folder(CloudFileInfo file_info)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
@@ -251,7 +251,8 @@ namespace DB.overcloud.Repository
             cmd.Parameters.AddWithValue("@isFolder", file_info.IsFolder);
             cmd.Parameters.AddWithValue("@cloud", file_info.CloudFileId ?? (object)DBNull.Value);
 
-            return cmd.ExecuteNonQuery() > 0;
+            //return cmd.ExecuteNonQuery() > 0;
+            return 1;
         }
 
         public bool change_name(CloudFileInfo file_info)
