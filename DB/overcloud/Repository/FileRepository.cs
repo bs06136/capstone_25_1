@@ -234,25 +234,35 @@ namespace DB.overcloud.Repository
 
         public int add_folder(CloudFileInfo file_info)
         {
-            using var conn = new MySqlConnection(connectionString);
-            conn.Open();
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
 
-            string query = @"INSERT INTO CloudFileInfo 
-                (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, cloud_file_id) 
-                VALUES 
-                (@name, @size, @uploaded, @storage, @parent, @isFolder, @cloud)";
+                string query = @"
+                    INSERT INTO CloudFileInfo 
+                        (file_name, cloud_storage_num, parent_folder_id, is_folder)
+                    VALUES 
+                        (@file_name, @cloud_storage_num, @parent_folder_id, 1);
+                    SELECT LAST_INSERT_ID();";
 
-            using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@name", file_info.FileName);
-            cmd.Parameters.AddWithValue("@size", Convert.ToUInt32(file_info.FileSize));
-            cmd.Parameters.AddWithValue("@uploaded", file_info.UploadedAt);
-            cmd.Parameters.AddWithValue("@storage", file_info.CloudStorageNum);
-            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
-            cmd.Parameters.AddWithValue("@isFolder", file_info.IsFolder);
-            cmd.Parameters.AddWithValue("@cloud", file_info.CloudFileId ?? (object)DBNull.Value);
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@file_name", file_info.file_name);
+                    cmd.Parameters.AddWithValue("@cloud_storage_num", file_info.cloud_storage_num);
+                    cmd.Parameters.AddWithValue("@parent_folder_id", file_info.parent_folder_id);
 
-            //return cmd.ExecuteNonQuery() > 0;
-            return 1;
+                    object result = cmd.ExecuteScalar();
+
+                    if (result != null && int.TryParse(result.ToString(), out int insertedId))
+                    {
+                        return insertedId;
+                    }
+                    else
+                    {
+                        return -1;
+                    }
+                }
+            }
         }
 
         public bool change_name(CloudFileInfo file_info)
