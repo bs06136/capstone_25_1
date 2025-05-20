@@ -27,7 +27,6 @@ namespace OverCloud.Services.FileManager
             IAccountRepository accountRepository,
             FileUploadManager fileUploadManager
             )
-
         {
             this.fileRepository = fileRepository;
             this.cloudTierManager = cloudTierManager;
@@ -37,7 +36,7 @@ namespace OverCloud.Services.FileManager
             this.fileUploadManager = fileUploadManager;
         }
 
-        public async Task<bool> Copy_File(int copy_target_file_id, int target_parent_file_id)
+        public async Task<bool> Copy_File(int copy_target_file_id, int target_parent_file_id, string userId)
         {
             // 1. 복사할 파일 정보 조회
             var originalFile = fileRepository.GetFileById(copy_target_file_id);
@@ -48,7 +47,7 @@ namespace OverCloud.Services.FileManager
             }
 
             // 1.원본 파일이 있는 클라우드 정보
-            var allAccounts = accountRepository.GetAllAccounts("admin");
+            var allAccounts = accountRepository.GetAllAccounts(userId);
             var sourceCloud = allAccounts.FirstOrDefault(c => c.CloudStorageNum == originalFile.CloudStorageNum);
             if (sourceCloud == null)
             {
@@ -69,7 +68,7 @@ namespace OverCloud.Services.FileManager
             //임의 경로로 다운로드 
 
             // 1. 업로드 가능한 스토리지 선택
-            var bestStorage = cloudTierManager.SelectBestStorage(originalFile.FileSize / 1024); //ulong 자료형의 KB단위로 건네줘야함.
+            var bestStorage = cloudTierManager.SelectBestStorage(originalFile.FileSize / 1024, userId); //ulong 자료형의 KB단위로 건네줘야함.
 
             if (bestStorage == null)
             {
@@ -126,7 +125,7 @@ namespace OverCloud.Services.FileManager
         }
 
         //분산 파일인 경우 복사.
-        public async Task<bool> Copy_DistributedFile(int rootFileId, int targetParentFolderId)
+        public async Task<bool> Copy_DistributedFile(int rootFileId, int targetParentFolderId, string userId)
         {
             // 1. 조각 리스트 조회
             var chunks = fileRepository.GetChunksByRootFileId(rootFileId);
@@ -142,7 +141,7 @@ namespace OverCloud.Services.FileManager
 
             foreach (var chunk in chunks.OrderBy(c => c.ChunkIndex))
             {
-                var cloud = accountRepository.GetAllAccounts("admin")
+                var cloud = accountRepository.GetAllAccounts(userId)
                     .FirstOrDefault(c => c.CloudStorageNum == chunk.CloudStorageNum);
                 if (cloud == null)
                 {

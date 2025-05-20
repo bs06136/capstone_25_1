@@ -18,10 +18,10 @@ namespace OverCloud.Services
             this.accountRepository = accountRepository;
         }
 
-        public CloudStorageInfo SelectBestStorage(ulong fileSizeKB) //kb단위로 호출
+        public CloudStorageInfo SelectBestStorage(ulong fileSizeKB,string userId) //kb단위로 호출
         {
 
-            var clouds = accountRepository.GetAllAccounts("admin");
+            var clouds = accountRepository.GetAllAccounts(userId);
             if (clouds == null)
             {
                 System.Diagnostics.Debug.WriteLine("❌ 클라우드 계정 없음");
@@ -57,9 +57,9 @@ namespace OverCloud.Services
             };
         }
 
-        public List<CloudStorageInfo> GetStoragePlan(ulong totalFileSizeKB)
+        public List<CloudStorageInfo> GetStoragePlan(ulong totalFileSizeKB, string userId)
         {
-            var clouds = accountRepository.GetAllAccounts("admin");
+            var clouds = accountRepository.GetAllAccounts(userId);
             if (clouds == null || clouds.Count == 0)
             {
                 Console.WriteLine("❌ 등록된 클라우드 계정이 없습니다.");

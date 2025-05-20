@@ -41,12 +41,12 @@ namespace OverCloud.Services.FileManager
             this.cloudTierManager = cloudTierManager;
         }
 
-        public async Task<bool> file_upload(string file_name, int target_parent_file_id)
+        public async Task<bool> file_upload(string file_name, int target_parent_file_id,string userId)
         {
             ulong fileSize = (ulong)new FileInfo(file_name).Length;
 
             // 1. 업로드 가능한 스토리지 선택
-            var bestStorage = cloudTierManager.SelectBestStorage(fileSize/ 1024);
+            var bestStorage = cloudTierManager.SelectBestStorage(fileSize/ 1024, userId);
 
             string cloudType = bestStorage.CloudType;
 
@@ -85,13 +85,13 @@ namespace OverCloud.Services.FileManager
             return true;
         }
 
-        public async Task<bool> Upload_Distributed(string file_name, int parentFolderId)
+        public async Task<bool> Upload_Distributed(string file_name, int parentFolderId, string userId)
         {
             var fileInfo = new FileInfo(file_name);
             ulong fileSize = (ulong)fileInfo.Length;
             string fileName = fileInfo.Name;
 
-            var storagePlan = cloudTierManager.GetStoragePlan(fileSize/1024);
+            var storagePlan = cloudTierManager.GetStoragePlan(fileSize/1024, userId);
             if (storagePlan == null)
             {
                 Console.WriteLine("❌ 전체 저장소 용량 부족");
