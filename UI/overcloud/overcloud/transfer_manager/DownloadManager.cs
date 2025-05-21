@@ -25,7 +25,7 @@ namespace overcloud.transfer_manager
             _fileDownloadManager = fileDownloadManager;
         }
 
-        public void EnqueueDownloads(List<(string FileName, string CloudFileId, int CloudStorageNum, string LocalPath)> files)
+        public void EnqueueDownloads(List<(string FileName, string CloudFileId, int CloudStorageNum, string LocalPath)> files, string user_id)
         {
             foreach (var file in files)
             {
@@ -57,7 +57,7 @@ namespace overcloud.transfer_manager
 
                         // 실제 다운로드 실행
                         await _fileDownloadManager.DownloadFile(
-                            userId: "admin",
+                            userId: user_id,
                             cloudFileId: file.CloudFileId,
                             CloudStorageNum: file.CloudStorageNum,
                             savePath: file.LocalPath
