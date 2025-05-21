@@ -68,7 +68,7 @@ namespace overcloud.Views
     StorageSessionManager.InitializeFromDatabase(storages);
             
 
-            App.TransferManager = new TransferManager(_fileUploadManager, _fileDownloadManager);
+            App.TransferManager = new TransferManager(_fileUploadManager, _fileDownloadManager, _cloudTierManager);
 
             // MainWindow 실행
             var main = new MainWindow(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _cloudTierManager, userId);
