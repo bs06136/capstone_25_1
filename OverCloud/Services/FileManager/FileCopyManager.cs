@@ -64,7 +64,7 @@ namespace OverCloud.Services.FileManager
 
             // 업로드용 임시 파일 생성
             string tempPath = Path.GetTempFileName(); //임의 경로 지정
-            bool downloaded = await sourceService.DownloadFileAsync(sourceCloud.AccountId, originalFile.CloudFileId, tempPath);                                         
+            bool downloaded = await sourceService.DownloadFileAsync(sourceCloud.ID, originalFile.CloudFileId, tempPath);                                         
             //임의 경로로 다운로드 
 
             // 1. 업로드 가능한 스토리지 선택
@@ -111,7 +111,7 @@ namespace OverCloud.Services.FileManager
             };
 
             // 5. DB 저장
-            fileRepository.addfile(copiedFile, userId);
+            fileRepository.addfile(copiedFile);
 
             // 6. 업로드 후 용량 갱신
             quotaManager.UpdateQuotaAfterUploadOrDelete(bestStorage.CloudStorageNum, fileSize / 1024, true);
@@ -157,7 +157,7 @@ namespace OverCloud.Services.FileManager
                 }
 
                 string tempChunkPath = Path.GetTempFileName();
-                bool downloaded = await service.DownloadFileAsync(cloud.AccountId, chunk.CloudFileId, tempChunkPath);
+                bool downloaded = await service.DownloadFileAsync(cloud.ID, chunk.CloudFileId, tempChunkPath);
                 if (!downloaded)
                 {
                     Console.WriteLine($"❌ 조각 다운로드 실패: part{chunk.ChunkIndex}");
