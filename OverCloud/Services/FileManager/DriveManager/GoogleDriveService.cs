@@ -130,10 +130,11 @@ namespace OverCloud.Services.FileManager.DriveManager
         }
 
 
-        public async Task<(ulong, ulong)> GetDriveQuotaAsync(string userId) //admin
+        public async Task<(ulong, ulong)> GetDriveQuotaAsync(int cloudStorageNum) //admin
         {
-            var clouds = accountRepository.GetAllAccounts(userId);
-            var googleCloud = clouds.FirstOrDefault(c => c.ID == userId);
+            var googleCloud = storageRepo.GetCloud(cloudStorageNum); //
+
+            //var googleCloud = clouds.FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
             if (googleCloud == null)
             {
                 Console.WriteLine(googleCloud);
