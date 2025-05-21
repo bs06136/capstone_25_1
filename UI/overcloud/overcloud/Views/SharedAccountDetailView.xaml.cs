@@ -20,11 +20,12 @@ namespace overcloud.Views
         private FileCopyManager _fileCopyManager;
         private QuotaManager _quotaManager;
         private IFileRepository _fileRepository;
+        private string _user_id;
 
         private bool _isBarMode = true;
         private string _currentFilter = "All";
 
-        public SharedAccountDetailView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository)
+        public SharedAccountDetailView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, string user_id)
         {
             InitializeComponent();
 
@@ -35,6 +36,7 @@ namespace overcloud.Views
             _fileCopyManager = fileCopyManager;
             _quotaManager = quotaManager;
             _fileRepository = fileRepository;
+            _user_id = user_id;
 
             // 초기화
             _currentFilter = "All";
@@ -209,14 +211,14 @@ namespace overcloud.Views
 
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
-            AddAccountWindow window = new AddAccountWindow(_accountService);
+            AddAccountWindow window = new AddAccountWindow(_accountService, _user_id);
             window.ShowDialog();
         }
 
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("삭제 버튼 누름");
-            var window = new DeleteAccountWindow(_accountService);
+            var window = new DeleteAccountWindow(_accountService, _user_id);
             // this(UserControl)가 아니라 이 컨트롤을 호스트하는 Window를 Owner로 지정
             window.Owner = Window.GetWindow(this);
             window.ShowDialog();

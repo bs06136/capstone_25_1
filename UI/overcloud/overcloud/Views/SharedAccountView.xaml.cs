@@ -30,6 +30,7 @@ namespace overcloud.Views
         private FileCopyManager _fileCopyManager;
         private QuotaManager _quotaManager;
         private IFileRepository _fileRepository;
+        private string _user_id;
 
 
         // 탐색기 상태
@@ -38,7 +39,7 @@ namespace overcloud.Views
         private int moveTargetFolderId = -2;
         private List<FileItemViewModel> moveCandidates = new();
 
-        public SharedAccountView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository)
+        public SharedAccountView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, string user_id)
         {
             try
             {
@@ -57,6 +58,7 @@ namespace overcloud.Views
             _fileCopyManager = fileCopyManager;
             _quotaManager = quotaManager;
             _fileRepository = fileRepository;
+            _user_id = user_id;
 
             // 초기 서비스 설정
         }
@@ -170,7 +172,7 @@ namespace overcloud.Views
                     string filePath = fileDialog.FileName;
 
                     // ⭐ temp_class.file_upload 호출
-                    bool result = await _fileUploadManager.file_upload(filePath, currentFolderId);
+                    bool result = await _fileUploadManager.file_upload(filePath, currentFolderId, _user_id);
 
                     System.Windows.MessageBox.Show(result
                         ? $"파일 업로드 성공\n경로: {filePath}"
@@ -230,7 +232,7 @@ namespace overcloud.Views
                 var files = Directory.GetFiles(folderPath);
                 foreach (var filePath in files)
                 {
-                    bool uploadResult = await _fileUploadManager.file_upload(filePath, newFolderId);
+                    bool uploadResult = await _fileUploadManager.file_upload(filePath, newFolderId, _user_id);
                     if (!uploadResult)
                     {
                         System.Windows.MessageBox.Show($"파일 '{Path.GetFileName(filePath)}' 업로드 실패");
@@ -665,7 +667,7 @@ namespace overcloud.Views
             }
 
             // 비동기 삭제 호출
-            bool deleted = await _fileDeleteManager.Delete_File(file.CloudStorageNum, file.FileId);
+            bool deleted = await _fileDeleteManager.Delete_File(file.CloudStorageNum, file.FileId, _user_id);
 
             if (!deleted)
             {
@@ -841,7 +843,7 @@ namespace overcloud.Views
 
                 foreach (var item in selected)
                 {
-                    bool result = await _fileCopyManager.Copy_File(item.FileId, targetFolderId);
+                    bool result = await _fileCopyManager.Copy_File(item.FileId, targetFolderId, _user_id);
                     if (!result)
                     {
                         System.Windows.MessageBox.Show($"파일/폴더 '{item.FileName}' 복사 실패");
@@ -892,7 +894,7 @@ namespace overcloud.Views
                 else
                 {
                     // 파일이면 파일 복사 (Copy_File 호출)
-                    await _fileCopyManager.Copy_File(child.FileId, newFolderId);
+                    await _fileCopyManager.Copy_File(child.FileId, newFolderId, _user_id);
                 }
             }
 
