@@ -50,7 +50,7 @@ namespace OverCloud.Services.FileManager
             var cloudInfo = accountRepository
                .GetAllAccounts(userId)
                .FirstOrDefault(c => c.CloudStorageNum == file.CloudStorageNum);
-
+                
             string cloudType = cloudInfo.CloudType;
             var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(cloudType));
             if (service == null)

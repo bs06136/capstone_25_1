@@ -45,6 +45,8 @@ namespace overcloud.Views
         private int moveTargetFolderId = -2;
         private List<FileItemViewModel> moveCandidates = new();
 
+        private bool _isFolderChanging = false;
+
         public HomeView(AccountService accountService,
             FileUploadManager fileUploadManager,
             FileDownloadManager fileDownloadManager,
@@ -256,7 +258,7 @@ namespace overcloud.Views
                 CloudFileId = string.Empty,
             };
 
-            int newFolderId = _fileRepository.add_folder(folderInfo);
+            int newFolderId = _fileRepository.add_folder(folderInfo, _user_id);
             if (newFolderId == -1)
             {
                 System.Windows.MessageBox.Show($"폴더 '{folderInfo.FileName}' 등록 실패");
@@ -431,30 +433,50 @@ namespace overcloud.Views
 
 
 
-        private void RightFileItem_Click(object sender, MouseButtonEventArgs e)
+        private async void RightFileItem_Click(object sender, MouseButtonEventArgs e)
         {
-            if (sender is StackPanel panel && panel.DataContext != null)
+            if (_isFolderChanging) return;
+            _isFolderChanging = true;
+
+            try
             {
-                var fileInfo = panel.DataContext;
-
-                // dynamic으로 분리
-                dynamic info = fileInfo;
-
-                string fileName = info.FileName;
-                string iconPath = info.Icon;
-
-                if (iconPath == "asset/folder.png")
+                if (sender is StackPanel panel && panel.DataContext != null)
                 {
-                    var folder = _fileRepository.all_file_list(currentFolderId)
-                                 .FirstOrDefault(f => f.IsFolder && f.FileName == fileName);
+                    var fileInfo = panel.DataContext;
 
-                    if (folder != null)
+                    var info = panel.DataContext as FileItemViewModel;
+
+                    // 안전한 null 확인
+                    if (info == null || string.IsNullOrEmpty(info.FileName) || string.IsNullOrEmpty(info.Icon))
+                        return;
+
+
+                    if (info.Icon == "asset/folder.png")
                     {
-                        currentFolderId = folder.FileId;
-                        LoadFolderContents(currentFolderId);
-                        SelectFolderInTree(folder.FileId);
+                        var folder = _fileRepository.all_file_list(currentFolderId)
+                                     .FirstOrDefault(f => f.IsFolder && f.FileName == info.FileName);
+
+                        if (folder != null)
+                        {
+                            currentFolderId = folder.FileId;
+                            //LoadFolderContents(currentFolderId);
+                            //SelectFolderInTree(folder.FileId);
+                            await Task.Run(() =>
+                            {
+                                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    LoadFolderContents(currentFolderId);
+                                    SelectFolderInTree(folder.FileId);
+                                });
+                            });
+                        }
                     }
                 }
+            }
+            finally
+            {
+                // 로딩이 완료되었든 실패했든 다시 클릭 허용
+                _isFolderChanging = false;
             }
         }
 
@@ -850,7 +872,7 @@ namespace overcloud.Views
 
             try
             {
-                result = _fileRepository.add_folder(info);
+                result = _fileRepository.add_folder(info, _user_id);
                 //result = null;
             }
             catch (Exception ex)
@@ -929,7 +951,7 @@ namespace overcloud.Views
                 CloudFileId = string.Empty
             };
 
-            int newFolderId = _fileRepository.add_folder(newFolderInfo);
+            int newFolderId = _fileRepository.add_folder(newFolderInfo, _user_id);
             if (newFolderId == -1)
             {
                 System.Windows.MessageBox.Show($"폴더 '{newFolderInfo.FileName}' 복사 실패");
