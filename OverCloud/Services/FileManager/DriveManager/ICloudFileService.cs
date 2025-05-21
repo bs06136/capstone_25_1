@@ -21,7 +21,7 @@ namespace OverCloud.Services.FileManager.DriveManager
 
         Task<string> UploadFileAsync(CloudStorageInfo bestStorage, string filePath);
 
-        Task<(ulong total, ulong used)> GetDriveQuotaAsync(string userId);
+        Task<(ulong total, ulong used)> GetDriveQuotaAsync(int cloudStorageNum);
 
 
         //나중에 분산저장 구현 시 청크로 분리된 메서드를 하나로 합해서 사용할 수 있도록 분리

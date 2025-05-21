@@ -46,6 +46,11 @@ namespace OverCloud.Services.FileManager
                 return false;
             }
 
+            if (originalFile.IsDistributed)
+            {
+                await Copy_DistributedFile(copy_target_file_id, target_parent_file_id, userId);
+            }
+
             // 1.원본 파일이 있는 클라우드 정보
             var allAccounts = accountRepository.GetAllAccounts(userId);
             var sourceCloud = allAccounts.FirstOrDefault(c => c.CloudStorageNum == originalFile.CloudStorageNum);

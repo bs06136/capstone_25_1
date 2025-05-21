@@ -226,13 +226,13 @@ namespace OverCloud.Services.FileManager.DriveManager
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<(ulong, ulong)> GetDriveQuotaAsync(string userId)
+        public async Task<(ulong, ulong)> GetDriveQuotaAsync(int CloudStorageNum)
         {
-            var cloud = accountRepository.GetAllAccounts(userId)
-                .FirstOrDefault(c => c.ID == userId);
+            var oneCloud = storageRepository.GetCloud(CloudStorageNum);
+           // var oneCloud = cloud.FirstOrDefault(c => c.ID == userId);
 
-            if (cloud == null) return (0, 0);
-            if (!await EnsureAccessTokenAsync(cloud)) return (0, 0);
+            if (oneCloud == null) return (0, 0);
+            if (!await EnsureAccessTokenAsync(oneCloud)) return (0, 0);
 
             var client = CreateClient();
             var response = await client.GetAsync("https://graph.microsoft.com/v1.0/me/drive");
