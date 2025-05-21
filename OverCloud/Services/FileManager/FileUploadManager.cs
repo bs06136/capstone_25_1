@@ -77,7 +77,7 @@ namespace OverCloud.Services.FileManager
             };
 
             // 5. DB 저장
-            repo_file.addfile(file);
+            repo_file.addfile(file,userId);
 
 
             // 6. 업로드 후 용량 갱신
@@ -158,7 +158,7 @@ namespace OverCloud.Services.FileManager
                     ChunkSize = (ulong)read
                 };
 
-                repo_file.addfile(chunk);
+                repo_file.addfile(chunk, userId);
                 quotaManager.UpdateQuotaAfterUploadOrDelete(cloud.CloudStorageNum, chunk.FileSize, true);
                 uploadedChunks.Add(chunk);
 
