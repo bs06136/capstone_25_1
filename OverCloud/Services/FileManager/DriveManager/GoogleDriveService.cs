@@ -11,6 +11,7 @@ using System.Net.Http;
 using DB.overcloud.Repository;
 using Google.Apis.Upload;
 using System.Diagnostics;
+using MySqlX.XDevAPI.Common;
 
 namespace OverCloud.Services.FileManager.DriveManager
 {
@@ -38,13 +39,13 @@ namespace OverCloud.Services.FileManager.DriveManager
             });
         }
 
-        public async Task<string> UploadFileAsync(string userId, string file_name)
+        public async Task<string> UploadFileAsync(CloudStorageInfo bestStorage, string file_name)
         {
-            var clouds = accountRepository.GetAllAccounts(userId);
-            var googleCloud = clouds.FirstOrDefault(c => c.AccountId == userId);
-            if (googleCloud == null) return null;
+            var oneCloud = storageRepo.GetCloud(bestStorage.CloudStorageNum);
+            //var googleCloud = clouds.FirstOrDefault(c => c.ID == userId);
+            if (oneCloud == null) return null;
 
-            var accessToken = await tokenProvider.GetAccessTokenAsync(googleCloud);
+            var accessToken = await tokenProvider.GetAccessTokenAsync(oneCloud);
             var service = CreateDriveService(accessToken);
 
             var fileInfo = new FileInfo(file_name);
@@ -129,11 +130,15 @@ namespace OverCloud.Services.FileManager.DriveManager
         }
 
 
-        public async Task<(ulong, ulong)> GetDriveQuotaAsync(string userId)
+        public async Task<(ulong, ulong)> GetDriveQuotaAsync(string userId) //admin
         {
             var clouds = accountRepository.GetAllAccounts(userId);
-            var googleCloud = clouds.FirstOrDefault(c => c.AccountId == userId);
-            if (googleCloud == null) return (0, 0);
+            var googleCloud = clouds.FirstOrDefault(c => c.ID == userId);
+            if (googleCloud == null)
+            {
+                Console.WriteLine(googleCloud);
+                return (0, 0);
+            }
 
             var accessToken = await tokenProvider.GetAccessTokenAsync(googleCloud);
             var service = CreateDriveService(accessToken);
@@ -144,6 +149,8 @@ namespace OverCloud.Services.FileManager.DriveManager
 
             ulong total = ulong.Parse(result.StorageQuota.Limit?.ToString() ?? "0");
             ulong used = ulong.Parse(result.StorageQuota.Usage?.ToString() ?? "0");
+          
+
             return (total, used);
         }
 

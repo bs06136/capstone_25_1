@@ -44,15 +44,16 @@ namespace OverCloud.Services.FileManager.DriveManager
             return !string.IsNullOrEmpty(accessToken); ;
         }
 
-        public async Task<string> UploadFileAsync(string userId, string filePath)
+        public async Task<string> UploadFileAsync(CloudStorageInfo bestStorage, string filePath)
         {
-            var cloud = accountRepository.GetAllAccounts(userId)
-                .FirstOrDefault(c => c.AccountId == userId);
+            //var cloud = accountRepository.GetAllAccounts(userId)
+            //    .FirstOrDefault(c => c.AccountId == userId);
+            var oneCloud = storageRepository.GetCloud(bestStorage.CloudStorageNum);
 
-            if (cloud == null)
+            if (oneCloud == null)
                 return null;
 
-            string accessToken = await oneDriveTokenRefresher.RefreshAccessTokenAsync(cloud);
+            string accessToken = await oneDriveTokenRefresher.RefreshAccessTokenAsync(oneCloud);
             if (string.IsNullOrEmpty(accessToken)) return null;
 
 
@@ -119,7 +120,7 @@ namespace OverCloud.Services.FileManager.DriveManager
           //  Console.WriteLine($"Upload URL: {uploadUrl}");
 
             // 2. 조각 업로드( Authorization절대 붙이지않음)
-            const int chunkSize = 60 * 1024 * 1024; // 320KB (microsoft 권장 크기)
+            const int chunkSize = 100 * 1024 * 1024; // 320KB (microsoft 권장 크기)
             var fileInfo = new FileInfo(filePath);
             long fileSize = fileInfo.Length;
             long uploaded = 0;
@@ -228,7 +229,7 @@ namespace OverCloud.Services.FileManager.DriveManager
         public async Task<(ulong, ulong)> GetDriveQuotaAsync(string userId)
         {
             var cloud = accountRepository.GetAllAccounts(userId)
-                .FirstOrDefault(c => c.AccountId == userId);
+                .FirstOrDefault(c => c.ID == userId);
 
             if (cloud == null) return (0, 0);
             if (!await EnsureAccessTokenAsync(cloud)) return (0, 0);

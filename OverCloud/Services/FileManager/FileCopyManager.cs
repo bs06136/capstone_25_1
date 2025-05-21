@@ -86,7 +86,7 @@ namespace OverCloud.Services.FileManager
             }
 
             // ✅ 4. 재업로드
-            string newCloudFileId = await targetService.UploadFileAsync(bestStorage.AccountId, tempPath);
+            string newCloudFileId = await targetService.UploadFileAsync(bestStorage , tempPath);
             if (string.IsNullOrEmpty(newCloudFileId))
             {
                 Console.WriteLine(" 업로드 실패");
@@ -111,7 +111,7 @@ namespace OverCloud.Services.FileManager
             };
 
             // 5. DB 저장
-            fileRepository.addfile(copiedFile);
+            fileRepository.addfile(copiedFile, userId);
 
             // 6. 업로드 후 용량 갱신
             quotaManager.UpdateQuotaAfterUploadOrDelete(bestStorage.CloudStorageNum, fileSize / 1024, true);

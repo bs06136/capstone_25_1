@@ -1,8 +1,5 @@
 using DB.overcloud.Models;
-using Google.Protobuf.WellKnownTypes;
 using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
 
 namespace DB.overcloud.Repository
 {
@@ -36,6 +33,7 @@ namespace DB.overcloud.Repository
                     FileSize = Convert.ToUInt32(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ID = reader["ID"].ToString(),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
                     CloudFileId = reader["cloud_file_id"]?.ToString(),
@@ -55,11 +53,12 @@ namespace DB.overcloud.Repository
             conn.Open();
 
             string query = @"INSERT INTO CloudFileInfo 
-                (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, cloud_file_id, root_file_id, chunk_index, chunk_size, is_distributed)
+                (file_name, file_size, uploaded_at, cloud_storage_num, ID, parent_folder_id, is_folder, cloud_file_id, root_file_id, chunk_index, chunk_size, is_distributed)
                 VALUES 
-                (@name, @size, @time, @storage, @parent, @folder, @cloud, @rootId, @chunkIndex, @chunkSize, @isDistributed)";
+                (@name, @size, @time, @storage, @id, @parent, @folder, @cloud, @rootId, @chunkIndex, @chunkSize, @isDistributed)";
 
             using var cmd = new MySqlCommand(query, conn);
+
             cmd.Parameters.AddWithValue("@name", file_info.FileName);
             cmd.Parameters.AddWithValue("@size", file_info.FileSize);
             cmd.Parameters.AddWithValue("@time", file_info.UploadedAt);
@@ -67,7 +66,7 @@ namespace DB.overcloud.Repository
             cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
             cmd.Parameters.AddWithValue("@folder", file_info.IsFolder);
             cmd.Parameters.AddWithValue("@cloud", file_info.CloudFileId ?? "");
-
+            cmd.Parameters.AddWithValue("@id", file_info.ID);
             cmd.Parameters.AddWithValue("@rootId", file_info.RootFileId.HasValue ? file_info.RootFileId : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@chunkIndex", file_info.ChunkIndex.HasValue ? file_info.ChunkIndex : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@chunkSize", file_info.ChunkSize.HasValue ? file_info.ChunkSize : (object)DBNull.Value);
@@ -107,6 +106,7 @@ namespace DB.overcloud.Repository
                     FileSize = Convert.ToUInt32(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ID = reader["ID"].ToString(),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
                     CloudFileId = reader["cloud_file_id"]?.ToString(),
@@ -142,6 +142,7 @@ namespace DB.overcloud.Repository
                     FileSize = Convert.ToUInt32(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ID = reader["ID"].ToString(),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
                     CloudFileId = reader["cloud_file_id"]?.ToString(),
@@ -174,6 +175,7 @@ namespace DB.overcloud.Repository
                     FileSize = Convert.ToUInt32(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ID = reader["ID"].ToString(),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
                     CloudFileId = reader["cloud_file_id"]?.ToString(),
@@ -219,6 +221,7 @@ namespace DB.overcloud.Repository
                     FileSize = Convert.ToUInt32(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ID = reader["ID"].ToString(),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
                     CloudFileId = reader["cloud_file_id"]?.ToString(),
@@ -234,25 +237,36 @@ namespace DB.overcloud.Repository
 
         public int add_folder(CloudFileInfo file_info)
         {
-            using var conn = new MySqlConnection(connectionString);
-            conn.Open();
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
 
-            string query = @"INSERT INTO CloudFileInfo 
-                (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, cloud_file_id) 
-                VALUES 
-                (@name, @size, @uploaded, @storage, @parent, @isFolder, @cloud)";
+                string query = @"
+                    INSERT INTO CloudFileInfo 
+                        (file_name, cloud_storage_num, parent_folder_id, is_folder, ID)
+                    VALUES 
+                        (@file_name, @cloud_storage_num, @parent_folder_id, 1, @ID);
+                    SELECT LAST_INSERT_ID();";
 
-            using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@name", file_info.FileName);
-            cmd.Parameters.AddWithValue("@size", Convert.ToUInt32(file_info.FileSize));
-            cmd.Parameters.AddWithValue("@uploaded", file_info.UploadedAt);
-            cmd.Parameters.AddWithValue("@storage", file_info.CloudStorageNum);
-            cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
-            cmd.Parameters.AddWithValue("@isFolder", file_info.IsFolder);
-            cmd.Parameters.AddWithValue("@cloud", file_info.CloudFileId ?? (object)DBNull.Value);
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@file_name", file_info.FileName);
+                    cmd.Parameters.AddWithValue("@cloud_storage_num", file_info.CloudStorageNum);
+                    cmd.Parameters.AddWithValue("@parent_folder_id", file_info.ParentFolderId);
+                    cmd.Parameters.AddWithValue("@ID", file_info.ID);
 
-            //return cmd.ExecuteNonQuery() > 0;
-            return 1;
+                    object result = cmd.ExecuteScalar();
+
+                    if (result != null && int.TryParse(result.ToString(), out int insertedId))
+                    {
+                        return insertedId;
+                    }
+                    else
+                    {
+                        return -1;
+                    }
+                }
+            }
         }
 
         public bool change_name(CloudFileInfo file_info)
@@ -298,7 +312,7 @@ namespace DB.overcloud.Repository
                 INSERT INTO CloudFileInfo 
                 (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, cloud_file_id, root_file_id, chunk_index, chunk_size, is_distributed) 
                 VALUES 
-                (@name, @size, @time, @storage, @parent, @folder, @cloud, @rootId, @chunkIndex, @chunkSize, @isDistributed);
+                (@name, @size, @time, @storage, @id, @parent, @folder, @cloud, @rootId, @chunkIndex, @chunkSize, @isDistributed);
                 SELECT LAST_INSERT_ID();";
 
             using var cmd = new MySqlCommand(query, conn);
@@ -306,6 +320,7 @@ namespace DB.overcloud.Repository
             cmd.Parameters.AddWithValue("@size", Convert.ToUInt32(file_info.FileSize));
             cmd.Parameters.AddWithValue("@time", file_info.UploadedAt);
             cmd.Parameters.AddWithValue("@storage", file_info.CloudStorageNum);
+            cmd.Parameters.AddWithValue("@id", file_info.ID);
             cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
             cmd.Parameters.AddWithValue("@folder", file_info.IsFolder);
             cmd.Parameters.AddWithValue("@cloud", file_info.CloudFileId ?? (object)DBNull.Value);
@@ -337,6 +352,7 @@ namespace DB.overcloud.Repository
                     FileSize = Convert.ToUInt32(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ID = reader["ID"].ToString(),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
                     CloudFileId = reader["cloud_file_id"]?.ToString(),
@@ -370,6 +386,7 @@ namespace DB.overcloud.Repository
                     FileSize = Convert.ToUInt32(reader["file_size"]),
                     UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
                     CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ID = reader["ID"].ToString(),
                     ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
                     IsFolder = Convert.ToBoolean(reader["is_folder"]),
                     CloudFileId = reader["cloud_file_id"]?.ToString(),

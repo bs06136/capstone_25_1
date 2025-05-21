@@ -56,10 +56,16 @@ namespace OverCloud.Services
 
             bool result = storageRepository.AddCloudStorage(storage);
 
+            var clouds = accountRepository.GetAllAccounts(userId);
+            var OneCloud = clouds.FirstOrDefault(c => c.AccountId == storage.AccountId);
+
+
+            //cloudStorageNum을 넘겨주는 부분이 없음.
+
             if (result)
             {
                 //계정 추가 성공시 바로 용량 업데이트 호출
-                await quotaManager.SaveDriveQuotaToDB(storage.AccountId, storage.CloudStorageNum);
+                await quotaManager.SaveDriveQuotaToDB(userId, OneCloud.CloudStorageNum);
 
                 // ⭐ StorageSessionManager에도 반영 (옵션)
                 StorageSessionManager.Quotas.Add(new CloudQuotaInfo

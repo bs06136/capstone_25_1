@@ -41,8 +41,9 @@ namespace OverCloud.Services.FileManager
             this.cloudTierManager = cloudTierManager;
         }
 
-        public async Task<bool> file_upload(string file_name, int target_parent_file_id,string userId)
+        public async Task<bool> file_upload(string file_name, int target_parent_file_id, string userId)
         {
+            Console.WriteLine($"file_upload: {userId}");
             ulong fileSize = (ulong)new FileInfo(file_name).Length;
 
             // 1. 업로드 가능한 스토리지 선택
@@ -59,7 +60,7 @@ namespace OverCloud.Services.FileManager
             }
 
             // 3. 파일 업로드
-            var cloudFileId = await service.UploadFileAsync(bestStorage.AccountId, file_name);
+            var cloudFileId = await service.UploadFileAsync(bestStorage, file_name);
             if (string.IsNullOrEmpty(cloudFileId)) return false;
 
             // 4. 파일 정보 저장
@@ -76,7 +77,7 @@ namespace OverCloud.Services.FileManager
             };
 
             // 5. DB 저장
-            repo_file.addfile(file);
+            repo_file.addfile(file,userId);
 
 
             // 6. 업로드 후 용량 갱신
@@ -139,7 +140,7 @@ namespace OverCloud.Services.FileManager
                 // 업로드용 임시 파일 생성
                 string tempFile = Path.GetTempFileName(); //임의 경로 지정 
                 await File.WriteAllBytesAsync(tempFile, buffer); //버퍼 크기만큼(분산저장 chunk크기만큼) 잘라서 파일 쓰기.
-                string cloudFileId = await service.UploadFileAsync(cloud.AccountId, tempFile); // 잘린 파일 업로드
+                string cloudFileId = await service.UploadFileAsync(cloud, tempFile); // 잘린 파일 업로드
                 File.Delete(tempFile); //업로드 후 로컬에서 파일 삭제.
 
                 // 조각 파일 등록
@@ -157,7 +158,7 @@ namespace OverCloud.Services.FileManager
                     ChunkSize = (ulong)read
                 };
 
-                repo_file.addfile(chunk);
+                repo_file.addfile(chunk, userId);
                 quotaManager.UpdateQuotaAfterUploadOrDelete(cloud.CloudStorageNum, chunk.FileSize, true);
                 uploadedChunks.Add(chunk);
 

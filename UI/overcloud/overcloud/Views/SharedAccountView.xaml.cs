@@ -219,6 +219,7 @@ namespace overcloud.Views
                     FileSize = 0,
                     CloudStorageNum = -1,
                     CloudFileId = string.Empty,
+                    ID = _user_id
                 };
 
                 int newFolderId = _fileRepository.add_folder(folderInfo);
@@ -790,6 +791,7 @@ namespace overcloud.Views
                 FileSize = 0,
                 CloudStorageNum = -1,
                 CloudFileId = string.Empty,
+                ID = _user_id
             };
 
             // DB에 삽입
@@ -872,7 +874,8 @@ namespace overcloud.Views
                 UploadedAt = DateTime.Now,
                 FileSize = 0,
                 CloudStorageNum = -1,
-                CloudFileId = string.Empty
+                CloudFileId = string.Empty,
+                ID = _user_id
             };
 
             int newFolderId = _fileRepository.add_folder(newFolderInfo);
