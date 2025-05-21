@@ -50,7 +50,7 @@ namespace OverCloud.Services.FileManager
             }
 
 
-            bool result = await service.DownloadFileAsync(cloudInfo.AccountId, cloudFileId, savePath);
+            bool result = await service.DownloadFileAsync(cloudInfo.ID, cloudFileId, savePath);
             return result;
         }
 
