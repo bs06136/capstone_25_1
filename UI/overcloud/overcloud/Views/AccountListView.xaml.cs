@@ -59,7 +59,7 @@ namespace overcloud.Views
         private void RefreshList()
         {
             // (1) 사용자 ID 구하기
-            string currentUserId = /* AuthenticationService.CurrentUserId */ "admin";
+            string currentUserId = /* AuthenticationService.CurrentUserId */ _user_id;
 
             // (2) DB에서 계정 목록 조회
             var all = _accountService.Get_Clouds_For_User(currentUserId);
@@ -74,7 +74,7 @@ namespace overcloud.Views
                     UsagePercent = a.TotalCapacity > 0
                                       ? (int)(a.UsedCapacity * 100.0 / a.TotalCapacity)
                                       : 0,
-                    UsageDisplay = $"{(a.UsedCapacity / 1024 /1024):F2}/{(a.TotalCapacity / 1024 /1024):F2} GB",
+                    UsageDisplay = $"{((double)a.UsedCapacity / 1024 /1024):F2}/{((double)a.TotalCapacity / 1024 /1024):F2} GB",
                     LastLoginDate = DateTime.Now,
                     IsSelected = false
                 }));

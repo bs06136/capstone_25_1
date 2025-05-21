@@ -8,6 +8,7 @@ using DB.overcloud.Models;
 using OverCloud.Services.FileManager;
 using overcloud.transfer_manager;
 using overcloud;
+using OverCloud.Services;
 
 namespace OverCloud.transfer_manager
 {
@@ -17,10 +18,12 @@ namespace OverCloud.transfer_manager
         public ObservableCollection<TransferItemViewModel> Uploads => _uploads;
 
         private readonly FileUploadManager _fileUploadManager;
+        private readonly CloudTierManager _cloudTierManager;
 
-        public UploadManager(FileUploadManager fileUploadManager)
+        public UploadManager(FileUploadManager fileUploadManager, CloudTierManager cloudTierManager)
         {
             _fileUploadManager = fileUploadManager;
+            _cloudTierManager = cloudTierManager;
         }
 
         public void EnqueueUploads(List<(string FileName, string FilePath, int ParentFolderId)> files, string user_id)
@@ -52,7 +55,23 @@ namespace OverCloud.transfer_manager
                             item.Progress = 0;
                         });
 
-                        bool result = await _fileUploadManager.file_upload(file.FilePath, file.ParentFolderId, user_id);
+                        ulong fileSize = (ulong)new FileInfo(file.FilePath).Length;
+
+                        var bestStorage = _cloudTierManager.SelectBestStorage(fileSize / 1024, user_id); //byte -> kb단위로 전달
+
+
+                        bool result;
+
+                        if (bestStorage != null)
+                        {
+                            result = await _fileUploadManager.file_upload(file.FilePath, file.ParentFolderId, user_id);
+
+                        }
+                        else
+                        {
+                            result = await _fileUploadManager.Upload_Distributed(file.FilePath, file.ParentFolderId, user_id);
+                        }
+
 
                         System.Windows.Application.Current.Dispatcher.Invoke(() =>
                         {

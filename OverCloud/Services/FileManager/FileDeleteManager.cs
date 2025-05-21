@@ -47,39 +47,53 @@ namespace OverCloud.Services.FileManager
                 return false;
             }
 
-            var cloudInfo = accountRepository
-               .GetAllAccounts(userId)
-               .FirstOrDefault(c => c.CloudStorageNum == file.CloudStorageNum);
 
-            string cloudType = cloudInfo.CloudType;
-            var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(cloudType));
-            if (service == null)
+            if (!file.IsFolder)
             {
-                Console.WriteLine($"❌ 지원되지 않는 클라우드: {cloudType}");
-                return false;
-            }
+
+                var cloudInfo = accountRepository
+                    .GetAllAccounts(userId)
+                    .FirstOrDefault(c => c.CloudStorageNum == file.CloudStorageNum);
+
+                string cloudType = cloudInfo.CloudType;
+                var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(cloudType));
+                if (service == null)
+                {
+                    Console.WriteLine($"❌ 지원되지 않는 클라우드: {cloudType}");
+                    return false;
+                }
 
 
-            bool apiDeleted = await service.DeleteFileAsync(storageNum, file.CloudFileId, userId);
-            if (!apiDeleted)
-            {
-                Console.WriteLine("❌ 클라우드 API에서 파일 삭제 실패");
-                return false;
-            }
+                bool apiDeleted = await service.DeleteFileAsync(storageNum, file.CloudFileId, userId);
+                if (!apiDeleted)
+                {
+                    Console.WriteLine("❌ 클라우드 API에서 파일 삭제 실패");
+                    return false;
+                }
                 //파일 DB에서 삭제
-            bool dbDeleted = fileRepository.DeleteFile(fileId);
+                bool dbDeleted = fileRepository.DeleteFile(fileId);
 
 
-            if (dbDeleted)
+                if (dbDeleted)
+                {
+                    quotaManager.UpdateQuotaAfterUploadOrDelete(cloudInfo.CloudStorageNum, (ulong)((file.FileSize)/1024), false);
+                }
+
+                return dbDeleted;
+                }
+
+            else
             {
-                quotaManager.UpdateQuotaAfterUploadOrDelete(cloudInfo.CloudStorageNum, (ulong)((file.FileSize)/1024), false);
+                var fileInfo = storageRepository
+                   .GetCloud(file.CloudStorageNum);
+                
+                bool dbDeleted = fileRepository.DeleteFile(fileId);
+                    return dbDeleted;               
             }
-
-            return dbDeleted;
         }
 
 
-        public async Task<bool> Delete_DistributedFile(int logicalFileId,string userId)
+        public async Task<bool> Delete_DistributedFile(int logicalFileId, string userId)
         {
             var logicalFile = fileRepository.GetFileById(logicalFileId);
             if (logicalFile == null || !logicalFile.IsDistributed)
@@ -120,7 +134,7 @@ namespace OverCloud.Services.FileManager
                 }
 
                 // 2. 클라우드 API로 삭제
-                bool apiDeleted = await service.DeleteFileAsync(cloudInfo.CloudStorageNum, chunk.CloudFileId,userId);
+                bool apiDeleted = await service.DeleteFileAsync(cloudInfo.CloudStorageNum, chunk.CloudFileId, userId);
                 if (!apiDeleted)
                 {
                     Console.WriteLine($"❌ 조각 삭제 실패: {chunk.FileName}");

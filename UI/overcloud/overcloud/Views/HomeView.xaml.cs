@@ -45,6 +45,8 @@ namespace overcloud.Views
         private int moveTargetFolderId = -2;
         private List<FileItemViewModel> moveCandidates = new();
 
+        private bool _isFolderChanging = false;
+
         public HomeView(AccountService accountService,
             FileUploadManager fileUploadManager,
             FileDownloadManager fileDownloadManager,
@@ -254,6 +256,7 @@ namespace overcloud.Views
                 FileSize = 0,
                 CloudStorageNum = -1,
                 CloudFileId = string.Empty,
+                ID = _user_id
             };
 
             int newFolderId = _fileRepository.add_folder(folderInfo);
@@ -431,30 +434,50 @@ namespace overcloud.Views
 
 
 
-        private void RightFileItem_Click(object sender, MouseButtonEventArgs e)
+        private async void RightFileItem_Click(object sender, MouseButtonEventArgs e)
         {
-            if (sender is StackPanel panel && panel.DataContext != null)
+            if (_isFolderChanging) return;
+            _isFolderChanging = true;
+
+            try
             {
-                var fileInfo = panel.DataContext;
-
-                // dynamic으로 분리
-                dynamic info = fileInfo;
-
-                string fileName = info.FileName;
-                string iconPath = info.Icon;
-
-                if (iconPath == "asset/folder.png")
+                if (sender is StackPanel panel && panel.DataContext != null)
                 {
-                    var folder = _fileRepository.all_file_list(currentFolderId)
-                                 .FirstOrDefault(f => f.IsFolder && f.FileName == fileName);
+                    var fileInfo = panel.DataContext;
 
-                    if (folder != null)
+                    var info = panel.DataContext as FileItemViewModel;
+
+                    // 안전한 null 확인
+                    if (info == null || string.IsNullOrEmpty(info.FileName) || string.IsNullOrEmpty(info.Icon))
+                        return;
+
+
+                    if (info.Icon == "asset/folder.png")
                     {
-                        currentFolderId = folder.FileId;
-                        LoadFolderContents(currentFolderId);
-                        SelectFolderInTree(folder.FileId);
+                        var folder = _fileRepository.all_file_list(currentFolderId)
+                                     .FirstOrDefault(f => f.IsFolder && f.FileName == info.FileName);
+
+                        if (folder != null)
+                        {
+                            currentFolderId = folder.FileId;
+                            //LoadFolderContents(currentFolderId);
+                            //SelectFolderInTree(folder.FileId);
+                            await Task.Run(() =>
+                            {
+                                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    LoadFolderContents(currentFolderId);
+                                    SelectFolderInTree(folder.FileId);
+                                });
+                            });
+                        }
                     }
                 }
+            }
+            finally
+            {
+                // 로딩이 완료되었든 실패했든 다시 클릭 허용
+                _isFolderChanging = false;
             }
         }
 
@@ -582,7 +605,7 @@ namespace overcloud.Views
                         LocalPath: Path.Combine(localBase, f.FileName)
                     )).ToList();
 
-                App.TransferManager.DownloadManager.EnqueueDownloads(enqueueList);
+                App.TransferManager.DownloadManager.EnqueueDownloads(enqueueList, _user_id);
 
                 // 2. 폴더는 기존 재귀 다운로드
                 foreach (var item in selectedFiles.Where(f => f.IsFolder))
@@ -625,7 +648,7 @@ namespace overcloud.Views
                 App.TransferManager.DownloadManager.EnqueueDownloads(new List<(string FileName, string CloudFileId, int CloudStorageNum, string LocalPath)>
                     {
                         (file.FileName, file.CloudFileId, file.CloudStorageNum, localPath)
-                    });
+                    }, _user_id);
             }
         }
 
@@ -843,6 +866,7 @@ namespace overcloud.Views
                 FileSize = 0,
                 CloudStorageNum = -1,
                 CloudFileId = string.Empty,
+                ID = _user_id
             };
 
             // DB에 삽입
@@ -926,7 +950,8 @@ namespace overcloud.Views
                 UploadedAt = DateTime.Now,
                 FileSize = 0,
                 CloudStorageNum = -1,
-                CloudFileId = string.Empty
+                CloudFileId = string.Empty,
+                ID = _user_id
             };
 
             int newFolderId = _fileRepository.add_folder(newFolderInfo);

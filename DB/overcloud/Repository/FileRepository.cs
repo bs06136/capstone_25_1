@@ -1,4 +1,5 @@
 using DB.overcloud.Models;
+using MySql.Data.MySqlClient;
 
 namespace DB.overcloud.Repository
 {
