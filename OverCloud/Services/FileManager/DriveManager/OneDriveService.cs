@@ -193,7 +193,7 @@ namespace OverCloud.Services.FileManager.DriveManager
             Console.WriteLine("one DownloadFileAsync");
 
             var cloud = accountRepository.GetAllAccounts(userId)
-                .FirstOrDefault(c => c.AccountId == userId);
+                .FirstOrDefault(c => c.ID == userId);
 
             if (cloud == null) return false;
             if (!await EnsureAccessTokenAsync(cloud)) return false;
