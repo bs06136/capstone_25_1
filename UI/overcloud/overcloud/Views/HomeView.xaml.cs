@@ -605,7 +605,7 @@ namespace overcloud.Views
                         LocalPath: Path.Combine(localBase, f.FileName)
                     )).ToList();
 
-                App.TransferManager.DownloadManager.EnqueueDownloads(enqueueList);
+                App.TransferManager.DownloadManager.EnqueueDownloads(enqueueList, _user_id);
 
                 // 2. 폴더는 기존 재귀 다운로드
                 foreach (var item in selectedFiles.Where(f => f.IsFolder))
@@ -648,7 +648,7 @@ namespace overcloud.Views
                 App.TransferManager.DownloadManager.EnqueueDownloads(new List<(string FileName, string CloudFileId, int CloudStorageNum, string LocalPath)>
                     {
                         (file.FileName, file.CloudFileId, file.CloudStorageNum, localPath)
-                    });
+                    }, _user_id);
             }
         }
 

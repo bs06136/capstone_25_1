@@ -111,7 +111,7 @@ namespace OverCloud.Services.FileManager
             };
 
             // 5. DB 저장
-            fileRepository.addfile(copiedFile, userId);
+            fileRepository.addfile(copiedFile);
 
             // 6. 업로드 후 용량 갱신
             quotaManager.UpdateQuotaAfterUploadOrDelete(bestStorage.CloudStorageNum, fileSize / 1024, true);
