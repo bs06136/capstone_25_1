@@ -47,6 +47,7 @@ namespace OverCloud.Services.FileManager
                 return false;
             }
 
+
             if (!file.IsFolder)
             {
 
