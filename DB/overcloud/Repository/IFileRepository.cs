@@ -8,7 +8,7 @@ namespace DB.overcloud.Repository
         bool addfile(CloudFileInfo file_info);
         bool DeleteFile(int fileId);
         CloudFileInfo GetFileById(int fileId);
-        List<CloudFileInfo> all_file_list(int fileId);
+        List<CloudFileInfo> all_file_list(int fileId, string user_id);
         CloudFileInfo specific_file_info(int fileId);
         List<CloudFileInfo> GetAllFileInfo(string file_direc);
 

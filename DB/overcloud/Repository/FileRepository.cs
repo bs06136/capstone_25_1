@@ -123,22 +123,26 @@ namespace DB.overcloud.Repository
             return null;
         }
 
-        public List<CloudFileInfo> all_file_list(int fileId)
+        public List<CloudFileInfo> all_file_list(int fileId, string user_id)
         {
-            var list = new List<CloudFileInfo>();
+            var result = new List<CloudFileInfo>();
 
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = "SELECT * FROM CloudFileInfo WHERE parent_folder_id = @parent";
+            string query = @"
+                SELECT * FROM CloudFileInfo
+                WHERE parent_folder_id = @fileId
+                AND ID = @user_id;";
 
             using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@parent", fileId);
+            cmd.Parameters.AddWithValue("@fileId", fileId);
+            cmd.Parameters.AddWithValue("@user_id", user_id);
 
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
-                list.Add(new CloudFileInfo
+                result.Add(new CloudFileInfo
                 {
                     FileId = Convert.ToInt32(reader["file_id"]),
                     FileName = reader["file_name"].ToString(),
@@ -151,12 +155,12 @@ namespace DB.overcloud.Repository
                     CloudFileId = reader["cloud_file_id"]?.ToString(),
                     RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
                     ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
-                    ChunkSize = reader["chunk_size"] is DBNull ? (ulong?)null : Convert.ToUInt64(reader["chunk_size"]),
+                    ChunkSize = reader["chunk_size"] is DBNull ? null : Convert.ToUInt64(reader["chunk_size"]),
                     IsDistributed = Convert.ToBoolean(reader["is_distributed"])
                 });
             }
 
-            return list;
+            return result;
         }
 
         public CloudFileInfo specific_file_info(int fileId)
