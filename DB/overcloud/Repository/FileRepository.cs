@@ -66,10 +66,10 @@ namespace DB.overcloud.Repository
             cmd.Parameters.AddWithValue("@size", file_info.FileSize);
             cmd.Parameters.AddWithValue("@time", file_info.UploadedAt);
             cmd.Parameters.AddWithValue("@storage", file_info.CloudStorageNum);
+            cmd.Parameters.AddWithValue("@id", file_info.ID);
             cmd.Parameters.AddWithValue("@parent", file_info.ParentFolderId);
             cmd.Parameters.AddWithValue("@folder", file_info.IsFolder);
             cmd.Parameters.AddWithValue("@cloud", file_info.CloudFileId ?? "");
-            cmd.Parameters.AddWithValue("@id", file_info.ID);
             cmd.Parameters.AddWithValue("@rootId", file_info.RootFileId.HasValue ? file_info.RootFileId : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@chunkIndex", file_info.ChunkIndex.HasValue ? file_info.ChunkIndex : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@chunkSize", file_info.ChunkSize.HasValue ? file_info.ChunkSize : (object)DBNull.Value);
