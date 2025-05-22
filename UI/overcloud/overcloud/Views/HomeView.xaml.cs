@@ -143,7 +143,8 @@ namespace overcloud.Views
                 ParentFolderId = file.ParentFolderId,
                 IsFolder = file.IsFolder,
                 cloud_file_id = file.CloudFileId,
-                IsChecked = false
+                IsChecked = false,
+                IsDistributed = file.IsDistributed
             };
         }
 
