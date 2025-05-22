@@ -15,6 +15,7 @@ namespace OverCloud.transfer_manager
     public class UploadManager
     {
         private readonly ObservableCollection<TransferItemViewModel> _uploads = new();
+        private readonly SemaphoreSlim _semaphore = new(2); // 최대 2개 동시 다운로드
         public ObservableCollection<TransferItemViewModel> Uploads => _uploads;
 
         private readonly FileUploadManager _fileUploadManager;
@@ -47,6 +48,7 @@ namespace OverCloud.transfer_manager
                 // 비동기 업로드 시작
                 Task.Run(async () =>
                 {
+                    await _semaphore.WaitAsync();
                     try
                     {
                         System.Windows.Application.Current.Dispatcher.Invoke(() =>

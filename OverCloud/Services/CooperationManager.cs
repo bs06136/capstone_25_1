@@ -13,33 +13,31 @@ namespace OverCloud.Services
 {
     public class CooperationManager
     {
-
-        private bool Join_cooperation_Cloud_Storage_UI_to_pro(string user_id, string password)
+        private CoopUserRepository _coopUserRepository;
+        public CooperationManager(CoopUserRepository coopUserRepository)
         {
-            if (LoginWindow._CooperationRepository != null)
-            {
-                //return LoginWindow._CooperationRepository.Join_cooperation_Cloud_Storage_pro_to_DB( user_id,  password);
-                return true;
-            }
-            return false;
+            _coopUserRepository = coopUserRepository;
         }
 
-        private bool Add_cooperation_Cloud_Storage_UI_to_pro(string user_id_insert, string password, string user_id_mine)
+        public bool Join_cooperation_Cloud_Storage_UI_to_pro(string user_id_target, string password, string user_id_mine)
         {
-            if (LoginWindow._CooperationRepository != null)
-            {
-                return LoginWindow._CooperationRepository.Add_cooperation_Cloud_Storage_pro_to_DB(user_id_insert, password, user_id_mine);
-            }
-            return false;
+
+            return _coopUserRepository.Join_cooperation_Cloud_Storage_pro_to_DB(user_id_target,  password, user_id_mine);
+
         }
 
-        private bool Delete_cooperation_Cloud_Storage_UI_to_pro(string user_id_insert, string user_id_mine)
+        public bool Add_cooperation_Cloud_Storage_UI_to_pro(string user_id_insert, string password, string user_id_mine)
         {
-            if (LoginWindow._CooperationRepository != null)
-            {
-                return LoginWindow._CooperationRepository.Delete_cooperation_Cloud_Storage_pro_to_DB( user_id_insert,  user_id_mine);
-            }
-            return false;
+
+            return _coopUserRepository.Add_cooperation_Cloud_Storage_pro_to_DB(user_id_insert, password, user_id_mine);
+
+        }
+
+        public bool Delete_cooperation_Cloud_Storage_UI_to_pro(string user_id_insert, string user_id_mine)
+        {
+
+            return _coopUserRepository.Delete_cooperation_Cloud_Storage_pro_to_DB( user_id_insert,  user_id_mine);
+
         }
     }
 

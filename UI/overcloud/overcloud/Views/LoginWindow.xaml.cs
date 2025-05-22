@@ -5,6 +5,7 @@ using OverCloud.Services.StorageManager;
 using OverCloud.Services;
 using OverCloud.Services.FileManager.DriveManager;
 using OverCloud.transfer_manager;
+using DB.overcloud.Models;
 
 namespace overcloud.Views
 {
@@ -22,8 +23,8 @@ namespace overcloud.Views
 
         private AccountRepository accountRepository;
 
-        public static CooperationManager _CooperationManager;
-        public static CooperationRepository _CooperationRepository;
+        private CooperationManager _CooperationManager;
+        private CoopUserRepository _CoopUserRepository;
 
         public LoginWindow()
         {
@@ -50,8 +51,8 @@ namespace overcloud.Views
             _fileDeleteManager = new FileDeleteManager(accountRepository, _quotaManager, storageRepo, _fileRepository, cloudSvcs);
             _fileCopyManager = new FileCopyManager(_fileRepository, _cloudTierManager, cloudSvcs, _quotaManager, accountRepository, _fileUploadManager);
 
-            _CooperationManager = new();
-            _CooperationRepository = new(connStr);
+            _CoopUserRepository = new(connStr);
+            _CooperationManager = new(_CoopUserRepository);
 
         }
 
@@ -69,14 +70,29 @@ namespace overcloud.Views
                 return; // 창은 닫지 않고 다시 입력 가능
             }
 
-            var storages = new AccountRepository(DbConfig.ConnectionString).GetAllAccounts(userId);
-    StorageSessionManager.InitializeFromDatabase(storages);
-            
+            //var storages = new AccountRepository(DbConfig.ConnectionString).GetAllAccounts(userId);
+            //StorageSessionManager.InitializeFromDatabase(storages);
+
+            // 1. 계정 리스트 구성
+            var allAccounts = new List<string> { userId };
+            allAccounts.AddRange(_CoopUserRepository.connected_cooperation_account_nums(userId));
+
+            // 2. 전체 스토리지 수집
+            var allStorages = new List<CloudStorageInfo>();
+            foreach (var accId in allAccounts.Distinct())
+            {
+                var storages = accountRepository.GetAllAccounts(accId);
+                allStorages.AddRange(storages);
+            }
+
+            // 3. 세션 초기화
+            StorageSessionManager.InitializeFromDatabase(allStorages);
+
 
             App.TransferManager = new TransferManager(_fileUploadManager, _fileDownloadManager, _cloudTierManager);
 
             // MainWindow 실행
-            var main = new MainWindow(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _cloudTierManager, userId);
+            var main = new MainWindow(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _cloudTierManager, userId, accountRepository, _CooperationManager, _CoopUserRepository);
             System.Windows.Application.Current.MainWindow = main;
             main.Show();
 

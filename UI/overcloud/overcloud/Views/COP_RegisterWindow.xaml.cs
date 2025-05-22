@@ -1,15 +1,21 @@
 ﻿using System.Windows;
 using DB.overcloud.Repository;
+using OverCloud.Services;
 
 namespace overcloud.Views
 {
     public partial class COP_RegisterWindow : Window
     {
         private AccountRepository _accountRepository;
-        public COP_RegisterWindow(AccountRepository accountRepository)
+        private string user_id = null;
+        private CooperationManager _CooperationManager;
+
+        public COP_RegisterWindow(AccountRepository accountRepository, string user_id, CooperationManager cooperationManager)
         {
             _accountRepository = accountRepository;
+            this.user_id = user_id;
             InitializeComponent();
+            _CooperationManager = cooperationManager;
         }
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
@@ -23,7 +29,7 @@ namespace overcloud.Views
                 return;
             }
 
-            bool success = _accountRepository.assign_overcloud(userId, password);
+            bool success = _CooperationManager.Add_cooperation_Cloud_Storage_UI_to_pro(userId, password, user_id);
 
             if (success)
             {
