@@ -80,7 +80,7 @@ namespace DB.overcloud.Repository
             return delCmd.ExecuteNonQuery() > 0;
         }
 
-        public bool Join_cooperation_Cloud_Storage_pro_to_DB(string coop_id, string password, string user_id_mine)
+        public bool Join_cooperation_Cloud_Storage_pro_to_DB(string user_id_insert, string password, string user_id_mine)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
@@ -91,7 +91,7 @@ namespace DB.overcloud.Repository
                 WHERE ID = @id AND password = @pw AND is_shared = 1";
 
             using var checkCmd = new MySqlCommand(checkQuery, conn);
-            checkCmd.Parameters.AddWithValue("@id", coop_id);
+            checkCmd.Parameters.AddWithValue("@id", user_id_insert);
             checkCmd.Parameters.AddWithValue("@pw", password);
 
             object result = checkCmd.ExecuteScalar();
@@ -103,7 +103,7 @@ namespace DB.overcloud.Repository
                 VALUES (@coop_id, @user_id);";
 
             using var insertCmd = new MySqlCommand(insertQuery, conn);
-            insertCmd.Parameters.AddWithValue("@coop_id", coop_id);
+            insertCmd.Parameters.AddWithValue("@coop_id", user_id_insert);
             insertCmd.Parameters.AddWithValue("@user_id", user_id_mine);
 
             return insertCmd.ExecuteNonQuery() > 0;
