@@ -13,8 +13,9 @@ namespace overcloud.Views
     {
         private readonly IFileRepository _fileRepository;
         public int? SelectedFolderId { get; private set; } = null;
+        private string user_id = null;
 
-        public FolderSelectDialog(IFileRepository fileRepository)
+        public FolderSelectDialog(IFileRepository fileRepository, string user_id)
         {
             InitializeComponent();
             _fileRepository = fileRepository;
@@ -30,7 +31,7 @@ namespace overcloud.Views
 
         private void LoadChildFolders(TreeViewItem parentItem, int parentId)
         {
-            var folders = _fileRepository.all_file_list(parentId)
+            var folders = _fileRepository.all_file_list(parentId, user_id)
                 .Where(f => f.IsFolder)
                 .ToList();
 

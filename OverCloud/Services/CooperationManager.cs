@@ -7,25 +7,37 @@ using System.Threading.Tasks;
 using DB.overcloud.Models;
 using DB.overcloud.Repository;
 using OverCloud.Services.FileManager.DriveManager;
+using overcloud.Views;
 
 namespace OverCloud.Services
 {
     public class CooperationManager
     {
-        private bool Join_cooperation_Cloud_Storage(string user_id, string password)
+        private CoopUserRepository _coopUserRepository;
+        public CooperationManager(CoopUserRepository coopUserRepository)
         {
-
-            return true;
+            _coopUserRepository = coopUserRepository;
         }
 
-        private bool Add_cooperation_Cloud_Storage_UI_to_pro(string user_id_insert, string password, string user_id_mine)
+        public bool Join_cooperation_Cloud_Storage_UI_to_pro(string user_id_target, string password, string user_id_mine)
         {
-            return true;
+
+            return _coopUserRepository.Join_cooperation_Cloud_Storage_pro_to_DB(user_id_target,  password, user_id_mine);
+
         }
 
-        private bool Delete_cooperation_Cloud_Storage_UI_to_pro(string user_id_insert, string user_id_mine)
+        public bool Add_cooperation_Cloud_Storage_UI_to_pro(string user_id_insert, string password, string user_id_mine)
         {
-            return true;
+
+            return _coopUserRepository.Add_cooperation_Cloud_Storage_pro_to_DB(user_id_insert, password, user_id_mine);
+
+        }
+
+        public bool Delete_cooperation_Cloud_Storage_UI_to_pro(string user_id_insert, string user_id_mine)
+        {
+
+            return _coopUserRepository.Delete_cooperation_Cloud_Storage_pro_to_DB( user_id_insert,  user_id_mine);
+
         }
     }
 

@@ -112,7 +112,7 @@
             <Button x:Name="MoveButton" Width="72" Height="31"
                     Canvas.Left="1476" Canvas.Top="178"
                     Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
-                    Click="Button_Move_Click">
+                    Click="Button_DeleteSelected_Click">
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="5"/>
@@ -205,7 +205,7 @@
             <Button x:Name="UploadButton복사__C_" Width="119" Height="31"
        Canvas.Left="1040" Canvas.Top="178"
        Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
-       Click="Button_Save_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
+       Click="CreateCooperationAccount_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Resources>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="CornerRadius" Value="5"/>

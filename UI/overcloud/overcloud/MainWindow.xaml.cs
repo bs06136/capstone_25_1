@@ -19,11 +19,14 @@ namespace overcloud
         private QuotaManager _quotaManager;
         private IFileRepository _fileRepository;
         private CloudTierManager _cloudTierManager;
+        private AccountRepository _accountRepository;
+        private CooperationManager _CooperationManager;
+        private CoopUserRepository _CoopUserRepository;
 
         private string _user_id;
 
 
-        public MainWindow(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, CloudTierManager cloudTierManager, string user_id)
+        public MainWindow(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, CloudTierManager cloudTierManager, string user_id, AccountRepository accountRepository, CooperationManager CooperationManager , CoopUserRepository coopUserRepository)
         {
             InitializeComponent();
             _accountService = accountService;
@@ -35,6 +38,9 @@ namespace overcloud
             _fileRepository = fileRepository;
             _cloudTierManager = cloudTierManager;
             _user_id = user_id;
+            _accountRepository = accountRepository;
+            _CooperationManager = CooperationManager;
+            _CoopUserRepository = coopUserRepository;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -58,7 +64,7 @@ namespace overcloud
 
         private void SharedAccountMenu_Click(object sender, MouseButtonEventArgs e)
         {
-            MainFrame.Navigate(new Views.SharedAccountView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _user_id));
+            MainFrame.Navigate(new Views.SharedAccountView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _cloudTierManager, _user_id, _accountRepository, _CooperationManager, _CoopUserRepository));
         }
 
         private void SharedManageMenu_Click(object sender, MouseButtonEventArgs e)
