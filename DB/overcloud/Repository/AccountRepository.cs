@@ -16,20 +16,6 @@ namespace DB.overcloud.Repository
             cloudService = new StorageRepository(connStr);
         }
 
-        public bool InsertAccount(CloudAccountInfo account, string user_id)
-        {
-            using var conn = new MySqlConnection(connectionString);
-            conn.Open();
-
-            string query = "INSERT INTO Account (ID, password, total_size, used_size, is_shared) VALUES (@id, @pw, 0, 0, @is_shared)";
-            using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@id", account.ID);
-            cmd.Parameters.AddWithValue("@pw", account.Password);
-            cmd.Parameters.AddWithValue("@is_shared", account.IsShared ? 1 : 0);
-
-            return cmd.ExecuteNonQuery() > 0;
-        }
-
         public List<CloudStorageInfo> GetAllAccounts(string ID)
         {
             var result = new List<CloudStorageInfo>();
