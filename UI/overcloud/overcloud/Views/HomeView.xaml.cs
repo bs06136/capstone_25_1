@@ -210,7 +210,7 @@ namespace overcloud.Views
                     ulong fileSize = (ulong)new FileInfo(filePath).Length;
 
                     // 용량 체크
-                    ulong totalRemainingByte = _cloudTierManager.GetTotalRemainingQuotaInBytes("admin");
+                    ulong totalRemainingByte = _cloudTierManager.GetTotalRemainingQuotaInBytes(_user_id);
                     if (totalRemainingByte < fileSize)
                     {
                         System.Windows.MessageBox.Show("❌ 전체 클라우드 용량이 부족합니다.");

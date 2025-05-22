@@ -11,7 +11,7 @@ using Separator = LiveCharts.Wpf.Separator;
 
 namespace overcloud.Views
 {
-    public partial class SharedAccountDetailView : System.Windows.Controls.UserControl
+    public partial class SharedAccountDetailView : System.Windows.Controls.UserControl  //협업 계정에 연결된 모든 클라우드 계정을 가져오도록 수정해야함
     {
         private AccountService _accountService;
         private FileUploadManager _fileUploadManager;
@@ -61,7 +61,7 @@ namespace overcloud.Views
         private void LoadUsageDetails(string filter)
         {
             // 전체 계정 정보 가져오기
-            var all = _accountService.Get_Clouds_For_User("admin");
+            var all = _accountService.Get_Clouds_For_User(_user_id);
 
             // 필터링: “All” 이 아니면 해당 CloudType만
             var filtered = filter == "All"
@@ -111,9 +111,9 @@ namespace overcloud.Views
             UsageList.ItemsSource = items;
         }
 
-        private void LoadChart(string filter)
+        private void LoadChart(string filter)   
         {
-            var all = _accountService.Get_Clouds_For_User("admin");
+            var all = _accountService.Get_Clouds_For_User(_user_id);
 
             // 필터링
             var filtered = filter == "All"
