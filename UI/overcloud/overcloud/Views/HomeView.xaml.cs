@@ -126,6 +126,8 @@ namespace overcloud.Views
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
             }
+
+            public bool IsDistributed { get; set; }
         }
 
         //////변환기
@@ -599,10 +601,12 @@ namespace overcloud.Views
                 var enqueueList = selectedFiles
                     .Where(f => !f.IsFolder)
                     .Select(f => (
+                        FileID: f.FileId,
                         FileName: f.FileName,
                         CloudFileId: f.cloud_file_id,
                         CloudStorageNum: f.CloudStorageNum,
-                        LocalPath: Path.Combine(localBase, f.FileName)
+                        LocalPath: Path.Combine(localBase, f.FileName),
+                        IsDistributed: f.IsDistributed
                     )).ToList();
 
                 App.TransferManager.DownloadManager.EnqueueDownloads(enqueueList, _user_id);
@@ -610,7 +614,7 @@ namespace overcloud.Views
                 // 2. 폴더는 기존 재귀 다운로드
                 foreach (var item in selectedFiles.Where(f => f.IsFolder))
                 {
-                    await DownloadItemRecursive(item.FileId, localBase, allMap);
+                    await DownloadItemRecursive(item.FileId, localBase, allMap, item.IsDistributed);
                 }
 
                 System.Windows.MessageBox.Show("다운로드 요청 완료");
@@ -622,7 +626,7 @@ namespace overcloud.Views
         }
 
 
-        private async Task DownloadItemRecursive(int fileId, string localBase, Dictionary<int, CloudFileInfo> current_file_map)
+        private async Task DownloadItemRecursive(int fileId, string localBase, Dictionary<int, CloudFileInfo> current_file_map, bool _IsDistributed)
         {
             if (!current_file_map.TryGetValue(fileId, out var file)) return;
 
@@ -636,7 +640,7 @@ namespace overcloud.Views
                 var children = _fileRepository.all_file_list(file.FileId); // 이 폴더의 하위 항목
                 foreach (var child in children)
                 {
-                    DownloadItemRecursive(child.FileId, localBase, current_file_map);
+                    DownloadItemRecursive(child.FileId, localBase, current_file_map, child.IsDistributed);
                 }
             }
             else
@@ -645,9 +649,9 @@ namespace overcloud.Views
                 if (!string.IsNullOrEmpty(dir))
                     Directory.CreateDirectory(dir);
 
-                App.TransferManager.DownloadManager.EnqueueDownloads(new List<(string FileName, string CloudFileId, int CloudStorageNum, string LocalPath)>
+                App.TransferManager.DownloadManager.EnqueueDownloads(new List<(int FileId, string FileName, string CloudFileId, int CloudStorageNum, string LocalPath, bool IsDistributed)>
                     {
-                        (file.FileName, file.CloudFileId, file.CloudStorageNum, localPath)
+                        (fileId ,file.FileName, file.CloudFileId, file.CloudStorageNum, localPath, _IsDistributed)
                     }, _user_id);
             }
         }

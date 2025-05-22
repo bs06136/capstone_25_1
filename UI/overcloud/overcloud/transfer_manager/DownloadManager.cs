@@ -25,7 +25,7 @@ namespace overcloud.transfer_manager
             _fileDownloadManager = fileDownloadManager;
         }
 
-        public void EnqueueDownloads(List<(string FileName, string CloudFileId, int CloudStorageNum, string LocalPath)> files, string user_id)
+        public void EnqueueDownloads(List<(int FileID, string FileName, string CloudFileId, int CloudStorageNum, string LocalPath, bool IsDistributed)> files, string user_id)
         {
             foreach (var file in files)
             {
@@ -55,22 +55,30 @@ namespace overcloud.transfer_manager
                             item.Progress = 0;
                         });
 
-                        // 실제 다운로드 실행
-                        await _fileDownloadManager.DownloadFile(
-                            userId: user_id,
-                            cloudFileId: file.CloudFileId,
-                            CloudStorageNum: file.CloudStorageNum,
-                            savePath: file.LocalPath
-                        );
+                        if (file.IsDistributed)
+                            {
+                                await _fileDownloadManager.DownloadAndMergeFile(file.FileID, file.LocalPath, user_id);
+                            }
+                        else
+                            {
+                                await _fileDownloadManager.DownloadFile(
+                                userId: user_id,
+                                cloudFileId: file.CloudFileId,
+                                CloudStorageNum: file.CloudStorageNum,
+                                savePath: file.LocalPath
+                            );
 
-                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            item.Status = "완료";
-                            item.Progress = 100;
 
-                            // 완료 목록에 추가
-                            App.TransferManager.Completed.Add(item);
-                        });
+
+                            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                item.Status = "완료";
+                                item.Progress = 100;
+
+                                // 완료 목록에 추가
+                                App.TransferManager.Completed.Add(item);
+                            });
+                        }
                     }
                     catch (Exception ex)
                     {

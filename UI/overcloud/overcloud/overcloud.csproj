@@ -53,11 +53,14 @@
 	  <None Remove="asset\cancel.png" />
 	  <None Remove="asset\co.png" />
 	  <None Remove="asset\co_manage.png" />
+	  <None Remove="asset\create_co.png" />
 	  <None Remove="asset\delete.png" />
+	  <None Remove="asset\disconnect.png" />
 	  <None Remove="asset\download.png" />
 	  <None Remove="asset\folder.png" />
 	  <None Remove="asset\home.png" />
 	  <None Remove="asset\Icon.png" />
+	  <None Remove="asset\invite.png" />
 	  <None Remove="asset\overcloud_logo.png" />
 	  <None Remove="asset\pir.png" />
 	  <None Remove="asset\search.png" />
@@ -98,7 +101,13 @@
 	  <Resource Include="asset\co_manage.png">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Resource>
+	  <Resource Include="asset\create_co.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
 	  <Resource Include="asset\delete.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\disconnect.png">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Resource>
 	  <Resource Include="asset\download.png">
@@ -111,6 +120,9 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Resource>
 	  <Resource Include="asset\Icon.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\invite.png">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Resource>
 	  <Resource Include="asset\overcloud_logo.png">
