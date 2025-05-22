@@ -1,5 +1,7 @@
+using DB.overcloud.Models;
 using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 
 namespace DB.overcloud.Repository
 {
@@ -21,32 +23,17 @@ namespace DB.overcloud.Repository
 
             try
             {
-                // 1. CloudStorageInfo에 협업 클라우드 정보 추가
-                string insertCloudQuery = @"
-                    INSERT INTO CloudStorageInfo (
-                        ID, cloud_type, account_id, account_password, 
-                        total_capacity, used_capacity, is_shared
+                string insertAccountQuery = @"
+                    INSERT INTO Account (
+                        ID, password, is_shared
                     ) VALUES (
-                        @insert_id, 'COOP', @insert_id, @pw, 0, 0, 1
-                    );
-                    SELECT LAST_INSERT_ID();";
+                        @insert_id, @pw, 1
+                    );";
 
-                using var insertCloudCmd = new MySqlCommand(insertCloudQuery, conn, transaction);
-                insertCloudCmd.Parameters.AddWithValue("@insert_id", user_id_insert);
-                insertCloudCmd.Parameters.AddWithValue("@pw", password);
-
-                int insertedCloudNum = Convert.ToInt32(insertCloudCmd.ExecuteScalar());
-
-                // 2. Cooperation 테이블에 연결 정보 추가
-                string insertCoopQuery = @"
-                    INSERT INTO Cooperation (ID, cloud_storage_num)
-                    VALUES (@mine, @cloudNum);";
-
-                using var insertCoopCmd = new MySqlCommand(insertCoopQuery, conn, transaction);
-                insertCoopCmd.Parameters.AddWithValue("@mine", user_id_mine);
-                insertCoopCmd.Parameters.AddWithValue("@cloudNum", insertedCloudNum);
-
-                insertCoopCmd.ExecuteNonQuery();
+                using var insertAccountCmd = new MySqlCommand(insertAccountQuery, conn, transaction);
+                insertAccountCmd.Parameters.AddWithValue("@insert_id", user_id_insert);
+                insertAccountCmd.Parameters.AddWithValue("@pw", password);
+                insertAccountCmd.ExecuteNonQuery();
 
                 transaction.Commit();
                 return true;
@@ -63,24 +50,51 @@ namespace DB.overcloud.Repository
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            // 1. cloud_storage_num 조회
-            string getStorageQuery = "SELECT cloud_storage_num FROM CloudStorageInfo WHERE ID = @id AND is_shared = 1 LIMIT 1";
-            using var getCmd = new MySqlCommand(getStorageQuery, conn);
-            getCmd.Parameters.AddWithValue("@id", user_id_insert);
+            // 1. user_id_insert가 협업 클라우드 계정인지 확인
+            string checkSharedQuery = @"
+                SELECT ID FROM Account 
+                WHERE ID = @id AND is_shared = 1
+                LIMIT 1";
 
-            object result = getCmd.ExecuteScalar();
-            if (result == null) return false;
+            using var checkCmd = new MySqlCommand(checkSharedQuery, conn);
+            checkCmd.Parameters.AddWithValue("@id", user_id_insert);
 
-            int cloudStorageNum = Convert.ToInt32(result);
+            object checkResult = checkCmd.ExecuteScalar();
+            if (checkResult == null) return false;
 
-            // 2. Cooperation 테이블에서 연결 제거
-            string deleteQuery = "DELETE FROM Cooperation WHERE ID = @mine AND cloud_storage_num = @cloudNum";
+            // 2. Cooperation 테이블에서 해당 협업 클라우드 연결 제거
+            string deleteQuery = @"
+                DELETE FROM Cooperation 
+                WHERE cloud_storage_num = @cloud_id";
+
             using var delCmd = new MySqlCommand(deleteQuery, conn);
-            delCmd.Parameters.AddWithValue("@mine", user_id_mine);
-            delCmd.Parameters.AddWithValue("@cloudNum", cloudStorageNum);
+            delCmd.Parameters.AddWithValue("@cloud_id", user_id_insert);
 
             return delCmd.ExecuteNonQuery() > 0;
         }
-        
+
+        public List<int> connected_cooperation_account_nums(string user_id)
+        {
+            var result = new List<int>();
+
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                SELECT cloud_storage_num 
+                FROM Cooperation 
+                WHERE ID = @id;";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@id", user_id);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                result.Add(Convert.ToInt32(reader["cloud_storage_num"]));
+            }
+
+            return result;
+        }
     }
 }
