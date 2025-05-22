@@ -22,6 +22,9 @@ namespace overcloud.Views
 
         private AccountRepository accountRepository;
 
+        public static CooperationManager _CooperationManager;
+        public static CooperationRepository _CooperationRepository;
+
         public LoginWindow()
         {
             InitializeComponent();
@@ -47,6 +50,8 @@ namespace overcloud.Views
             _fileDeleteManager = new FileDeleteManager(accountRepository, _quotaManager, storageRepo, _fileRepository, cloudSvcs);
             _fileCopyManager = new FileCopyManager(_fileRepository, _cloudTierManager, cloudSvcs, _quotaManager, accountRepository, _fileUploadManager);
 
+            _CooperationManager = new();
+            _CooperationRepository = new(connStr);
 
         }
 
