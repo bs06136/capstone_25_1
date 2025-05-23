@@ -53,6 +53,9 @@ namespace overcloud.Views
             _fileDeleteManager = new FileDeleteManager(accountRepository, _quotaManager, storageRepo, _fileRepository, cloudSvcs);
             _fileCopyManager = new FileCopyManager(_fileRepository, _cloudTierManager, cloudSvcs, _quotaManager, accountRepository, _fileUploadManager);
 
+            _CoopUserRepository = new CoopUserRepository(connStr);
+            _CooperationManager = new(_CoopUserRepository);
+
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
