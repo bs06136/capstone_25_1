@@ -74,6 +74,7 @@ namespace OverCloud.Services.FileManager
                 ParentFolderId = target_parent_file_id, // 최상위 업로드라면 -1 ,일단은 파일만처리, 나중에는 폴더까지 
                 IsFolder = false,
                 CloudFileId = cloudFileId,
+                ID = userId
             };
 
             // 5. DB 저장
@@ -110,10 +111,12 @@ namespace OverCloud.Services.FileManager
                 ParentFolderId = parentFolderId,
                 IsFolder = false,
                 IsDistributed = true,
-                CloudStorageNum= -1
+                CloudStorageNum= -1,
+                ID = userId
             };
-            int logicalFileId = repo_file.AddFileAndReturnId(logical);
 
+            int logicalFileId = repo_file.AddFileAndReturnId(logical);
+            Console.WriteLine(logicalFileId);
             using FileStream source = new FileStream(file_name, FileMode.Open, FileAccess.Read);
             ulong remainingBytes = fileSize;
             int chunkIndex = 0;
@@ -155,7 +158,8 @@ namespace OverCloud.Services.FileManager
                     CloudFileId = cloudFileId,
                     RootFileId = logicalFileId,
                     ChunkIndex = chunkIndex,
-                    ChunkSize = (ulong)read
+                    ChunkSize = (ulong)read,
+                    ID= userId
                 };
 
                 repo_file.addfile(chunk);

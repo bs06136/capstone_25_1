@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Packaging;
 using System.Threading.Tasks;
 using DB.overcloud.Models;
 using DB.overcloud.Repository;
@@ -18,6 +19,7 @@ namespace OverCloud.Services.FileManager
 
 //        new GoogleDriveService(new GoogleTokenProvider() , new StorageRepository(DbConfig.ConnectionString) )
         public FileDownloadManager(
+           
             IFileRepository fileRepo,
             IAccountRepository acountRepository,
             List<ICloudFileService> cloudServices)
@@ -51,11 +53,11 @@ namespace OverCloud.Services.FileManager
             }
 
 
-            bool result = await service.DownloadFileAsync(cloudInfo.ID, cloudFileId, savePath);
+            bool result = await service.DownloadFileAsync(cloudInfo.ID, cloudFileId, savePath, CloudStorageNum);
             return result;
         }
 
-        public async Task<bool> DownloadAndMergeFile(int logicalFileId, string finalsavePath, string userId)
+        public async Task<bool> DownloadAndMergeFile(int logicalFileId, string finalsavePath, string userId,int CloudStorageNum)
         {
             // 1. 논리 파일 정보 불러오기
             var logicalFile = fileRepo.GetFileById(logicalFileId);
@@ -102,7 +104,7 @@ namespace OverCloud.Services.FileManager
 
                 // 3. 조각 다운로드 → 임시 파일 경로 반환
                 string tempPath = Path.GetTempFileName();
-                bool success = await service.DownloadFileAsync(account.AccountId, chunk.CloudFileId, tempPath);
+                bool success = await service.DownloadFileAsync(account.ID, chunk.CloudFileId, tempPath, chunk.CloudStorageNum);
                 if (!success)
                 {
                     Console.WriteLine($"❌ 조각 다운로드 실패: {chunk.FileName}");
