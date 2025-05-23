@@ -89,16 +89,16 @@ namespace OverCloud.Services.FileManager.DriveManager
             }
         }
 
-        public async Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath)
+        public async Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath,int CloudStorageNum)
         {
-            var clouds = accountRepository.GetAllAccounts(userId);
-            var googleCloud = clouds.FirstOrDefault(c => c.ID == userId);
-            if (googleCloud == null) return false;
+            var clouds = storageRepo.GetCloud(CloudStorageNum);
+       //     var googleCloud = clouds.FirstOrDefault(c => c.ID == userId);
+            if (clouds == null) return false;
 
             Console.WriteLine(userId);
             Console.WriteLine(" google DownloadFileAsync");
 
-            var accessToken = await tokenProvider.GetAccessTokenAsync(googleCloud);
+            var accessToken = await tokenProvider.GetAccessTokenAsync(clouds);
             var service = CreateDriveService(accessToken);
 
             var request = service.Files.Get(cloudFileId);

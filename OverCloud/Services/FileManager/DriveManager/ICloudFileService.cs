@@ -15,7 +15,7 @@ namespace OverCloud.Services.FileManager.DriveManager
     {
         //지금은 클라우드에 직접 들어가서 파일을 다운로드 해오는 형식.
         
-        Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath);
+        Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath, int CloudStorageNum);
 
         Task<bool> DeleteFileAsync(int cloudStorageNum, string fileId, string userId);
 
