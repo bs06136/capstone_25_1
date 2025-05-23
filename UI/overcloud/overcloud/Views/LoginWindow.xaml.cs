@@ -32,16 +32,6 @@ namespace overcloud.Views
         {
             InitializeComponent();
 
-            string filePath = "1.5GB_dummy_file.bin";
-            long fileSizeInBytes = (long)(1.5 * 1024 * 1024 * 1024); // 1.5GB = 1.5 * 1024^3
-
-            using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                fs.SetLength(fileSizeInBytes);
-            }
-
-            Console.WriteLine("✅ 1.5GB 파일 생성 완료: " + filePath);
-
 
             var connStr = DbConfig.ConnectionString;
             var storageRepo = new StorageRepository(connStr);
