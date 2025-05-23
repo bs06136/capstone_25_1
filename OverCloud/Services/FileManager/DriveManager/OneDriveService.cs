@@ -35,6 +35,8 @@ namespace OverCloud.Services.FileManager.DriveManager
 
         private async Task<bool> EnsureAccessTokenAsync(CloudStorageInfo cloud)
         {
+            accessToken = null;
+            Console.WriteLine($"accessToken:{accessToken}");
             if (string.IsNullOrEmpty(accessToken))
             {
                 accessToken = await oneDriveTokenRefresher.RefreshAccessTokenAsync(cloud);
@@ -187,13 +189,12 @@ namespace OverCloud.Services.FileManager.DriveManager
         }
 
 
-        public async Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath)
+        public async Task<bool> DownloadFileAsync(int CloudStorageNum, string cloudFileId, string savePath)
         {   
-            Console.WriteLine(userId); //여기서 userID는 구글게정, 원드 계정, 드롭계정 id
+                //  Console.WriteLine(userId); //여기서 userID는 구글게정, 원드 계정, 드롭계정 id
             Console.WriteLine("one DownloadFileAsync");
 
-            var cloud = accountRepository.GetAllAccounts(userId)
-                .FirstOrDefault(c => c.ID == userId);
+            var cloud = storageRepository.GetCloud(CloudStorageNum);
 
             if (cloud == null) return false;
             if (!await EnsureAccessTokenAsync(cloud)) return false;
