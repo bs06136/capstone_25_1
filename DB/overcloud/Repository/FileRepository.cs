@@ -317,7 +317,7 @@ namespace DB.overcloud.Repository
 
             string query = @"
                 INSERT INTO CloudFileInfo 
-                (file_name, file_size, uploaded_at,ID, cloud_storage_num, parent_folder_id, is_folder, cloud_file_id, root_file_id, chunk_index, chunk_size, is_distributed) 
+                (file_name, file_size, uploaded_at, cloud_storage_num, ID, parent_folder_id, is_folder, cloud_file_id, root_file_id, chunk_index, chunk_size, is_distributed) 
                 VALUES 
                 (@name, @size, @time, @storage, @id, @parent, @folder, @cloud, @rootId, @chunkIndex, @chunkSize, @isDistributed);
                 SELECT LAST_INSERT_ID();";
