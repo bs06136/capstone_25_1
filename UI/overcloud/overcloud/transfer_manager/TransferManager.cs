@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using overcloud.transfer_manager;
 using overcloud.Views;
+using OverCloud.Services;
 using OverCloud.Services.FileManager;
 
 namespace OverCloud.transfer_manager
@@ -11,10 +12,10 @@ namespace OverCloud.transfer_manager
         public UploadManager UploadManager { get; }
         public ObservableCollection<TransferItemViewModel> Completed { get; }
 
-        public TransferManager(FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager)
+        public TransferManager(FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, CloudTierManager cloudTierManager)
         {
             DownloadManager = new DownloadManager(fileDownloadManager);
-            UploadManager = new UploadManager(fileUploadManager);
+            UploadManager = new UploadManager(fileUploadManager, cloudTierManager);
             Completed = new ObservableCollection<TransferItemViewModel>();
         }
     }

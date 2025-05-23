@@ -32,7 +32,7 @@ namespace overcloud.Views
                 System.Diagnostics.Debug.WriteLine("계정 불러오기 시작");
                 // 기존: List<CloudStorageInfo> accounts = main.GetAllCloudStatus();
                 // 변경: List<CloudAccountInfo> accounts = main.GetAllAccounts();
-                List<CloudStorageInfo> accounts = _accountService.Get_Clouds_For_User("admin");
+                List<CloudStorageInfo> accounts = _accountService.Get_Clouds_For_User(_user_id);
                 AccountListBox.ItemsSource = accounts;
                 Debug.WriteLine("list 출력");
             }

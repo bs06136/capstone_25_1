@@ -126,6 +126,8 @@ namespace overcloud.Views
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
             }
+
+            public bool IsDistributed { get; set; }
         }
 
         //////변환기
@@ -141,7 +143,8 @@ namespace overcloud.Views
                 ParentFolderId = file.ParentFolderId,
                 IsFolder = file.IsFolder,
                 cloud_file_id = file.CloudFileId,
-                IsChecked = false
+                IsChecked = false,
+                IsDistributed = file.IsDistributed
             };
         }
 
@@ -207,7 +210,7 @@ namespace overcloud.Views
                     ulong fileSize = (ulong)new FileInfo(filePath).Length;
 
                     // 용량 체크
-                    ulong totalRemainingByte = _cloudTierManager.GetTotalRemainingQuotaInBytes("admin");
+                    ulong totalRemainingByte = _cloudTierManager.GetTotalRemainingQuotaInBytes(_user_id);
                     if (totalRemainingByte < fileSize)
                     {
                         System.Windows.MessageBox.Show("❌ 전체 클라우드 용량이 부족합니다.");
@@ -256,9 +259,10 @@ namespace overcloud.Views
                 FileSize = 0,
                 CloudStorageNum = -1,
                 CloudFileId = string.Empty,
+                ID = _user_id
             };
 
-            int newFolderId = _fileRepository.add_folder(folderInfo, _user_id);
+            int newFolderId = _fileRepository.add_folder(folderInfo);
             if (newFolderId == -1)
             {
                 System.Windows.MessageBox.Show($"폴더 '{folderInfo.FileName}' 등록 실패");
@@ -297,7 +301,7 @@ namespace overcloud.Views
             };
 
             // 바로 하위 폴더만 조회해서 추가
-            var rootChildren = _fileRepository.all_file_list(-1)
+            var rootChildren = _fileRepository.all_file_list(-1, _user_id)
                                  .Where(f => f.IsFolder)
                                  .ToList();
 
@@ -326,7 +330,7 @@ namespace overcloud.Views
 
                     int parentId = (int)parentItem.Tag;
 
-                    var children = _fileRepository.all_file_list(parentId)
+                    var children = _fileRepository.all_file_list(parentId, _user_id)
                                     .Where(f => f.IsFolder)
                                     .ToList();
 
@@ -384,7 +388,7 @@ namespace overcloud.Views
                     if (tvi.Items.Count == 1 && tvi.Items[0] is string s && s == "Loading...")
                     {
                         tvi.Items.Clear();
-                        var children = _fileRepository.all_file_list(id).Where(f => f.IsFolder);
+                        var children = _fileRepository.all_file_list(id, _user_id).Where(f => f.IsFolder);
                         foreach (var f in children)
                         {
                             var childTvi = new TreeViewItem
@@ -422,7 +426,7 @@ namespace overcloud.Views
 
         private void LoadFolderContents(int folderId)
         {
-            var contents = _fileRepository.all_file_list(folderId)
+            var contents = _fileRepository.all_file_list(folderId, _user_id)
                 .Select(file => ToViewModel(file))
                 .ToList();
 
@@ -453,7 +457,7 @@ namespace overcloud.Views
 
                     if (info.Icon == "asset/folder.png")
                     {
-                        var folder = _fileRepository.all_file_list(currentFolderId)
+                        var folder = _fileRepository.all_file_list(currentFolderId, _user_id)
                                      .FirstOrDefault(f => f.IsFolder && f.FileName == info.FileName);
 
                         if (folder != null)
@@ -517,7 +521,7 @@ namespace overcloud.Views
                             childItem.Items.Clear();
 
                             // ⚠️ 하위 항목을 중복해서 추가하지 않도록 체크
-                            var children = _fileRepository.all_file_list(childId)
+                            var children = _fileRepository.all_file_list(childId, _user_id)
                                            .Where(f => f.IsFolder && f.FileId != childId) // 자기 자신은 제외
                                            .ToList();
 
@@ -598,18 +602,20 @@ namespace overcloud.Views
                 var enqueueList = selectedFiles
                     .Where(f => !f.IsFolder)
                     .Select(f => (
+                        FileID: f.FileId,
                         FileName: f.FileName,
                         CloudFileId: f.cloud_file_id,
                         CloudStorageNum: f.CloudStorageNum,
-                        LocalPath: Path.Combine(localBase, f.FileName)
+                        LocalPath: Path.Combine(localBase, f.FileName),
+                        IsDistributed: f.IsDistributed
                     )).ToList();
 
-                App.TransferManager.DownloadManager.EnqueueDownloads(enqueueList);
+                App.TransferManager.DownloadManager.EnqueueDownloads(enqueueList, _user_id);
 
                 // 2. 폴더는 기존 재귀 다운로드
                 foreach (var item in selectedFiles.Where(f => f.IsFolder))
                 {
-                    await DownloadItemRecursive(item.FileId, localBase, allMap);
+                    await DownloadItemRecursive(item.FileId, localBase, allMap, item.IsDistributed);
                 }
 
                 System.Windows.MessageBox.Show("다운로드 요청 완료");
@@ -621,7 +627,7 @@ namespace overcloud.Views
         }
 
 
-        private async Task DownloadItemRecursive(int fileId, string localBase, Dictionary<int, CloudFileInfo> current_file_map)
+        private async Task DownloadItemRecursive(int fileId, string localBase, Dictionary<int, CloudFileInfo> current_file_map, bool _IsDistributed)
         {
             if (!current_file_map.TryGetValue(fileId, out var file)) return;
 
@@ -632,10 +638,10 @@ namespace overcloud.Views
             {
                 Directory.CreateDirectory(localPath);
 
-                var children = _fileRepository.all_file_list(file.FileId); // 이 폴더의 하위 항목
+                var children = _fileRepository.all_file_list(file.FileId, file.ID); // 이 폴더의 하위 항목
                 foreach (var child in children)
                 {
-                    DownloadItemRecursive(child.FileId, localBase, current_file_map);
+                    DownloadItemRecursive(child.FileId, localBase, current_file_map, child.IsDistributed);
                 }
             }
             else
@@ -644,10 +650,10 @@ namespace overcloud.Views
                 if (!string.IsNullOrEmpty(dir))
                     Directory.CreateDirectory(dir);
 
-                App.TransferManager.DownloadManager.EnqueueDownloads(new List<(string FileName, string CloudFileId, int CloudStorageNum, string LocalPath)>
+                App.TransferManager.DownloadManager.EnqueueDownloads(new List<(int FileId, string FileName, string CloudFileId, int CloudStorageNum, string LocalPath, bool IsDistributed)>
                     {
-                        (file.FileName, file.CloudFileId, file.CloudStorageNum, localPath)
-                    });
+                        (fileId ,file.FileName, file.CloudFileId, file.CloudStorageNum, localPath, _IsDistributed)
+                    }, _user_id);
             }
         }
 
@@ -670,7 +676,7 @@ namespace overcloud.Views
 
             void Traverse(int parentId)
             {
-                var children = _fileRepository.all_file_list(parentId);
+                var children = _fileRepository.all_file_list(parentId, _user_id);
                 foreach (var file in children)
                 {
                     result[file.FileId] = file;
@@ -725,7 +731,7 @@ namespace overcloud.Views
             // 1. 폴더인 경우 자식 먼저 삭제
             if (file.IsFolder)
             {
-                var children = _fileRepository.all_file_list(file.FileId);
+                var children = _fileRepository.all_file_list(file.FileId, file.ID);
                 foreach (var child in children)
                 {
                     await DeleteItemRecursive(child.FileId, allFileMap);
@@ -766,7 +772,7 @@ namespace overcloud.Views
                 return;
             }
 
-            var dialog = new FolderSelectDialog(_fileRepository)
+            var dialog = new FolderSelectDialog(_fileRepository, _user_id)
             {
                 Owner = Window.GetWindow(this)
             };
@@ -865,6 +871,7 @@ namespace overcloud.Views
                 FileSize = 0,
                 CloudStorageNum = -1,
                 CloudFileId = string.Empty,
+                ID = _user_id
             };
 
             // DB에 삽입
@@ -872,7 +879,7 @@ namespace overcloud.Views
 
             try
             {
-                result = _fileRepository.add_folder(info, _user_id);
+                result = _fileRepository.add_folder(info);
                 //result = null;
             }
             catch (Exception ex)
@@ -908,7 +915,7 @@ namespace overcloud.Views
                 return;
             }
 
-            var dialog = new FolderSelectDialog(_fileRepository)
+            var dialog = new FolderSelectDialog(_fileRepository, _user_id)
             {
                 Owner = Window.GetWindow(this)
             };
@@ -948,10 +955,11 @@ namespace overcloud.Views
                 UploadedAt = DateTime.Now,
                 FileSize = 0,
                 CloudStorageNum = -1,
-                CloudFileId = string.Empty
+                CloudFileId = string.Empty,
+                ID = _user_id
             };
 
-            int newFolderId = _fileRepository.add_folder(newFolderInfo, _user_id);
+            int newFolderId = _fileRepository.add_folder(newFolderInfo);
             if (newFolderId == -1)
             {
                 System.Windows.MessageBox.Show($"폴더 '{newFolderInfo.FileName}' 복사 실패");
@@ -959,7 +967,7 @@ namespace overcloud.Views
             }
 
             // 2. 하위 항목 재귀 복사
-            var children = _fileRepository.all_file_list(sourceFolderId);
+            var children = _fileRepository.all_file_list(sourceFolderId, _user_id);
             foreach (var child in children)
             {
                 if (child.IsFolder)

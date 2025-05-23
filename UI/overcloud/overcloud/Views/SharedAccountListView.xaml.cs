@@ -48,7 +48,7 @@ namespace overcloud.Views
 
         private void RefreshList()
         {
-            string currentUserId = "admin";
+            string currentUserId = _user_id;
 
             // 공유 계정 리스트 불러오기
             var all = _accountService.Get_Clouds_For_User(currentUserId);
