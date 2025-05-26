@@ -9,9 +9,9 @@ namespace overcloud.Views
 {
     public partial class AddAccountWindow : Window
     {
-        private LoginController _controller;
+        private LoginController _controller; 
         private string _user_id;                    //수정 필요
-        bool _isCooperationMode;
+        bool _isCooperationMode; 
 
         public AddAccountWindow(LoginController controller, string user_id ,  bool coop)
         {
