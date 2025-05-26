@@ -4,10 +4,11 @@ namespace DB.overcloud.Repository
 {
     public interface IStorageRepository
     {
-        CloudStorageInfo GetCloud(int cloudStorageNum);
+        int GetOrCreateCloudStorageNum(string cloudType, string accountId);
+        CloudStorageInfo GetCloud(int cloudStorageNum, string userId);
         bool AddCloudStorage(CloudStorageInfo info);
-        bool DeleteCloudStorage(int cloudStorageNum);
+        bool DeleteCloudStorage(int cloudStorageNum, string userId);
         bool account_save(CloudStorageInfo one_cloud);
-        bool UpdateRefreshToken(int cloudStorageNum, string refreshToken);
+        bool UpdateRefreshToken(int cloudStorageNum, string userId, string refreshToken);
     }
 }
