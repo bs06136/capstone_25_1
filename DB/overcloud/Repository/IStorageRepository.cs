@@ -6,7 +6,7 @@ namespace DB.overcloud.Repository
     {
         int GetOrCreateCloudStorageNum(string cloudType, string accountId);
         CloudStorageInfo GetCloud(int cloudStorageNum, string userId);
-        bool AddCloudStorage(CloudStorageInfo info);
+        bool AddCloudStorage(CloudStorageInfo info, string userId);
         bool DeleteCloudStorage(int cloudStorageNum, string userId);
         bool account_save(CloudStorageInfo one_cloud);
         bool UpdateRefreshToken(int cloudStorageNum, string userId, string refreshToken);
