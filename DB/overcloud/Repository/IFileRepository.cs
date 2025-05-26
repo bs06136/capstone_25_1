@@ -20,5 +20,7 @@ namespace DB.overcloud.Repository
         int AddFileAndReturnId(CloudFileInfo file_info);
         public List<CloudFileInfo> GetChunksByRootFileId(int rootFileId);
         public List<CloudFileInfo> GetFilesByStorageNum(int cloudStorageNum);
+
+        public void updateFile(CloudFileInfo file_info);
     }
 }

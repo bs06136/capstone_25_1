@@ -46,11 +46,11 @@ namespace OverCloud.Services.FileManager.DriveManager
             return !string.IsNullOrEmpty(accessToken); ;
         }
 
-        public async Task<string> UploadFileAsync(CloudStorageInfo bestStorage, string filePath)
+        public async Task<string> UploadFileAsync(CloudStorageInfo bestStorage, string filePath, string userId)
         {
             //var cloud = accountRepository.GetAllAccounts(userId)
             //    .FirstOrDefault(c => c.AccountId == userId);
-            var oneCloud = storageRepository.GetCloud(bestStorage.CloudStorageNum);
+            var oneCloud = storageRepository.GetCloud(bestStorage.CloudStorageNum,userId);
 
             if (oneCloud == null)
                 return null;
@@ -122,7 +122,7 @@ namespace OverCloud.Services.FileManager.DriveManager
           //  Console.WriteLine($"Upload URL: {uploadUrl}");
 
             // 2. 조각 업로드( Authorization절대 붙이지않음)
-            const int chunkSize = 100 * 1024 * 1024; // 320KB (microsoft 권장 크기)
+            const int chunkSize = 100 * 1024 * 1024; // 100MB씩 나눔
             var fileInfo = new FileInfo(filePath);
             long fileSize = fileInfo.Length;
             long uploaded = 0;
@@ -189,16 +189,12 @@ namespace OverCloud.Services.FileManager.DriveManager
         }
 
 
-<<<<<<< HEAD
-        public async Task<bool> DownloadFileAsync(int CloudStorageNum, string cloudFileId, string savePath)
-=======
-        public async Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath, int CloudStorageNum)
->>>>>>> 05857bff55589c8d44fc2eee9d3bb317f58dcc3c
+        public async Task<bool> DownloadFileAsync(int CloudStorageNum, string cloudFileId, string savePath,string userId)
         {   
                 //  Console.WriteLine(userId); //여기서 userID는 구글게정, 원드 계정, 드롭계정 id
             Console.WriteLine("one DownloadFileAsync");
 
-            var cloud = storageRepository.GetCloud(CloudStorageNum);
+            var cloud = storageRepository.GetCloud(CloudStorageNum, userId);
 
             if (cloud == null) return false;
             if (!await EnsureAccessTokenAsync(cloud)) return false;
@@ -220,8 +216,8 @@ namespace OverCloud.Services.FileManager.DriveManager
 
         public async Task<bool> DeleteFileAsync(int cloudStorageNum, string cloudFileId, string userId)
         {
-            var cloud = accountRepository.GetAllAccounts(userId)
-                .FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
+            var cloud = storageRepository.GetCloud(cloudStorageNum, userId);
+               // .FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
             if (cloud == null) return false;
             if (!await EnsureAccessTokenAsync(cloud)) return false;
 
@@ -231,9 +227,9 @@ namespace OverCloud.Services.FileManager.DriveManager
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<(ulong, ulong)> GetDriveQuotaAsync(int CloudStorageNum)
+        public async Task<(ulong, ulong)> GetDriveQuotaAsync(int CloudStorageNum,string userId)
         {
-            var oneCloud = storageRepository.GetCloud(CloudStorageNum);
+            var oneCloud = storageRepository.GetCloud(CloudStorageNum, userId);
            // var oneCloud = cloud.FirstOrDefault(c => c.ID == userId);
 
             if (oneCloud == null) return (0, 0);

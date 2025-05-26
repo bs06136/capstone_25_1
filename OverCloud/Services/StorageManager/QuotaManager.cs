@@ -19,17 +19,16 @@ namespace OverCloud.Services.StorageManager
         //private readonly OneDriveService oneDriveService;
         private readonly IAccountRepository accountRepository;
         private readonly IStorageRepository storageRepository;
-        private AccountService accountService;
+        private readonly IFileRepository fileRepository;
+        private readonly CloudTierManager cloudTierManager;
 
-        public QuotaManager(IEnumerable<ICloudFileService> cloudServices, IStorageRepository storageRepo, IAccountRepository accountRepo)
+        public QuotaManager(IEnumerable<ICloudFileService> cloudServices, IStorageRepository storageRepo, IAccountRepository accountRepo,IFileRepository fileRepository, CloudTierManager cloudTierManager)
         {
             storageRepository = storageRepo;
             accountRepository = accountRepo;
-
+            this.fileRepository = fileRepository;
             this.cloudServices = cloudServices;
-           //googleDriveService = new GoogleDriveService(new GoogleTokenProvider(), storageRepository);
-            // dropboxService = new DropboxService();
-            // oneDriveService = new OneDriveService();
+            this.cloudTierManager = cloudTierManager;
         }
 
         //계정에 있는 모든 스토리지의 용량 업데이트
@@ -61,7 +60,7 @@ namespace OverCloud.Services.StorageManager
         {
            
             // 1. userEmail에 맞는 클라우드 타입 찾기
-            var cloudInfo = storageRepository.GetCloud(CloudStorageNum);
+            var cloudInfo = storageRepository.GetCloud(CloudStorageNum, userId);
             if (cloudInfo == null)
             {
                 Console.WriteLine("❌ 해당 이메일에 맞는 클라우드 정보를 찾을 수 없습니다.");
@@ -82,7 +81,7 @@ namespace OverCloud.Services.StorageManager
             }
 
             // 3. 해당 클라우드에 API 호출
-            var (total, used) = await service.GetDriveQuotaAsync(CloudStorageNum);
+            var (total, used) = await service.GetDriveQuotaAsync(CloudStorageNum, userId);
 
 
             // 5. TotalCapacity, UsedCapacity만 업데이트 (KB단위)
@@ -137,25 +136,130 @@ namespace OverCloud.Services.StorageManager
         }
 
 
-
-        //만약 UI에서 새로고침버튼 누를때 전체 새로 업데이트하고 싶으면 사용
-        //로그인/ 계정추가/ 삭제 후 강제로 메모리 초기화하고 새로 불러올 때 사용 가능.
-        public void RefreshAllQuotas(string userId) //오버클라우드 아이디
+        public ulong GetTotalRemainingQuotaInBytes_Delete_Account(string userId, int cloudStroageNum)
         {
-            StorageSessionManager.Quotas.Clear();
+            var clouds = accountRepository.GetAllAccounts(userId);
+            if (clouds == null || clouds.Count == 0)
+                return 0;
 
-            var cloudList = accountRepository.GetAllAccounts(userId);
-            foreach (var cloud in cloudList)
+            ulong totalAvailableBytes = 0;
+
+            foreach (var cloud in clouds)
             {
-                StorageSessionManager.Quotas.Add(new CloudQuotaInfo
-                {
-                    CloudStorageNum = cloud.CloudStorageNum,
-                    CloudType = cloud.CloudType,
-                    TotalCapacityKB = cloud.TotalCapacity,
-                    UsedCapacityKB = cloud.UsedCapacity
-                });
+                ulong remainingKB = cloud.TotalCapacity - cloud.UsedCapacity;
+                totalAvailableBytes += remainingKB * 1024; // KB → byte
             }
+
+            var delete_cloud = storageRepository.GetCloud(cloudStroageNum, userId);
+            ulong remainingKB_Delete_Cloud = delete_cloud.TotalCapacity - delete_cloud.UsedCapacity;
+            totalAvailableBytes -= remainingKB_Delete_Cloud * 1024;
+
+            return totalAvailableBytes;
         }
+
+        public ulong AllFilelistSize(int CloudStorageNum)
+        {
+            var files = fileRepository.GetFilesByStorageNum(CloudStorageNum);
+
+            ulong totalSize = 0;
+
+            foreach (var file in files)
+            {
+                totalSize += (ulong)file.FileSize;  // file.Size를 ulong으로 캐스팅
+            }
+
+            return totalSize;
+        }
+
+
+
+        public async Task<bool> AccountFile_Redistribution(int cloudStorageNum, string userId)
+        {
+            // 1. 삭제될 계정의 파일 목록 조회
+            var filesToRedistribute = fileRepository.GetFilesByStorageNum(cloudStorageNum);
+            if (filesToRedistribute == null || filesToRedistribute.Count == 0)
+            {
+                Console.WriteLine("재분배할 파일이 없습니다.");
+                return true; // 아무 파일도 없으므로 성공 처리
+            }
+
+            foreach (var file in filesToRedistribute)
+            {
+                try
+                {
+                    var cloud = storageRepository.GetCloud(cloudStorageNum, userId);
+                    var sourceService = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(cloud.CloudType));
+                    if (sourceService == null)
+                    {
+                        Console.WriteLine($"❌ 클라우드 서비스 없음 (cloudType: {cloud.CloudType})");
+                        continue;
+                    }
+
+                    string tempPath = Path.GetTempFileName();
+                    bool downloaded = await sourceService.DownloadFileAsync(file.CloudStorageNum, file.CloudFileId, tempPath,userId);
+                    if (!downloaded)
+                    {
+                        Console.WriteLine($"❌ 파일 다운로드 실패: {file.FileName}");
+                        continue;
+                    }
+
+                    var candidateStorages = cloudTierManager.GetCandidateStorages(file.FileSize / 1024, userId);
+                    if (candidateStorages == null)
+                    {
+                        Console.WriteLine($"❌ 적절한 스토리지가 없음. 파일: {file.FileName}");
+                        File.Delete(tempPath);
+                        continue;
+                    }
+
+                    bool uploadSuccess = false;
+
+                    foreach (var bestStorage in candidateStorages)
+                    {
+                        var targetService = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(bestStorage.CloudType));
+                        if (targetService == null)
+                        {
+                            Console.WriteLine($"❌ 대상 클라우드 서비스 없음: {bestStorage.CloudType}");
+                            continue;
+                        }
+
+                        string newCloudFileId = await targetService.UploadFileAsync(bestStorage, tempPath, userId);
+                        if (!string.IsNullOrEmpty(newCloudFileId))
+                        {
+                            // 업로드 성공 처리
+                            file.CloudStorageNum = bestStorage.CloudStorageNum;
+                            file.CloudFileId = newCloudFileId;
+                            fileRepository.updateFile(file);
+                            UpdateQuotaAfterUploadOrDelete(bestStorage.CloudStorageNum, file.FileSize / 1024, true);
+                            uploadSuccess = true;
+                            Console.WriteLine($"✅ 파일 재분배 성공: {file.FileName} -> {bestStorage.CloudType}");
+                            break; // 반복문 종료 (업로드 성공)
+                        }
+
+                        Console.WriteLine($"❌ 업로드 실패: {file.FileName} 대상: {bestStorage.CloudType}");
+                    }
+
+                    File.Delete(tempPath); // 임시 파일 삭제
+
+                    if (!uploadSuccess)
+                    {
+                        Console.WriteLine($"❌ 모든 스토리지 업로드 실패: {file.FileName}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"❌ 예외 발생: {ex.Message}");
+                }
+            }
+
+            // 7. 모든 파일 재분배 후 집계 갱신
+            UpdateAggregatedStorageForUser(userId);
+            return true;
+        }
+
+
+
+
+
 
     }
 

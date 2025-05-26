@@ -18,32 +18,7 @@ namespace overcloud.Views
         public LoginWindow(LoginController controller)
         {
             InitializeComponent();
-<<<<<<< HEAD
             _controller = controller;
-=======
-
-
-            var connStr = DbConfig.ConnectionString;
-            var storageRepo = new StorageRepository(connStr);
-            //var accountRepo = new AccountRepository(connStr);
-            accountRepository = new AccountRepository(DbConfig.ConnectionString);
-            _fileRepository = new FileRepository(connStr);
-
-            var tokenFactory = new TokenProviderFactory();
-            var googleSvc = new GoogleDriveService(tokenFactory.CreateGoogleTokenProvider(), storageRepo, accountRepository);
-            var oneDriveSvc = new OneDriveService(tokenFactory.CreateOneDriveTokenRefresher(), storageRepo, accountRepository);
-            var cloudSvcs = new List<ICloudFileService> { googleSvc, oneDriveSvc };
-
-            _quotaManager = new QuotaManager(cloudSvcs, storageRepo, accountRepository);
-            _accountService = new AccountService(accountRepository, storageRepo, _quotaManager);
-            _cloudTierManager = new CloudTierManager(accountRepository);
-
-            _fileUploadManager = new FileUploadManager(_accountService, _quotaManager, storageRepo, _fileRepository, cloudSvcs, _cloudTierManager);
-            _fileDownloadManager = new FileDownloadManager(_fileRepository, accountRepository, cloudSvcs);
-            _fileDeleteManager = new FileDeleteManager(accountRepository, _quotaManager, storageRepo, _fileRepository, cloudSvcs);
-            _fileCopyManager = new FileCopyManager(_fileRepository, _cloudTierManager, cloudSvcs, _quotaManager, accountRepository, _fileUploadManager);
-
->>>>>>> 05857bff55589c8d44fc2eee9d3bb317f58dcc3c
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
