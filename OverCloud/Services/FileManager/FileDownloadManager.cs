@@ -56,20 +56,11 @@ namespace OverCloud.Services.FileManager
                 return false;
             }
 
-
-<<<<<<< HEAD
-            bool result = await service.DownloadFileAsync(CloudStorageNum, cloudFileId, savePath);
-            return result;
-        }
-
-        public async Task<bool> DownloadAndMergeFile(int logicalFileId, string finalsavePath, string userId, int CloudStorageNum)
-=======
             bool result = await service.DownloadFileAsync(cloudInfo.ID, cloudFileId, savePath, CloudStorageNum);
             return result;
         }
 
         public async Task<bool> DownloadAndMergeFile(int logicalFileId, string finalsavePath, string userId,int CloudStorageNum)
->>>>>>> 05857bff55589c8d44fc2eee9d3bb317f58dcc3c
         {
                   // 1. 논리 파일 정보 불러오기
             var logicalFile = fileRepo.GetFileById(logicalFileId);
@@ -119,11 +110,8 @@ namespace OverCloud.Services.FileManager
 
                         // 3. 조각 다운로드 → 임시 파일 경로 반환
                 string tempPath = Path.GetTempFileName();
-<<<<<<< HEAD
-                bool success = await service.DownloadFileAsync(chunk.CloudStorageNum, chunk.CloudFileId, tempPath);
-=======
+
                 bool success = await service.DownloadFileAsync(account.ID, chunk.CloudFileId, tempPath, chunk.CloudStorageNum);
->>>>>>> 05857bff55589c8d44fc2eee9d3bb317f58dcc3c
                 if (!success)
                 {
                     Console.WriteLine($"❌ 조각 다운로드 실패: {chunk.FileName}");
