@@ -71,6 +71,8 @@ namespace OverCloud.transfer_manager
                         }
                         else
                         {
+                            Console.WriteLine("분산저장 시작");
+                            Console.WriteLine(file.ParentFolderId);
                             result = await _fileUploadManager.Upload_Distributed(file.FilePath, file.ParentFolderId, user_id);
                         }
 

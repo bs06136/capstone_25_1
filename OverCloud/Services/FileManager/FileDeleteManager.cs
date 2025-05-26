@@ -51,9 +51,9 @@ namespace OverCloud.Services.FileManager
             if (!file.IsFolder)
             {
 
-                var cloudInfo = accountRepository
-                    .GetAllAccounts(userId)
-                    .FirstOrDefault(c => c.CloudStorageNum == file.CloudStorageNum);
+                var cloudInfo = storageRepository.GetCloud(file.CloudStorageNum, userId);
+                    //.GetAllAccounts(userId)
+                    //.FirstOrDefault(c => c.CloudStorageNum == file.CloudStorageNum);
 
                 string cloudType = cloudInfo.CloudType;
                 var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(cloudType));
@@ -84,8 +84,7 @@ namespace OverCloud.Services.FileManager
 
             else
             {
-                var fileInfo = storageRepository
-                   .GetCloud(file.CloudStorageNum);
+                var fileInfo = storageRepository.GetCloud(file.CloudStorageNum,userId);
                 
                 bool dbDeleted = fileRepository.DeleteFile(fileId);
                     return dbDeleted;               
@@ -114,9 +113,9 @@ namespace OverCloud.Services.FileManager
 
             foreach (var chunk in chunks)
             {
-                var cloudInfo = accountRepository
-                    .GetAllAccounts(userId)
-                    .FirstOrDefault(c => c.CloudStorageNum == chunk.CloudStorageNum);
+                var cloudInfo = storageRepository.GetCloud(chunk.CloudStorageNum, userId);
+                    //.GetAllAccounts(userId)
+                    //.FirstOrDefault(c => c.CloudStorageNum == chunk.CloudStorageNum);
 
                 if (cloudInfo == null)
                 {

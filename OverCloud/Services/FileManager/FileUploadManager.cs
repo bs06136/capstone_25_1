@@ -18,7 +18,6 @@ namespace OverCloud.Services.FileManager
     public class FileUploadManager
     {
         private readonly AccountService accountService;
-        //private readonly GoogleDriveService googleDriveService;
         private readonly IFileRepository repo_file;
         private readonly CloudTierManager cloudTierManager;
         private readonly QuotaManager quotaManager;
@@ -60,7 +59,7 @@ namespace OverCloud.Services.FileManager
             }
 
             // 3. 파일 업로드
-            var cloudFileId = await service.UploadFileAsync(bestStorage, file_name);
+            var cloudFileId = await service.UploadFileAsync(bestStorage, file_name, userId);
             if (string.IsNullOrEmpty(cloudFileId)) return false;
 
             // 4. 파일 정보 저장
@@ -111,10 +110,12 @@ namespace OverCloud.Services.FileManager
                 ParentFolderId = parentFolderId,
                 IsFolder = false,
                 IsDistributed = true,
-                CloudStorageNum= -1
+                CloudStorageNum= -1,
+                ID = userId
             };
-            int logicalFileId = repo_file.AddFileAndReturnId(logical);
 
+            int logicalFileId = repo_file.AddFileAndReturnId(logical);
+            Console.WriteLine(logicalFileId);
             using FileStream source = new FileStream(file_name, FileMode.Open, FileAccess.Read);
             ulong remainingBytes = fileSize;
             int chunkIndex = 0;
@@ -141,7 +142,7 @@ namespace OverCloud.Services.FileManager
                 // 업로드용 임시 파일 생성
                 string tempFile = Path.GetTempFileName(); //임의 경로 지정 
                 await File.WriteAllBytesAsync(tempFile, buffer); //버퍼 크기만큼(분산저장 chunk크기만큼) 잘라서 파일 쓰기.
-                string cloudFileId = await service.UploadFileAsync(cloud, tempFile); // 잘린 파일 업로드
+                string cloudFileId = await service.UploadFileAsync(cloud, tempFile,userId); // 잘린 파일 업로드
                 File.Delete(tempFile); //업로드 후 로컬에서 파일 삭제.
 
                 // 조각 파일 등록
@@ -156,7 +157,8 @@ namespace OverCloud.Services.FileManager
                     CloudFileId = cloudFileId,
                     RootFileId = logicalFileId,
                     ChunkIndex = chunkIndex,
-                    ChunkSize = (ulong)read
+                    ChunkSize = (ulong)read,
+                    ID= userId
                 };
 
                 repo_file.addfile(chunk);
@@ -184,6 +186,9 @@ namespace OverCloud.Services.FileManager
                 return false;
             }
         }
+
+
+
 
 
     }

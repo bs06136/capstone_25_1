@@ -317,7 +317,7 @@ namespace DB.overcloud.Repository
 
             string query = @"
                 INSERT INTO CloudFileInfo 
-                (file_name, file_size, uploaded_at, cloud_storage_num, parent_folder_id, is_folder, cloud_file_id, root_file_id, chunk_index, chunk_size, is_distributed) 
+                (file_name, file_size, uploaded_at, cloud_storage_num, ID, parent_folder_id, is_folder, cloud_file_id, root_file_id, chunk_index, chunk_size, is_distributed) 
                 VALUES 
                 (@name, @size, @time, @storage, @id, @parent, @folder, @cloud, @rootId, @chunkIndex, @chunkSize, @isDistributed);
                 SELECT LAST_INSERT_ID();";
@@ -406,5 +406,32 @@ namespace DB.overcloud.Repository
 
             return files;
         }
+
+        public void updateFile(CloudFileInfo file)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                UPDATE CloudFileInfo
+                SET 
+                    cloud_storage_num = @cloudStorageNum,
+                    cloud_file_id = @cloudFileId
+                WHERE 
+                    file_id = @fileId
+            ";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@cloudStorageNum", file.CloudStorageNum);
+            cmd.Parameters.AddWithValue("@cloudFileId", file.CloudFileId);
+            cmd.Parameters.AddWithValue("@fileId", file.FileId);
+
+            cmd.ExecuteNonQuery();
+
+            // MySqlConnection 기본 AutoCommit 모드라서 별도의 transaction.Commit() 불필요
+            // 하지만, 트랜잭션을 명시적으로 사용 중이라면, transaction.Commit() 추가해야 함
+        }
+
+
     }
 }
