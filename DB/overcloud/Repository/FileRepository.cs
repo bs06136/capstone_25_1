@@ -406,5 +406,32 @@ namespace DB.overcloud.Repository
 
             return files;
         }
+
+        public void updateFile(CloudFileInfo file)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                UPDATE CloudFileInfo
+                SET 
+                    cloud_storage_num = @cloudStorageNum,
+                    cloud_file_id = @cloudFileId
+                WHERE 
+                    file_id = @fileId
+            ";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@cloudStorageNum", file.CloudStorageNum);
+            cmd.Parameters.AddWithValue("@cloudFileId", file.CloudFileId);
+            cmd.Parameters.AddWithValue("@fileId", file.FileId);
+
+            cmd.ExecuteNonQuery();
+
+            // MySqlConnection 기본 AutoCommit 모드라서 별도의 transaction.Commit() 불필요
+            // 하지만, 트랜잭션을 명시적으로 사용 중이라면, transaction.Commit() 추가해야 함
+        }
+
+
     }
 }

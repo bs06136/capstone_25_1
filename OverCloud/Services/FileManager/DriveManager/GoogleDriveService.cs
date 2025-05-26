@@ -39,10 +39,9 @@ namespace OverCloud.Services.FileManager.DriveManager
             });
         }
 
-        public async Task<string> UploadFileAsync(CloudStorageInfo bestStorage, string file_name)
+        public async Task<string> UploadFileAsync(CloudStorageInfo bestStorage, string file_name, string userId)
         {
-            var oneCloud = storageRepo.GetCloud(bestStorage.CloudStorageNum);
-            //var googleCloud = clouds.FirstOrDefault(c => c.ID == userId);
+            var oneCloud = storageRepo.GetCloud(bestStorage.CloudStorageNum, userId);
             if (oneCloud == null) return null;
 
             var accessToken = await tokenProvider.GetAccessTokenAsync(oneCloud);
@@ -89,9 +88,9 @@ namespace OverCloud.Services.FileManager.DriveManager
             }
         }
 
-        public async Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath,int CloudStorageNum)
+        public async Task<bool> DownloadFileAsync(int CloudStorageNum, string cloudFileId, string savePath, string userId)
         {
-            var clouds = storageRepo.GetCloud(CloudStorageNum);
+            var clouds = storageRepo.GetCloud(CloudStorageNum,userId);
        //     var googleCloud = clouds.FirstOrDefault(c => c.ID == userId);
             if (clouds == null) return false;
 
@@ -108,10 +107,10 @@ namespace OverCloud.Services.FileManager.DriveManager
             return true;
         }
 
-        public async Task<bool> DeleteFileAsync(int cloudStorageNum, string fileId,string userId)
+        public async Task<bool> DeleteFileAsync(int cloudStorageNum, string fileId, string userId)
         {
-            var clouds = accountRepository.GetAllAccounts(userId);
-            var googleCloud = clouds.FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
+            var googleCloud = storageRepo.GetCloud(cloudStorageNum, userId);
+            //var googleCloud = clouds.FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
             if (googleCloud == null) return false;
 
             var accessToken = await tokenProvider.GetAccessTokenAsync(googleCloud);
@@ -130,9 +129,9 @@ namespace OverCloud.Services.FileManager.DriveManager
         }
 
 
-        public async Task<(ulong, ulong)> GetDriveQuotaAsync(int cloudStorageNum) //admin
+        public async Task<(ulong, ulong)> GetDriveQuotaAsync(int cloudStorageNum, string userId) //admin
         {
-            var googleCloud = storageRepo.GetCloud(cloudStorageNum); //
+            var googleCloud = storageRepo.GetCloud(cloudStorageNum, userId); //
 
             //var googleCloud = clouds.FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
             if (googleCloud == null)

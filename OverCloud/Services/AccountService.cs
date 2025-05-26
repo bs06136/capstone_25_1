@@ -22,8 +22,8 @@ namespace OverCloud.Services
         
         public AccountService(IAccountRepository accountRepo, IStorageRepository storageRepo ,QuotaManager quotaMgr)
         {
-            accountRepository = new AccountRepository(DbConfig.ConnectionString);
-            storageRepository = new StorageRepository(DbConfig.ConnectionString);
+            accountRepository = accountRepo;
+            storageRepository = storageRepo;
             quotaManager = quotaMgr;
         }
 
@@ -40,12 +40,10 @@ namespace OverCloud.Services
                 storage.ClientId = clientId;
                 storage.ClientSecret = clientSecret;
                 Console.WriteLine("구글 계정 추가중...");
-
             }
             else if (storage.CloudType == "OneDrive")
             {
                 var (email, refreshToken, clientId, clientSecret) = await OneDriveAuthHelper.AuthorizeAsync(storage.AccountId);
-
                 storage.ID = userId;
                 storage.AccountId = email;
                 storage.RefreshToken = refreshToken;
@@ -59,8 +57,6 @@ namespace OverCloud.Services
             var clouds = accountRepository.GetAllAccounts(userId);
             var OneCloud = clouds.FirstOrDefault(c => c.AccountId == storage.AccountId);
 
-
-            //cloudStorageNum을 넘겨주는 부분이 없음.
 
             if (result)
             {
@@ -80,26 +76,40 @@ namespace OverCloud.Services
                 quotaManager.UpdateAggregatedStorageForUser(userId);
             }
 
-
-
             return result;
-
         }
 
         // 오버클라우드 계정에 있던 클라우드 하나 삭제 (UI에서 호출)
-        public bool Delete_Cloud_Storage(int cloudStorageNum,string userId)
+        public async Task<bool> Delete_Cloud_Storage(int cloudStorageNum, string userId)
         {
-
-            var clouds = accountRepository.GetAllAccounts(userId);
-            var target = clouds.FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
-            
+            var target = storageRepository.GetCloud(cloudStorageNum, userId);
             if (target == null)
             {
                 Console.WriteLine($" 삭제 실패 : cloudStorageNum {cloudStorageNum}에 해당하는 클라우드 계정이 없습니다.");
                 return false;
             }
 
-            bool result = storageRepository.DeleteCloudStorage(cloudStorageNum);
+            //삭제할 계정을 제외한 나머지 스토리지의 용량정보.
+            ulong storageCapacity = quotaManager.GetTotalRemainingQuotaInBytes_Delete_Account(userId, target.CloudStorageNum);
+
+            //해당 스토리지의 파일들의 크기합산.
+            ulong filesSize = quotaManager.AllFilelistSize(target.CloudStorageNum);
+
+            //공간이 남는다면 재분배 해야함.
+            if (storageCapacity > filesSize)
+            {
+                bool redistributionResult = await quotaManager.AccountFile_Redistribution(target.CloudStorageNum, userId);
+                if (!redistributionResult)
+                {
+                    Console.WriteLine("❌ 파일 재분배 실패로 삭제 중단");
+                    return false;
+                }
+            }
+
+            var deleteCloud = storageRepository.GetCloud(cloudStorageNum,userId);
+
+            //Thread.Sleep(1);
+            bool result = storageRepository.DeleteCloudStorage(deleteCloud.CloudStorageNum, userId);
             if (result)
             {
                 StorageSessionManager.RemoveQuota(target.AccountId, target.CloudType);
@@ -122,6 +132,8 @@ namespace OverCloud.Services
             return accountRepository.GetAllAccounts(userId);
         }
    
+
+ 
 
     }
 }

@@ -18,6 +18,7 @@ namespace OverCloud.Services.FileManager
         private readonly QuotaManager quotaManager;
         private readonly IAccountRepository accountRepository;
         private readonly FileUploadManager fileUploadManager;
+        private readonly IStorageRepository storageRepository;
 
         public FileCopyManager(
             IFileRepository fileRepository,
@@ -25,7 +26,8 @@ namespace OverCloud.Services.FileManager
             List<ICloudFileService> cloudServices,
             QuotaManager quotaManager,
             IAccountRepository accountRepository,
-            FileUploadManager fileUploadManager
+            FileUploadManager fileUploadManager,
+            IStorageRepository storageRepository
             )
         {
             this.fileRepository = fileRepository;
@@ -34,6 +36,7 @@ namespace OverCloud.Services.FileManager
             this.quotaManager = quotaManager;
             this.accountRepository = accountRepository;
             this.fileUploadManager = fileUploadManager;
+            this.storageRepository = storageRepository;
         }
 
         public async Task<bool> Copy_File(int copy_target_file_id, int target_parent_file_id, string userId)
@@ -52,8 +55,8 @@ namespace OverCloud.Services.FileManager
             }
 
             // 1.원본 파일이 있는 클라우드 정보
-            var allAccounts = accountRepository.GetAllAccounts(userId);
-            var sourceCloud = allAccounts.FirstOrDefault(c => c.CloudStorageNum == originalFile.CloudStorageNum);
+            var sourceCloud = storageRepository.GetCloud(originalFile.CloudStorageNum,userId);
+            //var sourceCloud = allAccounts.FirstOrDefault(c => c.CloudStorageNum == originalFile.CloudStorageNum);
             if (sourceCloud == null)
             {
                 Console.WriteLine("원본 클라우드 계정 없음");
@@ -69,10 +72,10 @@ namespace OverCloud.Services.FileManager
 
                   // 업로드용 임시 파일 생성
             string tempPath = Path.GetTempFileName(); //임의 경로 지정
-            bool downloaded = await sourceService.DownloadFileAsync(sourceCloud.ID, originalFile.CloudFileId, tempPath, originalFile.CloudStorageNum);                                         
-            //임의 경로로 다운로드 
 
-                  // 1. 업로드 가능한 스토리지 선택
+            bool downloaded = await sourceService.DownloadFileAsync(originalFile.CloudStorageNum, originalFile.CloudFileId, tempPath, userId);                                         
+            //임의 경로로 다운로드 
+                // 1. 업로드 가능한 스토리지 선택
             var bestStorage = cloudTierManager.SelectBestStorage(originalFile.FileSize / 1024, userId); //ulong 자료형의 KB단위로 건네줘야함.
 
             if (bestStorage == null)
@@ -91,7 +94,7 @@ namespace OverCloud.Services.FileManager
             }
 
                 // ✅ 4. 재업로드
-            string newCloudFileId = await targetService.UploadFileAsync(bestStorage , tempPath);
+            string newCloudFileId = await targetService.UploadFileAsync(bestStorage , tempPath, userId);
             if (string.IsNullOrEmpty(newCloudFileId))
             {
                 Console.WriteLine(" 업로드 실패");
@@ -146,8 +149,8 @@ namespace OverCloud.Services.FileManager
 
             foreach (var chunk in chunks.OrderBy(c => c.ChunkIndex))
             {
-                var cloud = accountRepository.GetAllAccounts(userId)
-                    .FirstOrDefault(c => c.CloudStorageNum == chunk.CloudStorageNum);
+                var cloud = storageRepository.GetCloud(chunk.CloudStorageNum, userId);
+            //        .FirstOrDefault(c => c.CloudStorageNum == chunk.CloudStorageNum);
                 if (cloud == null)
                 {
                     Console.WriteLine("클라우드 정보 없음");
@@ -162,7 +165,9 @@ namespace OverCloud.Services.FileManager
                 }
 
                 string tempChunkPath = Path.GetTempFileName();
-                bool downloaded = await service.DownloadFileAsync(cloud.ID, chunk.CloudFileId, tempChunkPath, chunk.CloudStorageNum);
+
+                bool downloaded = await service.DownloadFileAsync(chunk.CloudStorageNum, chunk.CloudFileId, tempChunkPath, userId);
+
                 if (!downloaded)
                 {
                     Console.WriteLine($"❌ 조각 다운로드 실패: part{chunk.ChunkIndex}");

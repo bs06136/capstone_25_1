@@ -19,13 +19,16 @@ namespace OverCloud.Services
             _coopUserRepository = coopUserRepository;
         }
 
+
+        //협업 참가
         public bool Join_cooperation_Cloud_Storage_UI_to_pro(string user_id_target, string password, string user_id_mine)
         {
 
             return _coopUserRepository.Join_cooperation_Cloud_Storage_pro_to_DB(user_id_target,  password, user_id_mine);
 
         }
-
+        
+        //협업계정 생성
         public bool Add_cooperation_Cloud_Storage_UI_to_pro(string user_id_insert, string password, string user_id_mine)
         {
 
@@ -33,12 +36,14 @@ namespace OverCloud.Services
 
         }
 
+        //협업 탈퇴.
         public bool Delete_cooperation_Cloud_Storage_UI_to_pro(string user_id_insert, string user_id_mine)
         {
 
             return _coopUserRepository.Delete_cooperation_Cloud_Storage_pro_to_DB( user_id_insert,  user_id_mine);
 
         }
+
     }
 
 }

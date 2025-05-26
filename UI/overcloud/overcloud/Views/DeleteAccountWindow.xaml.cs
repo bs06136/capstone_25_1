@@ -38,7 +38,7 @@ namespace overcloud.Views
             }
         }
 
-        private void ConfirmDelete_Click(object sender, RoutedEventArgs e)
+        private async void ConfirmDelete_Click(object sender, RoutedEventArgs e)
         {
             var selectedAccount = AccountListBox.SelectedItem as CloudStorageInfo;
             if (selectedAccount == null)
@@ -51,7 +51,7 @@ namespace overcloud.Views
             int CloudStorageNum = selectedAccount.CloudStorageNum;
 
             // temp_class의 RemoveAccount 호출
-            bool result = _accountService.Delete_Cloud_Storage(CloudStorageNum, _user_id);
+            bool result = await _accountService.Delete_Cloud_Storage(CloudStorageNum, _user_id);
 
             System.Windows.MessageBox.Show(result ? "계정 삭제 성공" : "계정 삭제 실패");
             this.Close();

@@ -40,8 +40,8 @@ namespace OverCloud.Services.FileManager
             Console.WriteLine("DownloadFile");
             
 
-            var clouds = acountRepository.GetAllAccounts(userId);
-            var cloudInfo = clouds.FirstOrDefault(c => c.CloudStorageNum == CloudStorageNum);
+            var cloudInfo = storageRepository.GetCloud(CloudStorageNum, userId);
+            //var cloudInfo = clouds.FirstOrDefault(c => c.CloudStorageNum == CloudStorageNum);
             if (cloudInfo == null)
             {
                 Console.WriteLine("❌ 클라우드 정보 없음");
@@ -56,9 +56,12 @@ namespace OverCloud.Services.FileManager
                 return false;
             }
 
-            bool result = await service.DownloadFileAsync(cloudInfo.ID, cloudFileId, savePath, CloudStorageNum);
+
+            bool result = await service.DownloadFileAsync(CloudStorageNum, cloudFileId, savePath,userId);
             return result;
         }
+
+  
 
         public async Task<bool> DownloadAndMergeFile(int logicalFileId, string finalsavePath, string userId,int CloudStorageNum)
         {
@@ -87,20 +90,20 @@ namespace OverCloud.Services.FileManager
 
             foreach (var chunk in chunks)
             {
-                        // 클라우드 계정 정보 가져오기
-                var account = acountRepository.GetAllAccounts(userId)
-                    .FirstOrDefault(a => a.CloudStorageNum == chunk.CloudStorageNum);
-
+                // 클라우드 계정 정보 가져오기
+                var account = storageRepository.GetCloud(chunk.CloudStorageNum, userId);
+               
                 if (account == null)
                 {
                     Console.WriteLine($"❌ 계정 없음: CloudStorageNum {chunk.CloudStorageNum}");
                     return false;
                 }
 
-                var chunkCloud = storageRepository.GetCloud(chunk.CloudStorageNum);
+                //var chunkCloud = storageRepository.GetCloud(chunk.CloudStorageNum);
 
-                        //클라우드 서비스 선택 . 여기서 같은 클라우드 2개의 경우 , 첫번째것만 선택되어서 정확히 호출해야함.
-                var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(account.CloudType) && chunkCloud.CloudStorageNum == account.CloudStorageNum);
+                //클라우드 서비스 선택 . 여기서 같은 클라우드 2개의 경우 , 첫번째것만 선택되어서 정확히 호출해야함.
+                //원드라이브 두개 연결시, 분산저장된 파일 다운로드시에 첫번째 OneDrive계정만 선택되는 문제 해결.
+                var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(account.CloudType));
                 if (service == null)
                 {
                     Console.WriteLine();
@@ -110,8 +113,8 @@ namespace OverCloud.Services.FileManager
 
                         // 3. 조각 다운로드 → 임시 파일 경로 반환
                 string tempPath = Path.GetTempFileName();
+                bool success = await service.DownloadFileAsync(chunk.CloudStorageNum, chunk.CloudFileId, tempPath,userId);
 
-                bool success = await service.DownloadFileAsync(account.ID, chunk.CloudFileId, tempPath, chunk.CloudStorageNum);
                 if (!success)
                 {
                     Console.WriteLine($"❌ 조각 다운로드 실패: {chunk.FileName}");
