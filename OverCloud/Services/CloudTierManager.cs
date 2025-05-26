@@ -126,7 +126,7 @@ namespace OverCloud.Services
         }
 
 
-        public List<CloudStorageInfo> GetCandidateStorages(ulong fileSizeKB, string userId)
+        public List<CloudStorageInfo> GetCandidateStorages(ulong fileSizeKB, string userId,int excludeCloudStorageNum)
         {
             var clouds = accountRepository.GetAllAccounts(userId);
             if (clouds == null || clouds.Count == 0)
@@ -136,6 +136,7 @@ namespace OverCloud.Services
             }
 
             var candidates = clouds
+                 .Where(c => c.CloudStorageNum != excludeCloudStorageNum)  // 현재 계정 제외
                 .Where(c => ((long)c.TotalCapacity - (long)c.UsedCapacity) >= (long)fileSizeKB)
                 .OrderBy(c => GetTierValue(c.CloudType))  // 티어 순서
                 .ThenByDescending(c => c.TotalCapacity - c.UsedCapacity)  // 같은 티어면 여유공간 큰 순
