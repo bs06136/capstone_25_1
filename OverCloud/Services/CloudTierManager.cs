@@ -18,7 +18,7 @@ namespace OverCloud.Services
             this.accountRepository = accountRepository;
         }
 
-        public CloudStorageInfo SelectBestStorage(ulong fileSizeKB,string userId) //kb단위로 호출
+        public CloudStorageInfo SelectBestStorage(ulong fileSizeKB, string userId) //kb단위로 호출
         {
 
             var clouds = accountRepository.GetAllAccounts(userId);

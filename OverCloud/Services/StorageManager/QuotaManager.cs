@@ -82,7 +82,7 @@ namespace OverCloud.Services.StorageManager
             }
 
             // 3. 해당 클라우드에 API 호출
-            var (total, used) = await service.GetDriveQuotaAsync(userId);
+            var (total, used) = await service.GetDriveQuotaAsync(CloudStorageNum);
 
 
             // 5. TotalCapacity, UsedCapacity만 업데이트 (KB단위)

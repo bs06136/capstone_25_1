@@ -1,0 +1,62 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
+using DB.overcloud.Models;
+using DB.overcloud.Repository;
+using overcloud;
+using OverCloud.Services.FileManager;
+using OverCloud.Services.FileManager.DriveManager;
+using OverCloud.Services.StorageManager;
+using OverCloud.transfer_manager;
+
+namespace OverCloud.Services
+{
+    public class LoginController
+    {
+        public AccountService AccountService { get; }
+        public FileUploadManager FileUploadManager { get; }
+        public FileDownloadManager FileDownloadManager { get; }
+        public FileDeleteManager FileDeleteManager { get; }
+        public FileCopyManager FileCopyManager { get; }
+        public QuotaManager QuotaManager { get; }
+        public IFileRepository FileRepository { get; }
+        public CloudTierManager CloudTierManager { get; }
+        public TransferManager TransferManager { get; }
+
+        public AccountRepository AccountRepository { get; }
+        public CoopUserRepository CoopUserRepository { get; }
+        public CooperationManager CooperationManager { get; }
+
+        public LoginController() {
+            var connStr = DbConfig.ConnectionString;
+            var storageRepo = new StorageRepository(connStr);
+
+            AccountRepository = new AccountRepository(connStr);
+            FileRepository = new FileRepository(connStr);
+            CoopUserRepository = new CoopUserRepository(connStr);
+            CooperationManager = new CooperationManager(CoopUserRepository);
+
+            var tokenFactory = new TokenProviderFactory();
+
+            // 이 부분은 CloudStorageNum 구분된 인스턴스 방식으로 확장 가능
+            var googleSvc = new GoogleDriveService(tokenFactory.CreateGoogleTokenProvider(), storageRepo, AccountRepository);
+            var oneDriveSvc1 = new OneDriveService(tokenFactory.CreateOneDriveTokenRefresher(), storageRepo, AccountRepository);
+            var oneDriveSvc2 = new OneDriveService(tokenFactory.CreateOneDriveTokenRefresher(), storageRepo, AccountRepository);
+            var cloudSvcs = new List<ICloudFileService> { googleSvc, oneDriveSvc1, oneDriveSvc2 };
+
+            CloudTierManager = new CloudTierManager(AccountRepository);
+            QuotaManager = new QuotaManager(cloudSvcs, storageRepo, AccountRepository);
+            AccountService = new AccountService(AccountRepository, storageRepo, QuotaManager);
+            FileUploadManager = new FileUploadManager(AccountService, QuotaManager, storageRepo, FileRepository, cloudSvcs, CloudTierManager);
+            FileDownloadManager = new FileDownloadManager(FileRepository, AccountRepository, cloudSvcs, storageRepo);
+            FileDeleteManager = new FileDeleteManager(AccountRepository, QuotaManager, storageRepo, FileRepository, cloudSvcs);
+            FileCopyManager = new FileCopyManager(FileRepository, CloudTierManager, cloudSvcs, QuotaManager, AccountRepository, FileUploadManager);
+
+            TransferManager = new TransferManager(FileUploadManager, FileDownloadManager, CloudTierManager);
+        }
+    }
+
+}

@@ -57,7 +57,7 @@ namespace overcloud.transfer_manager
 
                         if (file.IsDistributed)
                             {
-                                await _fileDownloadManager.DownloadAndMergeFile(file.FileID, file.LocalPath, user_id);
+                                await _fileDownloadManager.DownloadAndMergeFile(file.FileID, file.LocalPath, user_id, file.CloudStorageNum);
                             }
                         else
                             {

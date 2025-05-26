@@ -5,54 +5,20 @@ using OverCloud.Services.StorageManager;
 using OverCloud.Services;
 using OverCloud.Services.FileManager.DriveManager;
 using OverCloud.transfer_manager;
+using DB.overcloud.Models;
+using System.IO;
+using System;
 
 namespace overcloud.Views
 {
     public partial class LoginWindow : Window
     {
+        private readonly LoginController _controller;
 
-        private AccountService _accountService;
-        private FileUploadManager _fileUploadManager;
-        private FileDownloadManager _fileDownloadManager;
-        private FileDeleteManager _fileDeleteManager;
-        private FileCopyManager _fileCopyManager;
-        private QuotaManager _quotaManager;
-        private IFileRepository _fileRepository;
-        private CloudTierManager _cloudTierManager;
-
-        private AccountRepository accountRepository;
-
-        public static CooperationManager _CooperationManager;
-        public static CooperationRepository _CooperationRepository;
-
-        public LoginWindow()
+        public LoginWindow(LoginController controller)
         {
             InitializeComponent();
-
-
-            var connStr = DbConfig.ConnectionString;
-            var storageRepo = new StorageRepository(connStr);
-            //var accountRepo = new AccountRepository(connStr);
-            accountRepository = new AccountRepository(DbConfig.ConnectionString);
-            _fileRepository = new FileRepository(connStr);
-
-            var tokenFactory = new TokenProviderFactory();
-            var googleSvc = new GoogleDriveService(tokenFactory.CreateGoogleTokenProvider(), storageRepo, accountRepository);
-            var oneDriveSvc = new OneDriveService(tokenFactory.CreateOneDriveTokenRefresher(), storageRepo, accountRepository);
-            var cloudSvcs = new List<ICloudFileService> { googleSvc, oneDriveSvc };
-
-            _quotaManager = new QuotaManager(cloudSvcs, storageRepo, accountRepository);
-            _accountService = new AccountService(accountRepository, storageRepo, _quotaManager);
-            _cloudTierManager = new CloudTierManager(accountRepository);
-
-            _fileUploadManager = new FileUploadManager(_accountService, _quotaManager, storageRepo, _fileRepository, cloudSvcs, _cloudTierManager);
-            _fileDownloadManager = new FileDownloadManager(_fileRepository, accountRepository, cloudSvcs);
-            _fileDeleteManager = new FileDeleteManager(accountRepository, _quotaManager, storageRepo, _fileRepository, cloudSvcs);
-            _fileCopyManager = new FileCopyManager(_fileRepository, _cloudTierManager, cloudSvcs, _quotaManager, accountRepository, _fileUploadManager);
-
-            _CooperationManager = new();
-            _CooperationRepository = new(connStr);
-
+            _controller = controller;
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -61,7 +27,7 @@ namespace overcloud.Views
             string userId = IdBox.Text;
             string password = PasswordBox.Password;
             
-            string loginResult = accountRepository.login_overcloud(userId, password);
+            string loginResult = _controller.AccountRepository.login_overcloud(userId, password);
 
             if (string.IsNullOrEmpty(loginResult))
             {
@@ -69,14 +35,29 @@ namespace overcloud.Views
                 return; // 창은 닫지 않고 다시 입력 가능
             }
 
-            var storages = new AccountRepository(DbConfig.ConnectionString).GetAllAccounts(userId);
-    StorageSessionManager.InitializeFromDatabase(storages);
-            
+            //var storages = new AccountRepository(DbConfig.ConnectionString).GetAllAccounts(userId);
+            //StorageSessionManager.InitializeFromDatabase(storages);
 
-            App.TransferManager = new TransferManager(_fileUploadManager, _fileDownloadManager, _cloudTierManager);
+            // 1. 계정 리스트 구성
+            var allAccounts = new List<string> { userId };
+            allAccounts.AddRange(_controller.CoopUserRepository.connected_cooperation_account_nums(userId));
+
+            // 2. 전체 스토리지 수집
+            var allStorages = new List<CloudStorageInfo>();
+            foreach (var accId in allAccounts.Distinct())
+            {
+                var storages = _controller.AccountRepository.GetAllAccounts(accId);
+                allStorages.AddRange(storages);
+            }
+
+            // 3. 세션 초기화
+            StorageSessionManager.InitializeFromDatabase(allStorages);
+
+
+            App.TransferManager = new TransferManager(_controller.FileUploadManager, _controller.FileDownloadManager, _controller.CloudTierManager);
 
             // MainWindow 실행
-            var main = new MainWindow(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _cloudTierManager, userId);
+            var main = new MainWindow(_controller,userId);
             System.Windows.Application.Current.MainWindow = main;
             main.Show();
 
@@ -86,7 +67,7 @@ namespace overcloud.Views
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
             // 예시: 회원가입 창 띄우기
-            var registerWindow = new RegisterWindow(accountRepository); // 따로 만들어진 회원가입 창
+            var registerWindow = new RegisterWindow(_controller.AccountRepository); // 따로 만들어진 회원가입 창
             registerWindow.Owner = this;
             registerWindow.ShowDialog();
         }

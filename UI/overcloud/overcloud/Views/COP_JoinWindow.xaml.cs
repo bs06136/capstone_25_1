@@ -4,13 +4,13 @@ using OverCloud.Services;
 
 namespace overcloud.Views
 {
-    public partial class COP_RegisterWindow : Window
+    public partial class COP_JoinWindow : Window
     {
         private AccountRepository _accountRepository;
         private string user_id = null;
         private CooperationManager _CooperationManager;
 
-        public COP_RegisterWindow(AccountRepository accountRepository, string user_id, CooperationManager cooperationManager)
+        public COP_JoinWindow(AccountRepository accountRepository, string user_id, CooperationManager cooperationManager)
         {
             _accountRepository = accountRepository;
             this.user_id = user_id;
@@ -18,7 +18,7 @@ namespace overcloud.Views
             _CooperationManager = cooperationManager;
         }
 
-        private void RegisterButton_Click(object sender, RoutedEventArgs e)
+        private void JoinButton_Click(object sender, RoutedEventArgs e)
         {
             string userId = IdBox.Text.Trim();
             string password = PasswordBox.Password.Trim();
@@ -29,16 +29,16 @@ namespace overcloud.Views
                 return;
             }
 
-            bool success = _CooperationManager.Add_cooperation_Cloud_Storage_UI_to_pro(userId, password, user_id);
+            bool success = _CooperationManager.Join_cooperation_Cloud_Storage_UI_to_pro(userId, password, user_id);
 
             if (success)
             {
-                System.Windows.MessageBox.Show("클라우드 생성이 완료되었습니다. 로그인해주세요.", "성공", MessageBoxButton.OK, MessageBoxImage.Information);
+                System.Windows.MessageBox.Show("클라우드 참가를 완료했습니다.", "성공", MessageBoxButton.OK, MessageBoxImage.Information);
                 this.Close();
             }
             else
             {
-                System.Windows.MessageBox.Show("이미 존재하는 클라우드 이름입니다. 다른 이름을 사용해주세요.", "실패", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show("참가에 문제가 발생했습니다.", "실패", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

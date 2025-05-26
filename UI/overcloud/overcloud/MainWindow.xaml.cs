@@ -11,59 +11,91 @@ namespace overcloud
     public partial class MainWindow : Window
     {
 
-        private AccountService _accountService;
-        private FileUploadManager _fileUploadManager;
-        private FileDownloadManager _fileDownloadManager;
-        private FileDeleteManager _fileDeleteManager;
-        private FileCopyManager _fileCopyManager;
-        private QuotaManager _quotaManager;
-        private IFileRepository _fileRepository;
-        private CloudTierManager _cloudTierManager;
-
+        private readonly LoginController _controller;
         private string _user_id;
 
-
-        public MainWindow(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, CloudTierManager cloudTierManager, string user_id)
+        public MainWindow(LoginController controller, string user_id)
         {
             InitializeComponent();
-            _accountService = accountService;
-            _fileUploadManager = fileUploadManager;
-            _fileDownloadManager = fileDownloadManager;
-            _fileDeleteManager = fileDeleteManager;
-            _fileCopyManager = fileCopyManager;
-            _quotaManager = quotaManager;
-            _fileRepository = fileRepository;
-            _cloudTierManager = cloudTierManager;
+            
+            _controller = controller;
             _user_id = user_id;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // 앱 시작 시 HomeView 로드
-            MainFrame.Navigate(new Views.HomeView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository,_cloudTierManager, _user_id));
+            MainFrame.Navigate(new Views.HomeView(
+                _controller.AccountService,
+                _controller.FileUploadManager,
+                _controller.FileDownloadManager,
+                _controller.FileDeleteManager,
+                _controller.FileCopyManager,
+                _controller.QuotaManager,
+                _controller.FileRepository,
+                _controller.CloudTierManager,
+                _user_id));
         }
 
         // 왼쪽 “홈” 메뉴 클릭 시
         private void HomeMenu_Click(object sender, MouseButtonEventArgs e)
         {
-            MainFrame.Navigate(new Views.HomeView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _cloudTierManager, _user_id));
+            MainFrame.Navigate(new Views.HomeView(
+                _controller.AccountService,
+                _controller.FileUploadManager,
+                _controller.FileDownloadManager,
+                _controller.FileDeleteManager,
+                _controller.FileCopyManager,
+                _controller.QuotaManager,
+                _controller.FileRepository,
+                _controller.CloudTierManager,
+                _user_id));
         }
 
         // 왼쪽 “계정 관리” 메뉴 클릭 시
         private void AccountMenu_Click(object sender, MouseButtonEventArgs e)
         {
-            MainFrame.Navigate(new Views.AccountView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _cloudTierManager, _user_id));
+            MainFrame.Navigate(new Views.AccountView(
+                _controller.AccountService,
+                _controller.FileUploadManager,
+                _controller.FileDownloadManager,
+                _controller.FileDeleteManager,
+                _controller.FileCopyManager,
+                _controller.QuotaManager,
+                _controller.FileRepository,
+                _controller.CloudTierManager,
+                _user_id));
 
         }
 
         private void SharedAccountMenu_Click(object sender, MouseButtonEventArgs e)
         {
-            MainFrame.Navigate(new Views.SharedAccountView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _user_id));
+            MainFrame.Navigate(new Views.SharedAccountView(
+                _controller.AccountService,
+                _controller.FileUploadManager,
+                _controller.FileDownloadManager,
+                _controller.FileDeleteManager,
+                _controller.FileCopyManager,
+                _controller.QuotaManager,
+                _controller.FileRepository,
+                _controller.CloudTierManager,
+                _user_id,
+                _controller.AccountRepository,
+                _controller.CooperationManager,
+                _controller.CoopUserRepository));
         }
 
         private void SharedManageMenu_Click(object sender, MouseButtonEventArgs e)
         {
-            MainFrame.Navigate(new Views.SharedManageView(_accountService, _fileUploadManager, _fileDownloadManager, _fileDeleteManager, _fileCopyManager, _quotaManager, _fileRepository, _user_id));
+            MainFrame.Navigate(new Views.SharedManageView(
+                _controller.AccountService,
+                _controller.FileUploadManager,
+                _controller.FileDownloadManager,
+                _controller.FileDeleteManager,
+                _controller.FileCopyManager,
+                _controller.QuotaManager,
+                _controller.FileRepository,
+                _user_id));
         }
     }
 }

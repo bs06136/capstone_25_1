@@ -14,12 +14,14 @@ namespace overcloud.Views
     {
         private AccountService _accountService;
         private bool isPieChartVisible = true;
+        private string _user_id;
 
         private SolidColorBrush[] baseBrushes = {
             new SolidColorBrush(Colors.DodgerBlue),
             new SolidColorBrush(Colors.Orange),
             new SolidColorBrush(Colors.ForestGreen)
         };
+
 
         public class CloudDisplayModel
         {
@@ -31,16 +33,17 @@ namespace overcloud.Views
             public System.Windows.Media.Brush UsedBrush { get; set; }   // For Used (darker)
         }
 
-        public DiskDetailWindow(AccountService accountService)
+        public DiskDetailWindow(AccountService accountService, string user_id)
         {
             InitializeComponent();
             _accountService = accountService;
             Loaded += DiskDetailWindow_Loaded;
+            _user_id = user_id;
         }
 
         private void DiskDetailWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var accountList = _accountService.Get_Clouds_For_User("admin");
+            var accountList = _accountService.Get_Clouds_For_User(_user_id);
 
             var displayList = accountList.Select((acc, idx) =>
             {
