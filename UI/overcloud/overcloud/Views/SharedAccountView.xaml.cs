@@ -25,17 +25,7 @@ namespace overcloud.Views
     public partial class SharedAccountView : System.Windows.Controls.UserControl
     {
 
-        private AccountService _accountService;
-        private FileUploadManager _fileUploadManager;
-        private FileDownloadManager _fileDownloadManager;
-        private FileDeleteManager _fileDeleteManager;
-        private FileCopyManager _fileCopyManager;
-        private QuotaManager _quotaManager;
-        private IFileRepository _fileRepository;
-        private CloudTierManager _cloudTierManager;
-        private AccountRepository _accountRepository;
-        private CooperationManager _CooperationManager;
-        private CoopUserRepository _CoopUserRepository;
+        private LoginController _controller;
 
         private static TransferManagerWindow _transferWindow;
 
@@ -51,18 +41,8 @@ namespace overcloud.Views
 
         private bool _isFolderChanging = false;
 
-        public SharedAccountView(AccountService accountService,
-            FileUploadManager fileUploadManager,
-            FileDownloadManager fileDownloadManager,
-            FileDeleteManager fileDeleteManager,
-            FileCopyManager fileCopyManager,
-            QuotaManager quotaManager,
-            IFileRepository fileRepository,
-            CloudTierManager cloudTierManager,
-            string user_id,
-            AccountRepository accountRepository,
-            CooperationManager cooperationManager,
-            CoopUserRepository coopUserRepository)
+        public SharedAccountView(LoginController controller,
+            string user_id)
 
         {
             try
@@ -75,18 +55,8 @@ namespace overcloud.Views
                 throw;
             }
             Loaded += HomeView_Loaded;
-            _accountService = accountService;
-            _fileUploadManager = fileUploadManager;
-            _fileDownloadManager = fileDownloadManager;
-            _fileDeleteManager = fileDeleteManager;
-            _fileCopyManager = fileCopyManager;
-            _quotaManager = quotaManager;
-            _fileRepository = fileRepository;
-            _cloudTierManager = cloudTierManager;
+            _controller = controller;
             _user_id = user_id;
-            _accountRepository = accountRepository;
-            _CooperationManager = cooperationManager;
-            _CoopUserRepository = coopUserRepository;
 
             // 초기 서비스 설정
         }
@@ -225,7 +195,7 @@ namespace overcloud.Views
                     ulong fileSize = (ulong)new FileInfo(filePath).Length;
 
                     // 용량 체크
-                    ulong totalRemainingByte = _cloudTierManager.GetTotalRemainingQuotaInBytes(_currentAccountId);
+                    ulong totalRemainingByte = _controller.CloudTierManager.GetTotalRemainingQuotaInBytes(_currentAccountId);
                     if (totalRemainingByte < fileSize)
                     {
                         System.Windows.MessageBox.Show("❌ 전체 클라우드 용량이 부족합니다.");
@@ -277,7 +247,7 @@ namespace overcloud.Views
                 ID = _currentAccountId
             };
 
-            int newFolderId = _fileRepository.add_folder(folderInfo);
+            int newFolderId = _controller.FileRepository.add_folder(folderInfo);
             if (newFolderId == -1)
             {
                 System.Windows.MessageBox.Show($"폴더 '{folderInfo.FileName}' 등록 실패");
@@ -316,7 +286,7 @@ namespace overcloud.Views
             {
                 parentItem.Items.Clear();
 
-                var children = _fileRepository.all_file_list(tag.FolderId, tag.AccountId)
+                var children = _controller.FileRepository.all_file_list(tag.FolderId, tag.AccountId)
                                 .Where(f => f.IsFolder)
                                 .ToList();
 
@@ -376,7 +346,7 @@ namespace overcloud.Views
                     if (tvi.Items.Count == 1 && tvi.Items[0] is string s && s == "Loading...")
                     {
                         tvi.Items.Clear();
-                        var children = _fileRepository.all_file_list(tag.FolderId, tag.AccountId).Where(f => f.IsFolder);
+                        var children = _controller.FileRepository.all_file_list(tag.FolderId, tag.AccountId).Where(f => f.IsFolder);
                         foreach (var f in children)
                         {
                             var childTvi = new TreeViewItem
@@ -411,7 +381,7 @@ namespace overcloud.Views
 
         private void LoadFolderContents(int folderId, string accountId)
         {
-            var contents = _fileRepository.all_file_list(folderId, accountId)
+            var contents = _controller.FileRepository.all_file_list(folderId, accountId)
                 .Select(file => ToViewModel(file))
                 .ToList();
 
@@ -427,7 +397,7 @@ namespace overcloud.Views
         {
             FileExplorerTree.Items.Clear();
 
-            var accounts = _CoopUserRepository.connected_cooperation_account_nums(_user_id);
+            var accounts = _controller.CoopUserRepository.connected_cooperation_account_nums(_user_id);
 
             foreach (var accountId in accounts)
             {
@@ -437,7 +407,7 @@ namespace overcloud.Views
                     Tag = new AccountFolderTag(accountId, -1)
                 };
 
-                var rootChildren = _fileRepository.all_file_list(-1, accountId)
+                var rootChildren = _controller.FileRepository.all_file_list(-1, accountId)
                                      .Where(f => f.IsFolder)
                                      .ToList();
 
@@ -479,7 +449,7 @@ namespace overcloud.Views
 
                     if (info.Icon == "asset/folder.png")
                     {
-                        var folder = _fileRepository.all_file_list(currentFolderId, _currentAccountId)
+                        var folder = _controller.FileRepository.all_file_list(currentFolderId, _currentAccountId)
                                      .FirstOrDefault(f => f.IsFolder && f.FileName == info.FileName);
 
                         if (folder != null)
@@ -543,7 +513,7 @@ namespace overcloud.Views
                             childItem.Items.Clear();
 
                             // ⚠️ 하위 항목을 중복해서 추가하지 않도록 체크
-                            var children = _fileRepository.all_file_list(childId, _currentAccountId)
+                            var children = _controller.FileRepository.all_file_list(childId, _currentAccountId)
                                            .Where(f => f.IsFolder && f.FileId != childId) // 자기 자신은 제외
                                            .ToList();
 
@@ -660,7 +630,7 @@ namespace overcloud.Views
             {
                 Directory.CreateDirectory(localPath);
 
-                var children = _fileRepository.all_file_list(file.FileId, file.ID); // 이 폴더의 하위 항목
+                var children = _controller.FileRepository.all_file_list(file.FileId, file.ID); // 이 폴더의 하위 항목
                 foreach (var child in children)
                 {
                     DownloadItemRecursive(child.FileId, localBase, current_file_map, child.IsDistributed);
@@ -698,7 +668,7 @@ namespace overcloud.Views
 
             void Traverse(int parentId)
             {
-                var children = _fileRepository.all_file_list(parentId, _currentAccountId);
+                var children = _controller.FileRepository.all_file_list(parentId, _currentAccountId);
                 foreach (var file in children)
                 {
                     result[file.FileId] = file;
@@ -753,7 +723,7 @@ namespace overcloud.Views
             // 1. 폴더인 경우 자식 먼저 삭제
             if (file.IsFolder)
             {
-                var children = _fileRepository.all_file_list(file.FileId, file.ID);
+                var children = _controller.FileRepository.all_file_list(file.FileId, file.ID);
                 foreach (var child in children)
                 {
                     await DeleteItemRecursive(child.FileId, allFileMap);
@@ -764,11 +734,11 @@ namespace overcloud.Views
             bool deleted;
             if (file.IsDistributed)
             {
-                deleted = await _fileDeleteManager.Delete_DistributedFile(file.FileId, _currentAccountId);
+                deleted = await _controller.FileDeleteManager.Delete_DistributedFile(file.FileId, _currentAccountId);
             }
             else
             {
-                deleted = await _fileDeleteManager.Delete_File(file.CloudStorageNum, file.FileId, _currentAccountId);
+                deleted = await _controller.FileDeleteManager.Delete_File(file.CloudStorageNum, file.FileId, _currentAccountId);
             }
 
             if (!deleted)
@@ -849,7 +819,7 @@ namespace overcloud.Views
 
             try
             {
-                result = _fileRepository.add_folder(info);
+                result = _controller.FileRepository.add_folder(info);
                 //result = null;
             }
             catch (Exception ex)
@@ -958,7 +928,7 @@ namespace overcloud.Views
 
         private void CreateCooperationAccount_Click(object sender, RoutedEventArgs e)
         {
-            var registerWindow = new COP_RegisterWindow(_accountRepository, _user_id, _CooperationManager);
+            var registerWindow = new COP_RegisterWindow(_controller, _user_id);
             registerWindow.Owner = Window.GetWindow(this); // 모달창으로 띄우기
             registerWindow.ShowDialog();
 
@@ -968,7 +938,7 @@ namespace overcloud.Views
 
         private void JoinCooperationAccount_Click(object sender, RoutedEventArgs e)
         {
-            var registerWindow = new COP_JoinWindow(_accountRepository, _user_id, _CooperationManager);
+            var registerWindow = new COP_JoinWindow(_controller, _user_id);
             registerWindow.Owner = Window.GetWindow(this); // 모달창으로 띄우기
             registerWindow.ShowDialog();
 

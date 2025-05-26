@@ -20,31 +20,18 @@ namespace overcloud.Views
     public partial class AccountListView : System.Windows.Controls.UserControl
     {
         // Services and managers
-        private AccountService _accountService;
-        private FileUploadManager _fileUploadManager;
-        private FileDownloadManager _fileDownloadManager;
-        private FileDeleteManager _fileDeleteManager;
-        private FileCopyManager _fileCopyManager;
-        private QuotaManager _quotaManager;
-        private IFileRepository _fileRepository;
+        private LoginController _controller;
         private string _user_id;
-
         private ICollectionView _view;
         private ObservableCollection<AccountItemViewModel> _items;
 
-        public AccountListView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, string user_id)
+        public AccountListView(LoginController controller, string user_id)
         {
             InitializeComponent();
             Loaded += AccountListView_Loaded;
 
             // 초기 서비스 설정
-            _accountService = accountService;
-            _fileUploadManager = fileUploadManager;
-            _fileDownloadManager = fileDownloadManager;
-            _fileDeleteManager = fileDeleteManager;
-            _fileCopyManager = fileCopyManager;
-            _quotaManager = quotaManager;
-            _fileRepository = fileRepository;
+            _controller = controller;
             _user_id = user_id;
 
 
@@ -62,7 +49,7 @@ namespace overcloud.Views
             string currentUserId = /* AuthenticationService.CurrentUserId */ _user_id;
 
             // (2) DB에서 계정 목록 조회
-            var all = _accountService.Get_Clouds_For_User(currentUserId);
+            var all = _controller.AccountService.Get_Clouds_For_User(currentUserId);
 
             // (3) 뷰모델 변환
             _items = new ObservableCollection<AccountItemViewModel>(
@@ -111,7 +98,7 @@ namespace overcloud.Views
 
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
-            var window = new AddAccountWindow(_accountService, _user_id);
+            var window = new AddAccountWindow(_controller, _user_id, false);
             window.Owner = Window.GetWindow(this);
             window.ShowDialog();
 
@@ -121,7 +108,7 @@ namespace overcloud.Views
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("삭제 버튼 누름");
-            var window = new DeleteAccountWindow(_accountService, _user_id);
+            var window = new DeleteAccountWindow(_controller, _user_id);
             window.Owner = Window.GetWindow(this);
             window.ShowDialog();
 

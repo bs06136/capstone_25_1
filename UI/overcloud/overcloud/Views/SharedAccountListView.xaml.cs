@@ -13,29 +13,17 @@ namespace overcloud.Views
 {
     public partial class SharedAccountListView : System.Windows.Controls.UserControl
     {
-        private readonly AccountService _accountService;
-        private readonly FileUploadManager _fileUploadManager;
-        private readonly FileDownloadManager _fileDownloadManager;
-        private readonly FileDeleteManager _fileDeleteManager;
-        private readonly FileCopyManager _fileCopyManager;
-        private readonly QuotaManager _quotaManager;
-        private readonly IFileRepository _fileRepository;
+        private LoginController _controller;
         private string _user_id;
 
         private ICollectionView _view;
         private ObservableCollection<AccountItemViewModel> _items;
 
-        public SharedAccountListView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, string user_id)
+        public SharedAccountListView(LoginController controller, string user_id)
         {
             InitializeComponent();
 
-            _accountService = accountService;
-            _fileUploadManager = fileUploadManager;
-            _fileDownloadManager = fileDownloadManager;
-            _fileDeleteManager = fileDeleteManager;
-            _fileCopyManager = fileCopyManager;
-            _quotaManager = quotaManager;
-            _fileRepository = fileRepository;
+            _controller = controller;
             _user_id = user_id;
 
             FilterTab.SelectedIndex = 0;
@@ -51,7 +39,7 @@ namespace overcloud.Views
             string currentUserId = _user_id;
 
             // 공유 계정 리스트 불러오기
-            var all = _accountService.Get_Clouds_For_User(currentUserId);
+            var all = _controller.AccountService.Get_Clouds_For_User(currentUserId);
 
             _items = new ObservableCollection<AccountItemViewModel>(
                 all.Select(a => new AccountItemViewModel
@@ -97,7 +85,7 @@ namespace overcloud.Views
 
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
-            var window = new AddAccountWindow(_accountService, _user_id);
+            var window = new AddAccountWindow(_controller, _user_id, true);
             window.Owner = Window.GetWindow(this);
             window.ShowDialog();
 
@@ -106,7 +94,7 @@ namespace overcloud.Views
 
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
-            var window = new DeleteAccountWindow(_accountService, _user_id);
+            var window = new DeleteAccountWindow(_controller, _user_id);
             window.Owner = Window.GetWindow(this);
             window.ShowDialog();
 
