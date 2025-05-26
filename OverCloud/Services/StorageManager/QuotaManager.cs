@@ -203,7 +203,7 @@ namespace OverCloud.Services.StorageManager
                         continue;
                     }
 
-                    var candidateStorages = cloudTierManager.GetCandidateStorages(file.FileSize / 1024, userId);
+                    var candidateStorages = cloudTierManager.GetCandidateStorages(file.FileSize / 1024, userId, cloudStorageNum);
                     if (candidateStorages == null)
                     {
                         Console.WriteLine($"❌ 적절한 스토리지가 없음. 파일: {file.FileName}");

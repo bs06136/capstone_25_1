@@ -30,6 +30,7 @@ namespace OverCloud.Services
         // 오버클라우드 계정에 새로운 계정 추가 (UI에서 호출)
         public async Task<bool> Add_Cloud_Storage(CloudStorageInfo storage, string userId)
         {
+            //협업 클라우드 아이디를 넘겨줌
             
             if (storage.CloudType == "GoogleDrive")
             {
@@ -54,14 +55,14 @@ namespace OverCloud.Services
 
             bool result = storageRepository.AddCloudStorage(storage);
 
-            var clouds = accountRepository.GetAllAccounts(userId);
+            var clouds = accountRepository.GetAllAccounts(storage.ID);
             var OneCloud = clouds.FirstOrDefault(c => c.AccountId == storage.AccountId);
 
 
             if (result)
             {
                 //계정 추가 성공시 바로 용량 업데이트 호출
-                await quotaManager.SaveDriveQuotaToDB(userId, OneCloud.CloudStorageNum);
+                await quotaManager.SaveDriveQuotaToDB(storage.ID, OneCloud.CloudStorageNum);
 
                 // ⭐ StorageSessionManager에도 반영 (옵션)
                 StorageSessionManager.Quotas.Add(new CloudQuotaInfo
@@ -72,7 +73,7 @@ namespace OverCloud.Services
                     UsedCapacityKB = storage.UsedCapacity
                 });
 
-                         // 전체 합산 용량 업데이트도 할 수 있음
+                // 전체 합산 용량 업데이트도 할 수 있음
                 quotaManager.UpdateAggregatedStorageForUser(userId);
             }
 
@@ -106,10 +107,10 @@ namespace OverCloud.Services
                 }
             }
 
-            var deleteCloud = storageRepository.GetCloud(cloudStorageNum,userId);
+            //var deleteCloud = storageRepository.GetCloud(cloudStorageNum,userId);
 
             //Thread.Sleep(1);
-            bool result = storageRepository.DeleteCloudStorage(deleteCloud.CloudStorageNum, userId);
+            bool result = storageRepository.DeleteCloudStorage(cloudStorageNum, userId);
             if (result)
             {
                 StorageSessionManager.RemoveQuota(target.AccountId, target.CloudType);
