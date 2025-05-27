@@ -28,7 +28,7 @@ namespace OverCloud.Services
         }
 
         // 오버클라우드 계정에 새로운 계정 추가 (UI에서 호출)
-        public async Task<bool> Add_Cloud_Storage(CloudStorageInfo storage, string userId)
+        public async Task<bool> Add_Cloud_Storage(CloudStorageInfo storage, string userId) //storage가 협업, userid가 개인오버클라우드 id
         {
             //협업 클라우드 아이디를 넘겨줌
             
@@ -51,8 +51,8 @@ namespace OverCloud.Services
                 Console.WriteLine("원드라이브 계정 추가중...");
             }
 
-            bool result = storageRepository.AddCloudStorage(storage, storage.ID);
-
+            bool result = storageRepository.AddCloudStorage(storage, userId);
+            
             var clouds = accountRepository.GetAllAccounts(storage.ID);
             var OneCloud = clouds.FirstOrDefault(c => c.AccountId == storage.AccountId);
 
@@ -72,7 +72,7 @@ namespace OverCloud.Services
                 });
 
                 // 전체 합산 용량 업데이트도 할 수 있음
-                quotaManager.UpdateAggregatedStorageForUser(userId);
+                quotaManager.UpdateAggregatedStorageForUser(storage.ID);
             }
 
             return result;
