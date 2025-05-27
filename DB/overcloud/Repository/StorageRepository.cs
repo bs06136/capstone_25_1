@@ -147,13 +147,51 @@ namespace DB.overcloud.Repository
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = "DELETE FROM CloudStorageInfo WHERE cloud_storage_num = @num AND ID = @id";
+            using var transaction = conn.BeginTransaction();
 
-            using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@num", cloudStorageNum);
-            cmd.Parameters.AddWithValue("@id", userId);
+            try
+            {
+                // Step 1: CoopStorageInfo에서 존재 여부 확인
+                string checkCoopQuery = @"SELECT COUNT(*) FROM CoopStorageInfo 
+                                        WHERE cloud_storage_num = @num AND ID = @id";
 
-            return cmd.ExecuteNonQuery() > 0;
+                using var checkCmd = new MySqlCommand(checkCoopQuery, conn, transaction);
+                checkCmd.Parameters.AddWithValue("@num", cloudStorageNum);
+                checkCmd.Parameters.AddWithValue("@id", userId);
+
+                long count = (long)checkCmd.ExecuteScalar();
+
+                if (count > 0)
+                {
+                    // Step 2: CoopStorageInfo에서 먼저 삭제
+                    string deleteCoopQuery = @"DELETE FROM CoopStorageInfo 
+                                            WHERE cloud_storage_num = @num AND ID = @id";
+
+                    using var deleteCoopCmd = new MySqlCommand(deleteCoopQuery, conn, transaction);
+                    deleteCoopCmd.Parameters.AddWithValue("@num", cloudStorageNum);
+                    deleteCoopCmd.Parameters.AddWithValue("@id", userId);
+                    deleteCoopCmd.ExecuteNonQuery();
+                }
+
+                // Step 3: CloudStorageInfo 삭제 (공통)
+                string deleteCloudQuery = @"DELETE FROM CloudStorageInfo 
+                                            WHERE cloud_storage_num = @num AND ID = @id";
+
+                using var deleteCloudCmd = new MySqlCommand(deleteCloudQuery, conn, transaction);
+                deleteCloudCmd.Parameters.AddWithValue("@num", cloudStorageNum);
+                deleteCloudCmd.Parameters.AddWithValue("@id", userId);
+
+                int affected = deleteCloudCmd.ExecuteNonQuery();
+
+                transaction.Commit();
+
+                return affected > 0;
+            }
+            catch
+            {
+                transaction.Rollback();
+                return false;
+            }
         }
 
         public bool account_save(CloudStorageInfo one_cloud)
