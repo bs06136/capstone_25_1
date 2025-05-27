@@ -81,15 +81,35 @@ namespace DB.overcloud.Repository
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string query = @"
-                INSERT INTO Account (ID, password, total_size, used_size, is_shared)
-                VALUES (@id, @pw, 0, 0, 0);";
+            using var transaction = conn.BeginTransaction();
 
-            using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@id", ID);
-            cmd.Parameters.AddWithValue("@pw", password);
+            try
+            {
+                // 1. Account 테이블에 사용자 삽입
+                string insertAccountQuery = @"INSERT INTO Account (ID, password) VALUES (@id, @pw)";
+                using var cmd = new MySqlCommand(insertAccountQuery, conn, transaction);
+                cmd.Parameters.AddWithValue("@id", ID);
+                cmd.Parameters.AddWithValue("@pw", password);
+                cmd.ExecuteNonQuery();
 
-            return cmd.ExecuteNonQuery() > 0;
+                // 2. CloudStorageInfo에 시스템 전용 더미 계정 삽입
+                string insertDummyStorageQuery = @"INSERT INTO CloudStorageInfo
+                    (cloud_storage_num, ID, cloud_type, account_id, account_password, total_capacity, used_capacity)
+                    VALUES
+                    (-1, @id, 'SYSTEM', '', '', 0, 0)";
+
+                using var dummyCmd = new MySqlCommand(insertDummyStorageQuery, conn, transaction);
+                dummyCmd.Parameters.AddWithValue("@id", ID);
+                dummyCmd.ExecuteNonQuery();
+
+                transaction.Commit();
+                return true;
+            }
+            catch
+            {
+                transaction.Rollback();
+                return false;
+            }
         }
         
         public string login_overcloud(string ID, string password)
