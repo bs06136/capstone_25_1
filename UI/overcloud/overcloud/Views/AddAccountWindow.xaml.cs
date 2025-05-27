@@ -25,12 +25,11 @@ namespace overcloud.Views
 
         private void AddAccountWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("_isCooperationMode: " + _isCooperationMode);
             if (_isCooperationMode)
             {
                 // 협업 계정 리스트 보여주기
                 cooperationComboBox.Visibility = Visibility.Visible;
-                cooperationComboBox.Items.Clear();
-                cooperationComboBox.Items.Add(new ComboBoxItem { Content = "test@example.com" });
 
                 List<string> cooperationAccounts = _controller.CoopUserRepository.connected_cooperation_account_nums(_user_id);
                 Console.WriteLine("협업 계정 수: " + cooperationAccounts.Count);
@@ -43,6 +42,26 @@ namespace overcloud.Views
                 if (cooperationComboBox.Items.Count > 0)
                 {
                     (cooperationComboBox.Items[0] as ComboBoxItem).IsSelected = true;
+                }
+            }
+            else
+            {
+                Console.WriteLine("🔒 협업 모드가 아닌 경우 숨김 처리");
+                // 🔒 협업 모드가 아닌 경우 숨김 처리
+                cooperationComboBox.Visibility = Visibility.Collapsed;
+
+                foreach (var child in LogicalTreeHelper.GetChildren(this))
+                {
+                    if (child is Grid grid)
+                    {
+                        foreach (var sub in LogicalTreeHelper.GetChildren(grid))
+                        {
+                            if (sub is TextBlock tb && tb.Text == "협업 계정 선택")
+                            {
+                                tb.Visibility = Visibility.Collapsed;
+                            }
+                        }
+                    }
                 }
             }
         }

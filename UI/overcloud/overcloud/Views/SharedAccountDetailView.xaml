@@ -50,15 +50,13 @@
                    FontSize="20"
                    FontWeight="Bold"
                    VerticalAlignment="Center"/>
-            <TabControl x:Name="FilterTab"
-                    Margin="24,0,0,0"
-                    VerticalAlignment="Center"
-                    SelectionChanged="FilterTab_SelectionChanged">
-                <TabItem Header="All"       Tag="All"   />
-                <TabItem Header="Google"    Tag="GoogleDrive"/>
-                <TabItem Header="Onedrive"  Tag="OneDrive"/>
-                <TabItem Header="Dropbox"   Tag="Dropbox"/>
-            </TabControl>
+            <ComboBox x:Name="CoopSelector"
+          Width="200"
+          Height="32"
+          VerticalAlignment="Center"
+          Margin="24,0,0,0"
+          SelectionChanged="CoopSelector_SelectionChanged"/>
+
         </StackPanel>
 
         <!-- 3. 액션 버튼 -->

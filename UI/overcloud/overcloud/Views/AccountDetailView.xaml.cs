@@ -209,7 +209,7 @@ namespace overcloud.Views
 
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
-            AddAccountWindow window = new AddAccountWindow(_controller, _user_id, true);
+            AddAccountWindow window = new AddAccountWindow(_controller, _user_id, false);
             window.ShowDialog();
         }
 

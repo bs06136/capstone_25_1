@@ -36,24 +36,33 @@ namespace overcloud.Views
 
         private void RefreshList()
         {
-            string currentUserId = _user_id;
+            var myUserId = _user_id;
 
-            // 공유 계정 리스트 불러오기
-            var all = _controller.AccountService.Get_Clouds_For_User(currentUserId);
+            // 1. 내가 속한 협업 클라우드 ID들
+            var joinedCoops = _controller.CoopUserRepository.connected_cooperation_account_nums(myUserId);
 
-            _items = new ObservableCollection<AccountItemViewModel>(
-                all.Select(a => new AccountItemViewModel
+            // 2. 전체 계정 ViewModel 리스트 초기화
+            _items = new ObservableCollection<AccountItemViewModel>();
+
+            // 3. 각 협업 클라우드의 계정 목록 가져오기
+            foreach (var coopId in joinedCoops)
+            {
+                var accounts = _controller.AccountService.Get_Clouds_For_User(coopId);
+                foreach (var acc in accounts)
                 {
-                    CloudName = a.CloudType,
-                    IsActive = true,
-                    AccountId = a.AccountId,
-                    UsagePercent = a.TotalCapacity > 0
-                                      ? (int)(a.UsedCapacity * 100.0 / a.TotalCapacity)
-                                      : 0,
-                    UsageDisplay = $"{(a.UsedCapacity / 1024 / 1024):F2}/{(a.TotalCapacity / 1024 / 1024):F2} GB",
-                    LastLoginDate = DateTime.Now,
-                    IsSelected = false
-                }));
+                    _items.Add(new AccountItemViewModel
+                    {
+                        CloudName = acc.CloudType,
+                        IsActive = true,
+                        AccountId = acc.AccountId,
+                        Owner = coopId, // 소속된 협업 클라우드 ID를 Owner로
+                        UsagePercent = acc.TotalCapacity > 0 ? (int)(acc.UsedCapacity * 100.0 / acc.TotalCapacity) : 0,
+                        UsageDisplay = $"{(acc.UsedCapacity / 1024 / 1024):F2}/{(acc.TotalCapacity / 1024 / 1024):F2} GB",
+                        LastLoginDate = DateTime.Now,
+                        IsSelected = false
+                    });
+                }
+            }
 
             _view = CollectionViewSource.GetDefaultView(_items);
             AccountsGrid.ItemsSource = _view;
@@ -61,6 +70,8 @@ namespace overcloud.Views
             var header = (FilterTab.SelectedItem as TabItem)?.Header as string;
             ApplyFilter(header);
         }
+
+
 
         public class AccountItemViewModel : INotifyPropertyChanged
         {
@@ -78,10 +89,13 @@ namespace overcloud.Views
             public string UsageDisplay { get; set; }
             public DateTime LastLoginDate { get; set; }
 
+            public string Owner { get; set; }  // ✅ 추가
+
             public event PropertyChangedEventHandler PropertyChanged;
             protected void OnPropertyChanged([CallerMemberName] string prop = null)
                 => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
+
 
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {

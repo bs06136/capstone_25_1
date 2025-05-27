@@ -946,5 +946,14 @@ namespace overcloud.Views
             RefreshExplorer(); // 또는 LoadAccountTrees() 등
         }
 
+        private void DisJoinCooperationAccount_Click(object sender, RoutedEventArgs e)
+        {
+            var registerWindow = new COP_Dis_JoinWindow(_controller, _user_id);
+            registerWindow.Owner = Window.GetWindow(this); // 모달창으로 띄우기
+            registerWindow.ShowDialog();
+
+            // 협업 계정 생성 후 트리 새로고침 필요할 경우
+            RefreshExplorer(); // 또는 LoadAccountTrees() 등
+        }
     }
 }
