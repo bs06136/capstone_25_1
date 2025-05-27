@@ -10,14 +10,13 @@ namespace overcloud.Views
 {
     public partial class DeleteAccountWindow : Window
     {
-        private AccountService _accountService;     //수정 필요
+        private LoginController _controller;
         private string _user_id;                    //수정 필요
 
-        public DeleteAccountWindow(AccountService accountService, string user_id)
+        public DeleteAccountWindow(LoginController controller, string user_id)
         {
             InitializeComponent();
-
-            _accountService = accountService;
+            _controller = controller;
             _user_id = user_id;                    //수정 필요
 
             LoadAccounts();
@@ -32,7 +31,7 @@ namespace overcloud.Views
                 System.Diagnostics.Debug.WriteLine("계정 불러오기 시작");
                 // 기존: List<CloudStorageInfo> accounts = main.GetAllCloudStatus();
                 // 변경: List<CloudAccountInfo> accounts = main.GetAllAccounts();
-                List<CloudStorageInfo> accounts = _accountService.Get_Clouds_For_User(_user_id);
+                List<CloudStorageInfo> accounts = _controller.AccountService.Get_Clouds_For_User(_user_id);
                 AccountListBox.ItemsSource = accounts;
                 Debug.WriteLine("list 출력");
             }
@@ -51,7 +50,7 @@ namespace overcloud.Views
             int CloudStorageNum = selectedAccount.CloudStorageNum;
 
             // temp_class의 RemoveAccount 호출
-            bool result = await _accountService.Delete_Cloud_Storage(CloudStorageNum, _user_id);
+            bool result = await _controller.AccountService.Delete_Cloud_Storage(CloudStorageNum, _user_id);
 
             System.Windows.MessageBox.Show(result ? "계정 삭제 성공" : "계정 삭제 실패");
             this.Close();

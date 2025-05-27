@@ -6,16 +6,14 @@ namespace overcloud.Views
 {
     public partial class COP_JoinWindow : Window
     {
-        private AccountRepository _accountRepository;
+        private LoginController _controller;
         private string user_id = null;
-        private CooperationManager _CooperationManager;
 
-        public COP_JoinWindow(AccountRepository accountRepository, string user_id, CooperationManager cooperationManager)
+        public COP_JoinWindow(LoginController controller, string user_id)
         {
-            _accountRepository = accountRepository;
+            _controller = controller;
             this.user_id = user_id;
             InitializeComponent();
-            _CooperationManager = cooperationManager;
         }
 
         private void JoinButton_Click(object sender, RoutedEventArgs e)
@@ -29,7 +27,7 @@ namespace overcloud.Views
                 return;
             }
 
-            bool success = _CooperationManager.Join_cooperation_Cloud_Storage_UI_to_pro(userId, password, user_id);
+            bool success = _controller.CooperationManager.Join_cooperation_Cloud_Storage_UI_to_pro(userId, password, user_id);
 
             if (success)
             {

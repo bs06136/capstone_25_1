@@ -18,31 +18,19 @@ namespace overcloud.Views
 {
     public partial class AccountDetailView : System.Windows.Controls.UserControl
     {
-        private AccountService _accountService;
-        private FileUploadManager _fileUploadManager;
-        private FileDownloadManager _fileDownloadManager;
-        private FileDeleteManager _fileDeleteManager;
-        private FileCopyManager _fileCopyManager;
-        private QuotaManager _quotaManager;
-        private IFileRepository _fileRepository;
+        private LoginController _controller;
         private string _user_id;
 
         // true = 막대 차트, false = 파이 차트
         private bool _isBarMode = true;
         private string _currentFilter = "All";
 
-        public AccountDetailView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, string user_id)
+        public AccountDetailView(LoginController controller, string user_id)
         {
             InitializeComponent();
 
             // 서비스 초기화
-            _accountService = accountService;
-            _fileUploadManager = fileUploadManager;
-            _fileDownloadManager = fileDownloadManager;
-            _fileDeleteManager = fileDeleteManager;
-            _fileCopyManager = fileCopyManager;
-            _quotaManager = quotaManager;
-            _fileRepository = fileRepository;
+            _controller = controller;
             _user_id = user_id;
 
             // 초기 탭 선택
@@ -71,7 +59,7 @@ namespace overcloud.Views
         private void LoadUsageDetails(string filter)
         {
             // 전체 계정 정보 가져오기
-            var all = _accountService.Get_Clouds_For_User(_user_id);
+            var all = _controller.AccountService.Get_Clouds_For_User(_user_id);
 
             // 필터링: “All” 이 아니면 해당 CloudType만
             var filtered = filter == "All"
@@ -123,7 +111,7 @@ namespace overcloud.Views
 
         private void LoadChart(string filter)
         {
-            var all = _accountService.Get_Clouds_For_User(_user_id);
+            var all = _controller.AccountService.Get_Clouds_For_User(_user_id);
 
             // 필터링
             var filtered = filter == "All"
@@ -221,14 +209,14 @@ namespace overcloud.Views
 
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
-            AddAccountWindow window = new AddAccountWindow(_accountService, _user_id);
+            AddAccountWindow window = new AddAccountWindow(_controller, _user_id, false);
             window.ShowDialog();
         }
 
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("삭제 버튼 누름");
-            var window = new DeleteAccountWindow(_accountService, _user_id);
+            var window = new DeleteAccountWindow(_controller, _user_id);
             // this(UserControl)가 아니라 이 컨트롤을 호스트하는 Window를 Owner로 지정
             window.Owner = Window.GetWindow(this);
             window.ShowDialog();

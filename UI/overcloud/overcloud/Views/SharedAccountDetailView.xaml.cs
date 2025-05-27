@@ -13,29 +13,19 @@ namespace overcloud.Views
 {
     public partial class SharedAccountDetailView : System.Windows.Controls.UserControl  //협업 계정에 연결된 모든 클라우드 계정을 가져오도록 수정해야함
     {
-        private AccountService _accountService;
-        private FileUploadManager _fileUploadManager;
-        private FileDownloadManager _fileDownloadManager;
-        private FileDeleteManager _fileDeleteManager;
-        private FileCopyManager _fileCopyManager;
-        private QuotaManager _quotaManager;
-        private IFileRepository _fileRepository;
+        private LoginController _controller;
         private string _user_id;
 
         private bool _isBarMode = true;
         private string _currentFilter = "All";
 
-        public SharedAccountDetailView(AccountService accountService, FileUploadManager fileUploadManager, FileDownloadManager fileDownloadManager, FileDeleteManager fileDeleteManager, FileCopyManager fileCopyManager, QuotaManager quotaManager, IFileRepository fileRepository, string user_id)
+        private List<string> _cooperationGroups;
+        private string _selectedCoopId;
+
+        public SharedAccountDetailView(LoginController controller, string user_id)
         {
             InitializeComponent();
-
-            _accountService = accountService;
-            _fileUploadManager = fileUploadManager;
-            _fileDownloadManager = fileDownloadManager;
-            _fileDeleteManager = fileDeleteManager;
-            _fileCopyManager = fileCopyManager;
-            _quotaManager = quotaManager;
-            _fileRepository = fileRepository;
+            _controller = controller;
             _user_id = user_id;
 
             // 초기화
@@ -43,34 +33,32 @@ namespace overcloud.Views
         }
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            // 첫 로드 시
-            LoadUsageDetails("All");
-            LoadChart("All");
-        }
+            _cooperationGroups = _controller.CoopUserRepository.connected_cooperation_account_nums(_user_id);
+            CoopSelector.ItemsSource = _cooperationGroups;
 
-        private void FilterTab_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (FilterTab.SelectedItem is TabItem ti)
+            if (_cooperationGroups.Any())
             {
-                _currentFilter = ti.Tag.ToString();
-                LoadUsageDetails(_currentFilter);
-                LoadChart(_currentFilter);
+                CoopSelector.SelectedIndex = 0;
             }
         }
 
-        private void LoadUsageDetails(string filter)
+
+        private void CoopSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // 전체 계정 정보 가져오기
-            var all = _accountService.Get_Clouds_For_User(_user_id);
+            if (CoopSelector.SelectedItem is string selected)
+            {
+                _selectedCoopId = selected;
+                LoadUsageDetails(_selectedCoopId);
+                LoadChart(_selectedCoopId);
+            }
+        }
 
-            // 필터링: “All” 이 아니면 해당 CloudType만
-            var filtered = filter == "All"
-                ? all
-                : all.Where(a => a.CloudType.Equals(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+        private void LoadUsageDetails(string coopId)
+        {
+            var clouds = _controller.AccountService.Get_Clouds_For_User(coopId);
 
-            // 드라이브별 그룹화 및 합산
-            var grouped = filtered
-                .GroupBy(a => a.CloudType)
+            var grouped = clouds
+                .GroupBy(c => c.CloudType)
                 .Select(g => new
                 {
                     CloudType = g.Key,
@@ -79,50 +67,24 @@ namespace overcloud.Views
                 })
                 .ToList();
 
-            // 뷰모델 생성
-            var items = grouped
-                .Select(g => new UsageItemViewModel
-                {
-                    DriveName = g.CloudType,
-                    TotalDisplay = $"{g.Total:F2}GB",
-                    UsedDisplay = $"{g.Used:F2}GB",
-                    UsedPercent = g.Total > 0
-                        ? (int)(g.Used * 100.0 / g.Total)
-                        : 0
-                })
-                .ToList();
-
-            // “All” 필터일 때 전체 합계 행 추가
-            if (filter == "All")
+            var items = grouped.Select(g => new UsageItemViewModel
             {
-                ulong totalSum = (ulong)grouped.Sum(g => g.Total);
-                ulong usedSum = (ulong)grouped.Sum(g => g.Used);
-                items.Insert(0, new UsageItemViewModel
-                {
-                    DriveName = "Total",
-                    TotalDisplay = $"{totalSum:F2}GB",
-                    UsedDisplay = $"{usedSum:F2}GB",
-                    UsedPercent = totalSum > 0
-                        ? (int)(usedSum * 100.0 / totalSum)
-                        : 0
-                });
-            }
+                DriveName = g.CloudType,
+                TotalDisplay = $"{g.Total:F2}GB",
+                UsedDisplay = $"{g.Used:F2}GB",
+                UsedPercent = g.Total > 0 ? (int)(g.Used * 100.0 / g.Total) : 0
+            }).ToList();
 
             UsageList.ItemsSource = items;
         }
 
-        private void LoadChart(string filter)   
+
+        private void LoadChart(string coopId)   
         {
-            var all = _accountService.Get_Clouds_For_User(_user_id);
+            var clouds = _controller.AccountService.Get_Clouds_For_User(coopId);
 
-            // 필터링
-            var filtered = filter == "All"
-                ? all
-                : all.Where(a => a.CloudType.Equals(filter, StringComparison.OrdinalIgnoreCase)).ToList();
-
-            // 그룹화 & 합산
-            var grouped = filtered
-                .GroupBy(a => a.CloudType)
+            var grouped = clouds
+                .GroupBy(c => c.CloudType)
                 .Select(g => new
                 {
                     CloudType = g.Key,
@@ -130,6 +92,7 @@ namespace overcloud.Views
                     Used = g.Sum(x => (double)x.UsedCapacity) / 1024 / 1024
                 })
                 .ToList();
+
 
             if (_isBarMode)
             {
@@ -211,14 +174,14 @@ namespace overcloud.Views
 
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
-            AddAccountWindow window = new AddAccountWindow(_accountService, _user_id);
+            AddAccountWindow window = new AddAccountWindow(_controller, _user_id, true);
             window.ShowDialog();
         }
 
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("삭제 버튼 누름");
-            var window = new DeleteAccountWindow(_accountService, _user_id);
+            var window = new DeleteAccountWindow(_controller, _user_id);
             // this(UserControl)가 아니라 이 컨트롤을 호스트하는 Window를 Owner로 지정
             window.Owner = Window.GetWindow(this);
             window.ShowDialog();

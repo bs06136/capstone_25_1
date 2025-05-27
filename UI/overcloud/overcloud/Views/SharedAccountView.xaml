@@ -220,7 +220,7 @@
             <Button x:Name="UploadButton복사__C_1" Width="90" Height="31"
                 Canvas.Left="932" Canvas.Top="178"
                 Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
-                Click="Button_Save_Click" HorizontalAlignment="Left" VerticalAlignment="Top">
+                Click="DisJoinCooperationAccount_Click" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Button.Resources>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="CornerRadius" Value="5"/>
