@@ -17,18 +17,13 @@
         <ListBox x:Name="AccountListBox">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-
-                        <TextBlock Text="{Binding AccountId}" 
-                           FontWeight="Bold" 
-                           Margin="0,0,10,0"/>
-
-                        <TextBlock Text=" - " 
-                           Foreground="Gray" 
-                           VerticalAlignment="Center" 
-                           Margin="0,0,5,0"/>
-
-                        <TextBlock Text="{Binding CloudType}"/>
+                    <StackPanel Margin="4">
+                        <TextBlock Text="{Binding AccountId}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding CloudType}" Foreground="Gray"/>
+                        <TextBlock>
+                    <Run Text="소유자: "/>
+                    <Run Text="{Binding ID}" FontStyle="Italic" Foreground="DarkSlateBlue"/>
+                        </TextBlock>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
