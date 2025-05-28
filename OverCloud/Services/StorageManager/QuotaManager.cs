@@ -104,7 +104,7 @@ namespace OverCloud.Services.StorageManager
 
 
         //업로드 or 삭제 시 스토리지 용량 최신화.
-        public void UpdateQuotaAfterUploadOrDelete(int cloudStorageNum, ulong fileSizeKB, bool isUpload)
+        public void UpdateQuotaAfterUploadOrDelete(int cloudStorageNum, ulong fileSizeKB, bool isUpload, string userId)
         {
             var quota = StorageSessionManager.Quotas.FirstOrDefault(q => q.CloudStorageNum == cloudStorageNum);
             Console.WriteLine($" 업로드 or 삭제 반영 전: quota.Total = {quota.TotalCapacityKB}");
@@ -123,11 +123,15 @@ namespace OverCloud.Services.StorageManager
 
             Console.WriteLine($" 업로드 or 삭제 반영 후: quota.Used = {quota.UsedCapacityKB}");
 
+            var oneCloud = storageRepository.GetCloud(cloudStorageNum, userId);
+
             var cloudInfo = new CloudStorageInfo
             {
                 CloudStorageNum = quota.CloudStorageNum,
                 TotalCapacity = quota.TotalCapacityKB,
-                UsedCapacity = quota.UsedCapacityKB
+                UsedCapacity = quota.UsedCapacityKB,
+                ID =userId
+              
             };
 
             bool dbResult = storageRepository.account_save(cloudInfo);
@@ -240,7 +244,7 @@ namespace OverCloud.Services.StorageManager
                             file.CloudStorageNum = bestStorage.CloudStorageNum;
                             file.CloudFileId = newCloudFileId;
                             fileRepository.updateFile(file);
-                            UpdateQuotaAfterUploadOrDelete(bestStorage.CloudStorageNum, file.FileSize / 1024, true);
+                            UpdateQuotaAfterUploadOrDelete(bestStorage.CloudStorageNum, file.FileSize / 1024, true, userId);
                             uploadSuccess = true;
                             Console.WriteLine($"✅ 파일 재분배 성공: {file.FileName} -> {bestStorage.CloudType}");
                             break; // 반복문 종료 (업로드 성공)
@@ -386,7 +390,7 @@ namespace OverCloud.Services.StorageManager
                         ID = userId
                     };
                     fileRepository.addfile(chunk);
-                    UpdateQuotaAfterUploadOrDelete(cloud.CloudStorageNum, chunk.FileSize, true);
+                    UpdateQuotaAfterUploadOrDelete(cloud.CloudStorageNum, chunk.FileSize, true,userId);
                     uploadedChunks.Add(chunk);
 
                     chunkIndex++;

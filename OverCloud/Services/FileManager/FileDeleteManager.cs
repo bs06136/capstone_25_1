@@ -76,7 +76,7 @@ namespace OverCloud.Services.FileManager
 
                 if (dbDeleted)
                 {
-                    quotaManager.UpdateQuotaAfterUploadOrDelete(cloudInfo.CloudStorageNum, (ulong)((file.FileSize)/1024), false);
+                    quotaManager.UpdateQuotaAfterUploadOrDelete(cloudInfo.CloudStorageNum, (ulong)((file.FileSize)/1024), false, userId);
                 }
 
                 return dbDeleted;
@@ -150,7 +150,7 @@ namespace OverCloud.Services.FileManager
                 }
 
                 // 4. 용량 회복
-                quotaManager.UpdateQuotaAfterUploadOrDelete(chunk.CloudStorageNum, chunk.FileSize / 1024 , false);
+                quotaManager.UpdateQuotaAfterUploadOrDelete(chunk.CloudStorageNum, chunk.FileSize / 1024 , false, userId);
             }
 
             // 5. 논리 파일 메타데이터 삭제
