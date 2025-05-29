@@ -23,7 +23,7 @@ namespace DB.overcloud.Repository
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            string storageQuery = "SELECT * FROM CloudStorageInfo WHERE ID = @id";
+            string storageQuery = "SELECT * FROM CloudStorageInfo WHERE ID = @id AND cloud_storage_num != -1";
 
             using var cmd = new MySqlCommand(storageQuery, conn);
             cmd.Parameters.AddWithValue("@id", ID);
