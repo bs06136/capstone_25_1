@@ -11,7 +11,7 @@ namespace overcloud
     public partial class MainWindow : Window
     {
 
-        private readonly LoginController _controller;
+        private LoginController _controller;
         private string _user_id;
 
         public MainWindow(LoginController controller, string user_id)
@@ -26,14 +26,7 @@ namespace overcloud
         {
             // 앱 시작 시 HomeView 로드
             MainFrame.Navigate(new Views.HomeView(
-                _controller.AccountService,
-                _controller.FileUploadManager,
-                _controller.FileDownloadManager,
-                _controller.FileDeleteManager,
-                _controller.FileCopyManager,
-                _controller.QuotaManager,
-                _controller.FileRepository,
-                _controller.CloudTierManager,
+                _controller,
                 _user_id));
         }
 
@@ -41,14 +34,7 @@ namespace overcloud
         private void HomeMenu_Click(object sender, MouseButtonEventArgs e)
         {
             MainFrame.Navigate(new Views.HomeView(
-                _controller.AccountService,
-                _controller.FileUploadManager,
-                _controller.FileDownloadManager,
-                _controller.FileDeleteManager,
-                _controller.FileCopyManager,
-                _controller.QuotaManager,
-                _controller.FileRepository,
-                _controller.CloudTierManager,
+                _controller,
                 _user_id));
         }
 
@@ -56,14 +42,7 @@ namespace overcloud
         private void AccountMenu_Click(object sender, MouseButtonEventArgs e)
         {
             MainFrame.Navigate(new Views.AccountView(
-                _controller.AccountService,
-                _controller.FileUploadManager,
-                _controller.FileDownloadManager,
-                _controller.FileDeleteManager,
-                _controller.FileCopyManager,
-                _controller.QuotaManager,
-                _controller.FileRepository,
-                _controller.CloudTierManager,
+                _controller,
                 _user_id));
 
         }
@@ -71,30 +50,14 @@ namespace overcloud
         private void SharedAccountMenu_Click(object sender, MouseButtonEventArgs e)
         {
             MainFrame.Navigate(new Views.SharedAccountView(
-                _controller.AccountService,
-                _controller.FileUploadManager,
-                _controller.FileDownloadManager,
-                _controller.FileDeleteManager,
-                _controller.FileCopyManager,
-                _controller.QuotaManager,
-                _controller.FileRepository,
-                _controller.CloudTierManager,
-                _user_id,
-                _controller.AccountRepository,
-                _controller.CooperationManager,
-                _controller.CoopUserRepository));
+                _controller,
+                _user_id));
         }
 
         private void SharedManageMenu_Click(object sender, MouseButtonEventArgs e)
         {
             MainFrame.Navigate(new Views.SharedManageView(
-                _controller.AccountService,
-                _controller.FileUploadManager,
-                _controller.FileDownloadManager,
-                _controller.FileDeleteManager,
-                _controller.FileCopyManager,
-                _controller.QuotaManager,
-                _controller.FileRepository,
+                _controller,
                 _user_id));
         }
     }

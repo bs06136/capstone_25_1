@@ -220,7 +220,7 @@
             <Button x:Name="UploadButton복사__C_1" Width="90" Height="31"
                 Canvas.Left="932" Canvas.Top="178"
                 Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
-                Click="Button_Save_Click" HorizontalAlignment="Left" VerticalAlignment="Top">
+                Click="DisJoinCooperationAccount_Click" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Button.Resources>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="CornerRadius" Value="5"/>
@@ -247,6 +247,38 @@
                     <TextBlock Text="협업 참가" FontSize="12"/>
                 </StackPanel>
             </Button>
+            <Button x:Name="GenerateLinkButton" Width="93" Height="31"
+        Canvas.Left="723" Canvas.Top="178"
+        Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
+        Click="Button_GenerateLink_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image Source="pack://application:,,,/overcloud;component/asset/upload.png"
+               Width="16" Height="16" Margin="0,0,5,0"/>
+                    <TextBlock Text="링크 생성" FontSize="12"/>
+                </StackPanel>
+            </Button>
+
+            <Button x:Name="DownloadLinkButton" Width="106" Height="31"
+        Canvas.Left="602" Canvas.Top="178"
+        Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
+        Click="Button_DownloadLink_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image Source="pack://application:,,,/overcloud;component/asset/download.png"
+               Width="16" Height="16" Margin="0,0,5,0"/>
+                    <TextBlock Text="링크 다운로드" FontSize="12"/>
+                </StackPanel>
+            </Button>
+
 
         </Canvas>
     </Viewbox>

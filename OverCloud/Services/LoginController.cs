@@ -48,12 +48,12 @@ namespace OverCloud.Services
             var cloudSvcs = new List<ICloudFileService> { googleSvc, oneDriveSvc1, oneDriveSvc2 };
 
             CloudTierManager = new CloudTierManager(AccountRepository);
-            QuotaManager = new QuotaManager(cloudSvcs, storageRepo, AccountRepository);
+            QuotaManager = new QuotaManager(cloudSvcs, storageRepo, AccountRepository,FileRepository,CloudTierManager);
             AccountService = new AccountService(AccountRepository, storageRepo, QuotaManager);
             FileUploadManager = new FileUploadManager(AccountService, QuotaManager, storageRepo, FileRepository, cloudSvcs, CloudTierManager);
             FileDownloadManager = new FileDownloadManager(FileRepository, AccountRepository, cloudSvcs, storageRepo);
             FileDeleteManager = new FileDeleteManager(AccountRepository, QuotaManager, storageRepo, FileRepository, cloudSvcs);
-            FileCopyManager = new FileCopyManager(FileRepository, CloudTierManager, cloudSvcs, QuotaManager, AccountRepository, FileUploadManager);
+            FileCopyManager = new FileCopyManager(FileRepository, CloudTierManager, cloudSvcs, QuotaManager, AccountRepository, FileUploadManager, storageRepo);
 
             TransferManager = new TransferManager(FileUploadManager, FileDownloadManager, CloudTierManager);
         }

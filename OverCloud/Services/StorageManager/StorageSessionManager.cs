@@ -11,6 +11,7 @@ namespace OverCloud.Services.StorageManager
 {
     public class CloudQuotaInfo
     {
+     
         public string AccountId { get; set; }
         public int CloudStorageNum { get; set; }
         public string CloudType { get; set; }

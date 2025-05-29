@@ -2,18 +2,27 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters="clr-namespace:overcloud.Converters"
-        Title="계정 추가" Height="250" Width="300" WindowStartupLocation="CenterOwner">
+        Title="계정 추가" Height="250" Width="300" WindowStartupLocation="CenterOwner" 
+        Loaded="AddAccountWindow_Loaded">
 
     <Window.Resources>
         <converters:EmptyStringToVisibilityConverter x:Key="EmptyStringToVisibilityConverter"/>
+        <converters:EmptySelectionToVisibilityConverter x:Key="EmptySelectionToVisibilityConverter"/>
     </Window.Resources>
+
 
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <!-- 아이디 -->
             <RowDefinition Height="Auto"/>
+            <!-- 비밀번호 -->
             <RowDefinition Height="Auto"/>
+            <!-- 클라우드 선택 -->
             <RowDefinition Height="Auto"/>
+            <!-- 협업 계정 선택 -->
+            <RowDefinition Height="Auto"/>
+            <!-- 확인 버튼 -->
         </Grid.RowDefinitions>
 
         <!-- 아이디 입력 -->
@@ -45,8 +54,27 @@
             <ComboBoxItem Content="Dropbox"/>
         </ComboBox>
 
+        <Grid Grid.Row="3" Margin="0,5,0,5">
+            <ComboBox x:Name="cooperationComboBox"
+          Height="30"
+          Visibility="Collapsed"
+          Panel.ZIndex="1"/>
+
+            <TextBlock Text="협업 계정 선택"
+               Foreground="Gray"
+               Margin="5,0,0,0"
+               Panel.ZIndex="0"
+               VerticalAlignment="Center"
+               IsHitTestVisible="False"
+               Visibility="{Binding SelectedItem, ElementName=cooperationComboBox, Converter={StaticResource EmptySelectionToVisibilityConverter}}"/>
+        </Grid>
+
         <!-- 확인 버튼 -->
-        <Button Content="확인" Width="60" Height="30" HorizontalAlignment="Right"
-                Grid.Row="3" Margin="0,10,0,0" Click="Confirm_Click"/>
+        <Button Content="확인"
+        Grid.Row="4"
+        Width="60" Height="30"
+        HorizontalAlignment="Right"
+        Margin="0,10,0,0"
+        Click="Confirm_Click"/>
     </Grid>
 </Window>

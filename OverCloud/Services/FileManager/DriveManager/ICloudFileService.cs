@@ -15,13 +15,14 @@ namespace OverCloud.Services.FileManager.DriveManager
     {
         //지금은 클라우드에 직접 들어가서 파일을 다운로드 해오는 형식.
         
-        Task<bool> DownloadFileAsync(string userId, string cloudFileId, string savePath, int CloudStorageNum);
+
+        Task<bool> DownloadFileAsync(int CloudStorageNum, string cloudFileId, string savePath, string userId);
 
         Task<bool> DeleteFileAsync(int cloudStorageNum, string fileId, string userId);
 
-        Task<string> UploadFileAsync(CloudStorageInfo bestStorage, string filePath);
+        Task<string> UploadFileAsync(CloudStorageInfo bestStorage, string filePath, string userId);
 
-        Task<(ulong total, ulong used)> GetDriveQuotaAsync(int cloudStorageNum);
+        Task<(ulong total, ulong used)> GetDriveQuotaAsync(int cloudStorageNum, string userId);
 
 
         //나중에 분산저장 구현 시 청크로 분리된 메서드를 하나로 합해서 사용할 수 있도록 분리

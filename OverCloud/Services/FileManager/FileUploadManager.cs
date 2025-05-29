@@ -18,7 +18,6 @@ namespace OverCloud.Services.FileManager
     public class FileUploadManager
     {
         private readonly AccountService accountService;
-        //private readonly GoogleDriveService googleDriveService;
         private readonly IFileRepository repo_file;
         private readonly CloudTierManager cloudTierManager;
         private readonly QuotaManager quotaManager;
@@ -60,7 +59,7 @@ namespace OverCloud.Services.FileManager
             }
 
             // 3. 파일 업로드
-            var cloudFileId = await service.UploadFileAsync(bestStorage, file_name);
+            var cloudFileId = await service.UploadFileAsync(bestStorage, file_name, userId);
             if (string.IsNullOrEmpty(cloudFileId)) return false;
 
             // 4. 파일 정보 저장
@@ -82,7 +81,7 @@ namespace OverCloud.Services.FileManager
 
 
             // 6. 업로드 후 용량 갱신
-            quotaManager.UpdateQuotaAfterUploadOrDelete(bestStorage.CloudStorageNum, (ulong)((fileInfo.Length)/1024), true);
+            quotaManager.UpdateQuotaAfterUploadOrDelete(bestStorage.CloudStorageNum, (ulong)((fileInfo.Length)/1024), true, userId);
 
             return true;
         }
@@ -102,6 +101,10 @@ namespace OverCloud.Services.FileManager
 
             List<CloudStorageInfo> select = storagePlan;
 
+            //리스트를 하나의 스토리지로 가져와야함.
+          //  CloudStorageInfo select0 = select[0];
+
+
             //  논리 파일 먼저 등록
             CloudFileInfo logical = new CloudFileInfo
             {
@@ -111,8 +114,8 @@ namespace OverCloud.Services.FileManager
                 ParentFolderId = parentFolderId,
                 IsFolder = false,
                 IsDistributed = true,
-                CloudStorageNum= -1,
-                ID = userId
+                CloudStorageNum= -1, //문제
+                ID = userId 
             };
 
             int logicalFileId = repo_file.AddFileAndReturnId(logical);
@@ -143,7 +146,7 @@ namespace OverCloud.Services.FileManager
                 // 업로드용 임시 파일 생성
                 string tempFile = Path.GetTempFileName(); //임의 경로 지정 
                 await File.WriteAllBytesAsync(tempFile, buffer); //버퍼 크기만큼(분산저장 chunk크기만큼) 잘라서 파일 쓰기.
-                string cloudFileId = await service.UploadFileAsync(cloud, tempFile); // 잘린 파일 업로드
+                string cloudFileId = await service.UploadFileAsync(cloud, tempFile, userId); // 잘린 파일 업로드
                 File.Delete(tempFile); //업로드 후 로컬에서 파일 삭제.
 
                 // 조각 파일 등록
@@ -163,7 +166,7 @@ namespace OverCloud.Services.FileManager
                 };
 
                 repo_file.addfile(chunk);
-                quotaManager.UpdateQuotaAfterUploadOrDelete(cloud.CloudStorageNum, chunk.FileSize, true);
+                quotaManager.UpdateQuotaAfterUploadOrDelete(cloud.CloudStorageNum, chunk.FileSize, true, userId);
                 uploadedChunks.Add(chunk);
 
                 chunkIndex++;
@@ -187,6 +190,9 @@ namespace OverCloud.Services.FileManager
                 return false;
             }
         }
+
+
+
 
 
     }

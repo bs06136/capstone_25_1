@@ -51,9 +51,9 @@ namespace OverCloud.Services.FileManager
             if (!file.IsFolder)
             {
 
-                var cloudInfo = accountRepository
-                    .GetAllAccounts(userId)
-                    .FirstOrDefault(c => c.CloudStorageNum == file.CloudStorageNum);
+                var cloudInfo = storageRepository.GetCloud(file.CloudStorageNum, userId);
+                    //.GetAllAccounts(userId)
+                    //.FirstOrDefault(c => c.CloudStorageNum == file.CloudStorageNum);
 
                 string cloudType = cloudInfo.CloudType;
                 var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(cloudType));
@@ -76,7 +76,7 @@ namespace OverCloud.Services.FileManager
 
                 if (dbDeleted)
                 {
-                    quotaManager.UpdateQuotaAfterUploadOrDelete(cloudInfo.CloudStorageNum, (ulong)((file.FileSize)/1024), false);
+                    quotaManager.UpdateQuotaAfterUploadOrDelete(cloudInfo.CloudStorageNum, (ulong)((file.FileSize)/1024), false, userId);
                 }
 
                 return dbDeleted;
@@ -84,8 +84,7 @@ namespace OverCloud.Services.FileManager
 
             else
             {
-                var fileInfo = storageRepository
-                   .GetCloud(file.CloudStorageNum);
+                var fileInfo = storageRepository.GetCloud(file.CloudStorageNum,userId);
                 
                 bool dbDeleted = fileRepository.DeleteFile(fileId);
                     return dbDeleted;               
@@ -114,9 +113,9 @@ namespace OverCloud.Services.FileManager
 
             foreach (var chunk in chunks)
             {
-                var cloudInfo = accountRepository
-                    .GetAllAccounts(userId)
-                    .FirstOrDefault(c => c.CloudStorageNum == chunk.CloudStorageNum);
+                var cloudInfo = storageRepository.GetCloud(chunk.CloudStorageNum, userId);
+                    //.GetAllAccounts(userId)
+                    //.FirstOrDefault(c => c.CloudStorageNum == chunk.CloudStorageNum);
 
                 if (cloudInfo == null)
                 {
@@ -151,7 +150,7 @@ namespace OverCloud.Services.FileManager
                 }
 
                 // 4. 용량 회복
-                quotaManager.UpdateQuotaAfterUploadOrDelete(chunk.CloudStorageNum, chunk.FileSize / 1024 , false);
+                quotaManager.UpdateQuotaAfterUploadOrDelete(chunk.CloudStorageNum, chunk.FileSize / 1024 , false, userId);
             }
 
             // 5. 논리 파일 메타데이터 삭제

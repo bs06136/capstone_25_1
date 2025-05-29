@@ -11,11 +11,12 @@ namespace OverCloud.Services
     public class CloudTierManager
     {
 
-        private readonly AccountRepository accountRepository;
+        private readonly IAccountRepository accountRepository;     
 
-        public CloudTierManager(AccountRepository accountRepository)
+        public CloudTierManager(IAccountRepository accountRepository)
         {
             this.accountRepository = accountRepository;
+ 
         }
 
         public CloudStorageInfo SelectBestStorage(ulong fileSizeKB, string userId) //kb단위로 호출
@@ -123,6 +124,40 @@ namespace OverCloud.Services
 
             return totalAvailableBytes;
         }
+
+
+        public List<CloudStorageInfo> GetCandidateStorages(ulong fileSizeKB, string userId,int excludeCloudStorageNum)
+        {
+            var clouds = accountRepository.GetAllAccounts(userId);
+            if (clouds == null || clouds.Count == 0)
+            {
+                Console.WriteLine("❌ 클라우드 계정 없음");
+                return new List<CloudStorageInfo>();
+            }
+
+            var candidates = clouds
+                 .Where(c => c.CloudStorageNum != excludeCloudStorageNum)  // 현재 계정 제외
+                .Where(c => ((long)c.TotalCapacity - (long)c.UsedCapacity) >= (long)fileSizeKB)
+                .OrderBy(c => GetTierValue(c.CloudType))  // 티어 순서
+                .ThenByDescending(c => c.TotalCapacity - c.UsedCapacity)  // 같은 티어면 여유공간 큰 순
+                .ToList();
+
+            foreach (var c in candidates)
+            {
+                var remaining = (long)c.TotalCapacity - (long)c.UsedCapacity;
+                Console.WriteLine($"🧪 재분배 후보: {c.CloudType}, 잔여용량: {remaining}KB");
+            }
+
+            if (candidates.Count == 0)
+            {
+                Console.WriteLine("❌ 재분배 가능한 스토리지가 없습니다.");
+            }
+
+            return candidates;
+        }
+
+
+
 
     }
 
