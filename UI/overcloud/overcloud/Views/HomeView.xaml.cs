@@ -751,7 +751,7 @@ namespace overcloud.Views
                 return;
             }
 
-            var dialog = new FolderSelectDialog(_controller.FileRepository, _user_id)
+            var dialog = new FolderSelectDialog(_controller, _user_id)
             {
                 Owner = Window.GetWindow(this)
             };
@@ -894,7 +894,7 @@ namespace overcloud.Views
                 return;
             }
 
-            var dialog = new FolderSelectDialog(_controller.FileRepository, _user_id)
+            var dialog = new FolderSelectDialog(_controller, _user_id)
             {
                 Owner = Window.GetWindow(this)
             };
