@@ -17,9 +17,12 @@ namespace OverCloud.Services.FileManager.DriveManager
                 throw new ArgumentNullException(nameof(cloud));
 
             if (string.IsNullOrEmpty(cloud.RefreshToken) ||
-                string.IsNullOrEmpty(cloud.ClientId) ||
-                string.IsNullOrEmpty(cloud.ClientSecret))
+                string.IsNullOrEmpty(cloud.ClientId)
+                //string.IsNullOrEmpty(cloud.ClientSecret)
+                )
             {
+                Console.WriteLine($"RefreshToken: '{cloud.RefreshToken}'");
+                Console.WriteLine($"ClientId: '{cloud.ClientId}'");
                 throw new InvalidOperationException("CloudStorageInfo에 필요한 인증 정보가 없습니다.");
             }
 
