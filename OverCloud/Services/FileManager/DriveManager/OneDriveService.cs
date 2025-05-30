@@ -217,7 +217,7 @@ namespace OverCloud.Services.FileManager.DriveManager
         public async Task<bool> DeleteFileAsync(int cloudStorageNum, string cloudFileId, string userId)
         {
             var cloud = storageRepository.GetCloud(cloudStorageNum, userId);
-               // .FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
+            // .FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
             if (cloud == null) return false;
             if (!await EnsureAccessTokenAsync(cloud)) return false;
 
@@ -226,6 +226,9 @@ namespace OverCloud.Services.FileManager.DriveManager
 
             return response.IsSuccessStatusCode;
         }
+
+
+
 
         public async Task<(ulong, ulong)> GetDriveQuotaAsync(int CloudStorageNum,string userId)
         {
