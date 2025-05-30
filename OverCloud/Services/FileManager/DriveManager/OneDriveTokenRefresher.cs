@@ -27,7 +27,15 @@ namespace OverCloud.Services.FileManager.DriveManager
                 { "scope", "offline_access Files.ReadWrite.ALL User.Read" }
             };
 
+            Console.WriteLine("🔑 OneDrive AccessToken 재발급 요청 파라미터:");
+            foreach (var param in parameters)
+            {
+                Console.WriteLine($"{param.Key}: {param.Value}");
+            }
+
             var response = await client.PostAsync("https://login.microsoftonline.com/consumers/oauth2/v2.0/token", new FormUrlEncodedContent(parameters));
+            Console.WriteLine($"🔑 AccessToken 재발급 요청 상태: {response.StatusCode}");
+
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
@@ -36,7 +44,9 @@ namespace OverCloud.Services.FileManager.DriveManager
             }
 
             var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-            return json.RootElement.GetProperty("access_token").GetString();
+            var token =json.RootElement.GetProperty("access_token").GetString();
+            Console.WriteLine($"🔑 AccessToken 재발급 성공: {token}");
+            return token;
         }
 
     }
