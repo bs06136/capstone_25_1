@@ -203,7 +203,7 @@
                 </ListBox>
             </Grid>
             <Button x:Name="UploadButton복사__C_" Width="119" Height="31"
-       Canvas.Left="1040" Canvas.Top="178"
+       Canvas.Left="1625" Canvas.Top="130" 
        Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
        Click="CreateCooperationAccount_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Resources>
@@ -214,11 +214,20 @@
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Source="/asset/create_co.png"
                Width="16" Height="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="협업 계정 생성" FontSize="12"/>
+                    <TextBlock Text="협업 계정 생성" FontSize="12" RenderTransformOrigin="0.5,0.5">
+                        <TextBlock.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="-358.702"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
                 </StackPanel>
             </Button>
             <Button x:Name="UploadButton복사__C_1" Width="90" Height="31"
-                Canvas.Left="932" Canvas.Top="178"
+                Canvas.Left="1521" Canvas.Top="130"
                 Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
                 Click="DisJoinCooperationAccount_Click" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Button.Resources>
@@ -233,7 +242,7 @@
                 </StackPanel>
             </Button>
             <Button x:Name="UploadButton복사__C_2" Width="90" Height="31"
-                Canvas.Left="826" Canvas.Top="178"
+                Canvas.Left="1417" Canvas.Top="130"
                 Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
                 Click="JoinCooperationAccount_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Resources>
@@ -247,8 +256,30 @@
                     <TextBlock Text="협업 참가" FontSize="12"/>
                 </StackPanel>
             </Button>
+
+
+            <!-- 💡 여기 바로 아래 추가 -->
+            <Button x:Name="CurrentCooperationAccountsButton" Width="130" Height="31"
+                Canvas.Left="1273" Canvas.Top="130"
+                Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
+                Click="CurrentCooperationAccountsButton_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image Source="/asset/invite.png" Width="16" Height="16" Margin="0,0,5,0"/>
+                    <TextBlock Text="현재 참여중인 협업" FontSize="12"/>
+                </StackPanel>
+            </Button>
+
+
+
+
+
             <Button x:Name="GenerateLinkButton" Width="93" Height="31"
-        Canvas.Left="723" Canvas.Top="178"
+        Canvas.Left="1069" Canvas.Top="178"
         Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
         Click="Button_GenerateLink_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Resources>
@@ -264,7 +295,7 @@
             </Button>
 
             <Button x:Name="DownloadLinkButton" Width="106" Height="31"
-        Canvas.Left="602" Canvas.Top="178"
+        Canvas.Left="949" Canvas.Top="178"
         Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
         Click="Button_DownloadLink_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Resources>
@@ -278,6 +309,8 @@
                     <TextBlock Text="링크 다운로드" FontSize="12"/>
                 </StackPanel>
             </Button>
+            
+            
 
 
         </Canvas>

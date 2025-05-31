@@ -988,6 +988,13 @@ namespace overcloud.Views
             dialog.ShowDialog();
         }
 
+        private void CurrentCooperationAccountsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new CooperationListWindow(_controller, _user_id);
+            window.Owner = Window.GetWindow(this);
+            window.ShowDialog();
+        }
+
     }
 
 }
