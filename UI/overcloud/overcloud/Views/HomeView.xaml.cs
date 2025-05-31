@@ -973,7 +973,6 @@ namespace overcloud.Views
                 return;
             }
 
-            // 링크 구성: userId,cloudFileId,fileId 형식 이어붙이기
             List<string> linkParts = new();
 
             foreach (var item in selected)
@@ -982,10 +981,12 @@ namespace overcloud.Views
             }
 
             string fullLink = string.Join("|", linkParts);
+            string url = $"http://capstonedesign/?link={Uri.EscapeDataString(fullLink)}";
 
-            System.Windows.Clipboard.SetText(fullLink); // 클립보드에 복사
-            System.Windows.MessageBox.Show("링크가 복사되었습니다:\n" + fullLink);
+            System.Windows.Clipboard.SetText(url);
+            System.Windows.MessageBox.Show("링크가 복사되었습니다:\n" + url);
         }
+
 
         private void Button_DownloadLink_Click(object sender, RoutedEventArgs e)
         {

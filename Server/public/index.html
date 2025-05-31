@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>OverCloud 링크 다운로드</title>
+</head>
+<body>
+    <h1>OverCloud 링크 다운로드</h1>
+    <p>아래 버튼을 클릭하여 OverCloud를 실행하고 다운로드를 시작하세요.</p>
+    <button id="launchButton">OverCloud 실행하기</button>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const linkData = urlParams.get('link');
+
+        if (!linkData) {
+            document.body.innerHTML = "<h1>잘못된 링크입니다.</h1>";
+        }
+
+        document.getElementById("launchButton").onclick = () => {
+            // 안전성을 위해 한번 더 인코딩 적용
+            const encodedLink = encodeURIComponent(linkData);
+            const overcloudUrl = `overcloud://?link=${encodedLink}`;
+            window.location.href = overcloudUrl;
+
+            setTimeout(() => {
+                alert("OverCloud가 실행되지 않으면 프로그램이 설치되어 있는지 확인하세요.");
+            }, 2000);
+        };
+    </script>
+</body>
+</html>
