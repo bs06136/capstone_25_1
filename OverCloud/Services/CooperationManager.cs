@@ -44,6 +44,11 @@ namespace OverCloud.Services
 
         }
 
+        //public List<CoopUserInfo> GetCoopUserInfos()
+        //{
+        //    return ;
+        //}
+
     }
 
 }
