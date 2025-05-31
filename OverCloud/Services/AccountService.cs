@@ -50,6 +50,15 @@ namespace OverCloud.Services
                 storage.ClientSecret = clientSecret;
                 Console.WriteLine("원드라이브 계정 추가중...");
             }
+            else if (storage.CloudType == "Dropbox")
+            {
+                var (appKey, appSecret, refreshToken) = await DropboxAuthHelper.LoadDropboxCredentialsAsync();
+                storage.AccountId = storage.ID;
+                storage.RefreshToken = refreshToken;
+                storage.ClientId = appKey;
+                storage.ClientSecret = appSecret;
+                Console.WriteLine("드롭박스 계정 추가중...");
+            }
 
             bool result = storageRepository.AddCloudStorage(storage, userId);
             

@@ -41,6 +41,7 @@
 
 	<ItemGroup>
 	  <Compile Remove="..\..\..\DB\overcloud\Models\FileChunkInfo.cs" />
+	  <Compile Remove="..\..\..\OverCloud\Services\FileManager\DriveManager\DropboxTokenProvider.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
