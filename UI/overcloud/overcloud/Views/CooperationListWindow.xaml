@@ -23,7 +23,7 @@
                             <Ellipse Width="30" Height="30" Fill="LightBlue" Margin="0,0,10,0"/>
                             <StackPanel>
                                 <TextBlock Text="{Binding}" FontSize="14" FontWeight="Bold"/>
-                                <TextBlock Text="계정 상세정보" FontSize="12" Foreground="Gray"/>
+                                <TextBlock Text="Overcloud" FontSize="12" Foreground="Gray"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
