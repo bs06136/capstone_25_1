@@ -213,7 +213,11 @@
                             <StackPanel Orientation="Horizontal" Margin="5"
                                         MouseLeftButtonDown="RightFileItem_Click">
                                 <CheckBox IsChecked="{Binding IsChecked}" Click="CheckBox_Click"/>
-                                <Image Width="16" Height="16" Source="{Binding Icon}" Margin="5,0"/>
+                                <TextBlock Text="{Binding IconText}" 
+                                   FontSize="18" 
+                                   Margin="5,0"
+                                   xml:space="preserve"
+                                   />
                                 <TextBlock Text="{Binding FileName}" FontSize="16" Margin="20,0,0,0"/>
                             </StackPanel>
                         </DataTemplate>

@@ -110,6 +110,8 @@ namespace overcloud.Views
             }
 
             public bool IsDistributed { get; set; }
+
+            public string IconText => IsFolder ? "📁" : "📄";
         }
 
         //////변환기
