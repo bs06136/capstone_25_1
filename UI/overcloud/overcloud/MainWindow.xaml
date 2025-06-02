@@ -19,7 +19,7 @@
         </Style>
     </Window.Resources>
 
-    <Viewbox>
+    <Viewbox Stretch="Fill">
         <Canvas Width="1920" Height="1080">
 
             <!-- 최좌측 네비게이션 바 -->
