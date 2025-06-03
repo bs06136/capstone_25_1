@@ -432,6 +432,49 @@ namespace DB.overcloud.Repository
             // 하지만, 트랜잭션을 명시적으로 사용 중이라면, transaction.Commit() 추가해야 함
         }
 
+        public List<CloudFileInfo> FileSearchByName(int cloudStorageNum, string userId, string searchTerm)
+        {
+            var files = new List<CloudFileInfo>();
+
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                SELECT * FROM CloudFileInfo
+                WHERE cloud_storage_num = @cloudStorageNum
+                AND ID = @userId
+                AND file_name LIKE CONCAT('%', @searchTerm, '%')";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@cloudStorageNum", cloudStorageNum);
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@searchTerm", searchTerm);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                files.Add(new CloudFileInfo
+                {
+                    FileId = Convert.ToInt32(reader["file_id"]),
+                    FileName = reader["file_name"].ToString(),
+                    FileSize = Convert.ToUInt32(reader["file_size"]),
+                    UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
+                    CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ID = reader["ID"].ToString(),
+                    ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
+                    IsFolder = Convert.ToBoolean(reader["is_folder"]),
+                    CloudFileId = reader["cloud_file_id"]?.ToString(),
+                    RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
+                    ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
+                    ChunkSize = reader["chunk_size"] is DBNull ? null : Convert.ToUInt64(reader["chunk_size"]),
+                    IsDistributed = Convert.ToBoolean(reader["is_distributed"])
+                });
+            }
+
+            return files;
+        }
+
+
 
     }
 }
