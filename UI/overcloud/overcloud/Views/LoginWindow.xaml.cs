@@ -53,7 +53,7 @@ namespace overcloud.Views
 
             if (hashed != getPassword)
             {
-                System.Windows.MessageBox.Show("아이디 또는 비밀번호가 올바르지 않습니다. 다시 시도해주세요.", "로그인 실패", MessageBoxButton.OK, MessageBoxImage.Warning);
+                System.Windows.MessageBox.Show("비밀번호가 일치하지 않습니다. 다시 시도해주세요.", "로그인 실패", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             

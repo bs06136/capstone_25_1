@@ -255,7 +255,7 @@
 
             <!-- 💡 여기 바로 아래 추가 -->
             <Button x:Name="CurrentCooperationAccountsButton" Width="146" Height="31"
-                Canvas.Left="1257" Canvas.Top="130"
+                Canvas.Left="1286" Canvas.Top="130"
                 Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
                 Click="CurrentCooperationAccountsButton_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Resources>
@@ -305,7 +305,7 @@
                 </StackPanel>
             </Button>
             <Button x:Name="UploadButton복사__C_3" Width="90" Height="31"
-                Canvas.Left="1151" Canvas.Top="130"
+                Canvas.Left="1182" Canvas.Top="130"
                 Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
                 Click="Button_CreateIssue_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Resources>
