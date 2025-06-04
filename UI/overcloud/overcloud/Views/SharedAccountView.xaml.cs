@@ -794,6 +794,12 @@ namespace overcloud.Views
         ///폴더 추가
         private void Button_AddFolder_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(_currentAccountId))
+            {
+                System.Windows.MessageBox.Show("협업 클라우드를 먼저 선택해 주세요.", "알림", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             // 다이얼로그 띄우기
             var dlg = new AddFolderDialog();
             // this가 아니라 이 UserControl을 포함하고 있는 Window를 Owner로 지정
