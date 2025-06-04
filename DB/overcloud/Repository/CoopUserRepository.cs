@@ -42,6 +42,16 @@ namespace DB.overcloud.Repository
                 coopUserCmd.Parameters.AddWithValue("@user_id", user_id_mine);
                 coopUserCmd.ExecuteNonQuery();
 
+                // 3. CloudStorageInfo에 시스템 전용 더미 계정 삽입
+                string insertDummyStorageQuery = @"INSERT INTO CloudStorageInfo
+                    (cloud_storage_num, ID, cloud_type, account_id, account_password, total_capacity, used_capacity)
+                    VALUES
+                    (-1, @id, 'SYSTEM', '', '', 0, 0)";
+
+                using var dummyCmd = new MySqlCommand(insertDummyStorageQuery, conn, transaction);
+                dummyCmd.Parameters.AddWithValue("@id", user_id_insert);
+                dummyCmd.ExecuteNonQuery();
+
                 transaction.Commit();
                 return true;
             }
