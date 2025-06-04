@@ -181,7 +181,7 @@ namespace overcloud.Views
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("삭제 버튼 누름");
-            var window = new DeleteAccountWindow(_controller, _user_id);
+            var window = new DeleteAccountWindow(_controller, _user_id, true);
             // this(UserControl)가 아니라 이 컨트롤을 호스트하는 Window를 Owner로 지정
             window.Owner = Window.GetWindow(this);
             window.ShowDialog();

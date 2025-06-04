@@ -6,32 +6,49 @@ using System.Threading.Tasks;
 using DB.overcloud.Repository;
 using System.Windows.Controls;
 using System.Windows;
+using OverCloud.Services;
 
 namespace overcloud.Views
 {
     public partial class FolderSelectDialog : Window
     {
-        private readonly IFileRepository _fileRepository;
+        private LoginController _controller;
         public int? SelectedFolderId { get; private set; } = null;
         private string user_id = null;
 
-        public FolderSelectDialog(IFileRepository fileRepository, string user_id)
+        public FolderSelectDialog(LoginController _controller, string user_id)
         {
             InitializeComponent();
-            _fileRepository = fileRepository;
+            this._controller = _controller;
+            this.user_id = user_id;
             LoadFolders();
         }
 
         private void LoadFolders()
         {
-            var rootItem = new TreeViewItem { Header = "Over cloud", Tag = -1 };
-            LoadChildFolders(rootItem, -1);
-            FolderTreeView.Items.Add(rootItem);
+            // 내 클라우드
+            var myRootItem = new TreeViewItem { Header = "📁 내 클라우드", Tag = -1 };
+            LoadChildFolders(myRootItem, -1, user_id);
+            FolderTreeView.Items.Add(myRootItem);
+
+            // 협업 클라우드
+            var cooperationIds = _controller.CoopUserRepository.connected_cooperation_account_nums(user_id);
+            foreach (var coopUserId in cooperationIds)
+            {
+                var coopRootItem = new TreeViewItem
+                {
+                    Header = $"🤝 협업 클라우드 ({coopUserId})",
+                    Tag = (-1, coopUserId) // 튜플로 구분
+                };
+                LoadChildFolders(coopRootItem, -1, coopUserId);
+                FolderTreeView.Items.Add(coopRootItem);
+            }
         }
 
-        private void LoadChildFolders(TreeViewItem parentItem, int parentId)
+
+        private void LoadChildFolders(TreeViewItem parentItem, int parentId, string targetUserId)
         {
-            var folders = _fileRepository.all_file_list(parentId, user_id)
+            var folders = _controller.FileRepository.all_file_list(parentId, targetUserId)
                 .Where(f => f.IsFolder)
                 .ToList();
 
@@ -46,12 +63,13 @@ namespace overcloud.Views
                 item.Expanded += (s, e) =>
                 {
                     if (item.Items.Count == 0)
-                        LoadChildFolders(item, (int)item.Tag);
+                        LoadChildFolders(item, folder.FileId, targetUserId);
                 };
 
                 parentItem.Items.Add(item);
             }
         }
+
 
         private void FolderTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {

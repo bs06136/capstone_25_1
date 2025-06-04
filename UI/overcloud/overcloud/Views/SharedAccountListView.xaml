@@ -69,15 +69,13 @@
                        FontSize="20"
                        FontWeight="Bold"
                        VerticalAlignment="Center"/>
-			<TabControl x:Name="FilterTab"
-                        Margin="24,0,0,0"
-                        VerticalAlignment="Center"
-                        SelectionChanged="FilterTab_SelectionChanged">
-				<TabItem Header="All"/>
-				<TabItem Header="Active"/>
-				<TabItem Header="Disactive"/>
-			</TabControl>
-		</StackPanel>
+            <ComboBox x:Name="CoopSelector"
+          Width="200"
+          Height="32"
+          Margin="24,0,0,0"
+          VerticalAlignment="Center"
+          SelectionChanged="CoopSelector_SelectionChanged"/>
+        </StackPanel>
 
 		<!-- 3. DataGrid -->
 		<DataGrid x:Name="AccountsGrid"

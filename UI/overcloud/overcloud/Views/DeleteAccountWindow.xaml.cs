@@ -11,31 +11,46 @@ namespace overcloud.Views
     public partial class DeleteAccountWindow : Window
     {
         private LoginController _controller;
-        private string _user_id;                    //수정 필요
+        private string _user_id;    
+        private bool _is_shared; 
 
-        public DeleteAccountWindow(LoginController controller, string user_id)
+        public DeleteAccountWindow(LoginController controller, string user_id, bool is_shared)
         {
             InitializeComponent();
             _controller = controller;
-            _user_id = user_id;                    //수정 필요
+            _user_id = user_id;
+            _is_shared = is_shared;
 
             LoadAccounts();
         }
 
         private void LoadAccounts()
         {
-            var main = System.Windows.Application.Current.MainWindow as MainWindow;
-            if (main != null)
-            {
+            System.Diagnostics.Debug.WriteLine("계정 불러오기 시작");
 
-                System.Diagnostics.Debug.WriteLine("계정 불러오기 시작");
-                // 기존: List<CloudStorageInfo> accounts = main.GetAllCloudStatus();
-                // 변경: List<CloudAccountInfo> accounts = main.GetAllAccounts();
-                List<CloudStorageInfo> accounts = _controller.AccountService.Get_Clouds_For_User(_user_id);
-                AccountListBox.ItemsSource = accounts;
-                Debug.WriteLine("list 출력");
+            List<CloudStorageInfo> allAccounts = new();
+
+            if (_is_shared)
+            {
+                // 협업 클라우드에 속한 모든 계정 불러오기
+                List<string> coopIds = _controller.CoopUserRepository.connected_cooperation_account_nums(_user_id);
+                foreach (var coopId in coopIds)
+                {
+                    var accounts = _controller.AccountService.Get_Clouds_For_User(coopId);
+                    allAccounts.AddRange(accounts);
+                }
             }
+            else
+            {
+                // 일반 개인 계정만 불러오기
+                allAccounts = _controller.AccountService.Get_Clouds_For_User(_user_id);
+            }
+
+            AccountListBox.ItemsSource = allAccounts;
+            Debug.WriteLine("계정 목록 출력 완료");
         }
+
+
 
         private async void ConfirmDelete_Click(object sender, RoutedEventArgs e)
         {

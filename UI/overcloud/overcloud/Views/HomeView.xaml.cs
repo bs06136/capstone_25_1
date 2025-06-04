@@ -18,6 +18,7 @@ using OverCloud.Services.StorageManager;
 using overcloud.Converters;
 using overcloud.Windows;
 using overcloud.transfer_manager;
+using System.Windows.Media.Imaging;
 
 
 namespace overcloud.Views
@@ -107,6 +108,9 @@ namespace overcloud.Views
             }
 
             public bool IsDistributed { get; set; }
+
+            public string IconText => IsFolder ? "📁" : "📄";
+
         }
 
         //////변환기
@@ -275,7 +279,7 @@ namespace overcloud.Views
             // "모든 파일" 루트 노드
             var rootItem = new TreeViewItem
             {
-                Header = "Over cloud",
+                Header = "📁 Home",
                 Tag = -1
             };
 
@@ -288,7 +292,7 @@ namespace overcloud.Views
             {
                 var childItem = new TreeViewItem
                 {
-                    Header = child.FileName,
+                    Header = $"📁 {child.FileName}",
                     Tag = child.FileId
                 };
                 childItem.Items.Add("Loading..."); // 하위 폴더 열 때만 로드
@@ -317,9 +321,43 @@ namespace overcloud.Views
                     {
                         var childItem = new TreeViewItem
                         {
-                            Header = child.FileName,
+                            Header = $"📁 {child.FileName}",
                             Tag = child.FileId
                         };
+                        // StackPanel로 아이콘과 텍스트를 구성
+                        //var headerPanel = new StackPanel
+                        //{
+                        //    Orientation = System.Windows.Controls.Orientation.Horizontal
+                        //};
+
+                        //// 📂 이미지 아이콘 (예: Images/folder.png)
+                        //var image = new System.Windows.Controls.Image
+                        //{
+                        //    Source = new BitmapImage(new Uri("pack://application:,,,/asset/folder.png")),
+                        //    Width = 16,
+                        //    Height = 16,
+                        //    Margin = new Thickness(0, 0, 5, 0),
+                        //    VerticalAlignment = VerticalAlignment.Center
+                        //};
+
+                        //var icon = new TextBlock
+                        //{
+                        //    Text = "📁 ",
+                        //    VerticalAlignment = VerticalAlignment.Center
+                        //};
+
+                        //// 파일 이름
+                        //var text = new TextBlock
+                        //{
+                        //    Text = child.FileName,
+                        //    VerticalAlignment = VerticalAlignment.Center
+                        //};
+
+                        //headerPanel.Children.Add(icon);
+                        //headerPanel.Children.Add(text);
+
+                        //childItem.Header = headerPanel;
+
                         childItem.Items.Add("Loading..."); // 또 하위가 있을 수 있으니
                         childItem.Expanded += Folder_Expanded;
                         parentItem.Items.Add(childItem);
@@ -751,7 +789,7 @@ namespace overcloud.Views
                 return;
             }
 
-            var dialog = new FolderSelectDialog(_controller.FileRepository, _user_id)
+            var dialog = new FolderSelectDialog(_controller, _user_id)
             {
                 Owner = Window.GetWindow(this)
             };
@@ -894,7 +932,7 @@ namespace overcloud.Views
                 return;
             }
 
-            var dialog = new FolderSelectDialog(_controller.FileRepository, _user_id)
+            var dialog = new FolderSelectDialog(_controller, _user_id)
             {
                 Owner = Window.GetWindow(this)
             };
@@ -964,7 +1002,37 @@ namespace overcloud.Views
             return true;
         }
 
+        private void Button_GenerateLink_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = GetCheckedFiles();
+            if (selected.Count == 0)
+            {
+                System.Windows.MessageBox.Show("파일 또는 폴더를 선택해주세요.");
+                return;
+            }
+
+            List<string> linkParts = new();
+
+            foreach (var item in selected)
+            {
+                linkParts.Add($"{_user_id},{item.cloud_file_id},{item.FileId}");
+            }
+
+            string fullLink = string.Join("|", linkParts);
+            string url = $"http://ec2-54-180-122-223.ap-northeast-2.compute.amazonaws.com/?link={Uri.EscapeDataString(fullLink)}";
+
+            System.Windows.Clipboard.SetText(url);
+            System.Windows.MessageBox.Show("링크가 복사되었습니다:\n" + url);
+        }
 
 
+        private void Button_DownloadLink_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new DownloadFromLinkWindow(_user_id, _controller)
+            {
+                Owner = Window.GetWindow(this)
+            };
+            dialog.ShowDialog();
+        }
     }
 }

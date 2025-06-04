@@ -131,5 +131,30 @@ namespace DB.overcloud.Repository
 
             return result;
         }
+
+        public List<string> GetUsersByCoopId(string coop_id)
+        {
+            var result = new List<string>();
+
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                SELECT user_id
+                FROM CoopUserInfo
+                WHERE coop_id = @coop_id;";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@coop_id", coop_id);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                result.Add(reader["user_id"].ToString());
+            }
+
+            return result;
+        }
+
     }
 }

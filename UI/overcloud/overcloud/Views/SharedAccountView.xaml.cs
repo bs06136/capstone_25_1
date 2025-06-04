@@ -110,6 +110,8 @@ namespace overcloud.Views
             }
 
             public bool IsDistributed { get; set; }
+
+            public string IconText => IsFolder ? "📁" : "📄";
         }
 
         //////변환기
@@ -955,5 +957,46 @@ namespace overcloud.Views
             // 협업 계정 생성 후 트리 새로고침 필요할 경우
             RefreshExplorer(); // 또는 LoadAccountTrees() 등
         }
+
+        private void Button_GenerateLink_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = GetCheckedFiles();
+            if (selected.Count == 0)
+            {
+                System.Windows.MessageBox.Show("파일 또는 폴더를 선택해주세요.");
+                return;
+            }
+
+            List<string> linkParts = new();
+
+            foreach (var item in selected)
+            {
+                linkParts.Add($"{_user_id},{item.cloud_file_id},{item.FileId}");
+            }
+
+            string fullLink = string.Join("|", linkParts);
+            string url = $"http://ec2-54-180-122-223.ap-northeast-2.compute.amazonaws.com/?link={Uri.EscapeDataString(fullLink)}";
+
+            System.Windows.Clipboard.SetText(url);
+            System.Windows.MessageBox.Show("링크가 복사되었습니다:\n" + url);
+        }
+
+        private void Button_DownloadLink_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new DownloadFromLinkWindow(_user_id, _controller)
+            {
+                Owner = Window.GetWindow(this)
+            };
+            dialog.ShowDialog();
+        }
+
+        private void CurrentCooperationAccountsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new CooperationListWindow(_controller, _user_id);
+            window.Owner = Window.GetWindow(this);
+            window.ShowDialog();
+        }
+
     }
+
 }

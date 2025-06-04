@@ -19,35 +19,69 @@ namespace overcloud.Views
         private ICollectionView _view;
         private ObservableCollection<AccountItemViewModel> _items;
 
+        private List<string> _cooperationGroups;
+        private string _selectedCoopId;
+
         public SharedAccountListView(LoginController controller, string user_id)
         {
             InitializeComponent();
 
             _controller = controller;
             _user_id = user_id;
-
-            FilterTab.SelectedIndex = 0;
         }
 
         private void SharedAccountListView_Loaded(object sender, RoutedEventArgs e)
         {
-            RefreshList();
+            _cooperationGroups = _controller.CoopUserRepository.connected_cooperation_account_nums(_user_id);
+
+            // "전체 보기" 항목 추가
+            _cooperationGroups.Insert(0, "전체");
+
+            CoopSelector.ItemsSource = _cooperationGroups;
+            CoopSelector.SelectedIndex = 0; // 기본은 전체
+        }
+
+        private void CoopSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (CoopSelector.SelectedItem is string selected)
+            {
+                _selectedCoopId = selected;
+                RefreshList();
+            }
         }
 
         private void RefreshList()
         {
-            var myUserId = _user_id;
-
-            // 1. 내가 속한 협업 클라우드 ID들
-            var joinedCoops = _controller.CoopUserRepository.connected_cooperation_account_nums(myUserId);
-
-            // 2. 전체 계정 ViewModel 리스트 초기화
             _items = new ObservableCollection<AccountItemViewModel>();
 
-            // 3. 각 협업 클라우드의 계정 목록 가져오기
-            foreach (var coopId in joinedCoops)
+            if (_selectedCoopId == "전체")
             {
-                var accounts = _controller.AccountService.Get_Clouds_For_User(coopId);
+                // 전체 협업 클라우드 기준
+                var joinedCoops = _controller.CoopUserRepository.connected_cooperation_account_nums(_user_id);
+
+                foreach (var coopId in joinedCoops)
+                {
+                    var accounts = _controller.AccountService.Get_Clouds_For_User(coopId);
+                    foreach (var acc in accounts)
+                    {
+                        _items.Add(new AccountItemViewModel
+                        {
+                            CloudName = acc.CloudType,
+                            IsActive = true,
+                            AccountId = acc.AccountId,
+                            Owner = coopId,
+                            UsagePercent = acc.TotalCapacity > 0 ? (int)(acc.UsedCapacity * 100.0 / acc.TotalCapacity) : 0,
+                            UsageDisplay = $"{(acc.UsedCapacity / 1024 / 1024):F2}/{(acc.TotalCapacity / 1024 / 1024):F2} GB",
+                            LastLoginDate = DateTime.Now,
+                            IsSelected = false
+                        });
+                    }
+                }
+            }
+            else
+            {
+                // 특정 협업 클라우드만
+                var accounts = _controller.AccountService.Get_Clouds_For_User(_selectedCoopId);
                 foreach (var acc in accounts)
                 {
                     _items.Add(new AccountItemViewModel
@@ -55,7 +89,7 @@ namespace overcloud.Views
                         CloudName = acc.CloudType,
                         IsActive = true,
                         AccountId = acc.AccountId,
-                        Owner = coopId, // 소속된 협업 클라우드 ID를 Owner로
+                        Owner = _selectedCoopId,
                         UsagePercent = acc.TotalCapacity > 0 ? (int)(acc.UsedCapacity * 100.0 / acc.TotalCapacity) : 0,
                         UsageDisplay = $"{(acc.UsedCapacity / 1024 / 1024):F2}/{(acc.TotalCapacity / 1024 / 1024):F2} GB",
                         LastLoginDate = DateTime.Now,
@@ -66,10 +100,8 @@ namespace overcloud.Views
 
             _view = CollectionViewSource.GetDefaultView(_items);
             AccountsGrid.ItemsSource = _view;
-
-            var header = (FilterTab.SelectedItem as TabItem)?.Header as string;
-            ApplyFilter(header);
         }
+
 
 
 
@@ -108,35 +140,13 @@ namespace overcloud.Views
 
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
-            var window = new DeleteAccountWindow(_controller, _user_id);
+            var window = new DeleteAccountWindow(_controller, _user_id, true);
             window.Owner = Window.GetWindow(this);
             window.ShowDialog();
 
             RefreshList();
         }
 
-        private void FilterTab_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_view == null) return;
-            var header = (FilterTab.SelectedItem as TabItem)?.Header as string;
-            ApplyFilter(header);
-        }
 
-        private void ApplyFilter(string header)
-        {
-            switch (header)
-            {
-                case "Active":
-                    _view.Filter = o => ((AccountItemViewModel)o).IsActive;
-                    break;
-                case "Disactive":
-                    _view.Filter = o => !((AccountItemViewModel)o).IsActive;
-                    break;
-                default:
-                    _view.Filter = null;
-                    break;
-            }
-            _view.Refresh();
-        }
     }
 }

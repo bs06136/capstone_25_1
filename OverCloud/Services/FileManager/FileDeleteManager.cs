@@ -76,7 +76,7 @@ namespace OverCloud.Services.FileManager
 
                 if (dbDeleted)
                 {
-                    quotaManager.UpdateQuotaAfterUploadOrDelete(cloudInfo.CloudStorageNum, (ulong)((file.FileSize)/1024), false);
+                    quotaManager.UpdateQuotaAfterUploadOrDelete(cloudInfo.CloudStorageNum, (ulong)((file.FileSize)/1024), false, userId);
                 }
 
                 return dbDeleted;
@@ -121,7 +121,7 @@ namespace OverCloud.Services.FileManager
                 {
                     Console.WriteLine($"❌ 클라우드 정보 없음: {chunk.CloudStorageNum}");
                     allSuccess = false;
-                    continue;
+                    return allSuccess;
                 }
 
                 var service = cloudServices.FirstOrDefault(s => s.GetType().Name.Contains(cloudInfo.CloudType));
@@ -138,7 +138,7 @@ namespace OverCloud.Services.FileManager
                 {
                     Console.WriteLine($"❌ 조각 삭제 실패: {chunk.FileName}");
                     allSuccess = false;
-                    continue;
+                    return allSuccess;
                 }
 
                 // 3. DB에서 삭제
@@ -150,7 +150,7 @@ namespace OverCloud.Services.FileManager
                 }
 
                 // 4. 용량 회복
-                quotaManager.UpdateQuotaAfterUploadOrDelete(chunk.CloudStorageNum, chunk.FileSize / 1024 , false);
+                quotaManager.UpdateQuotaAfterUploadOrDelete(chunk.CloudStorageNum, chunk.FileSize / 1024 , false, userId);
             }
 
             // 5. 논리 파일 메타데이터 삭제
