@@ -1,0 +1,69 @@
+<UserControl x:Class="overcloud.Views.IssueDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:overcloud.Views">
+
+    <Viewbox>
+        <Canvas Width="1400" Height="1000" Background="#FAFAFA">
+
+            <TextBlock Text="이슈 상세정보" FontSize="24" FontWeight="Bold"
+                       Canvas.Left="50" Canvas.Top="40" />
+
+            <!-- 좌측: 파일 리스트 -->
+            <Rectangle Width="400" Height="400" Fill="#FFFFFF" Stroke="#DDD"
+                       Canvas.Left="50" Canvas.Top="100" RadiusX="10" RadiusY="10"/>
+            <TextBlock Text="관련 파일" FontWeight="Bold" FontSize="16" 
+                       Canvas.Left="70" Canvas.Top="110"/>
+            <ListBox x:Name="FileListBox"
+                     Canvas.Left="70" Canvas.Top="150"
+                     Width="360" Height="320" BorderThickness="0"
+                     Background="Transparent" FontSize="14"/>
+
+            <!-- 우측: 상세 정보 (이제 내부 교체될 영역) -->
+            <Rectangle Width="870" Height="400" Fill="#FFFFFF" Stroke="#DDD"
+                       Canvas.Left="480" Canvas.Top="100" RadiusX="10" RadiusY="10" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <ContentControl x:Name="RightDetailArea"
+                            Canvas.Left="500" Canvas.Top="120"
+                            Width="830" Height="360" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+            <!-- 하단: 코멘트 리스트 -->
+            <Rectangle Width="1300" Height="300" Fill="#FFFFFF" Stroke="#DDD"
+                       Canvas.Left="50" Canvas.Top="530" RadiusX="10" RadiusY="10"/>
+            <TextBlock Text="코멘트" FontWeight="Bold" FontSize="16" 
+                       Canvas.Left="70" Canvas.Top="540"/>
+
+            <ListBox x:Name="CommentListBox"
+                     Canvas.Left="70" Canvas.Top="580"
+                     Width="1260" Height="220"
+                     BorderThickness="0"
+                     Background="Transparent"
+                     FontSize="14">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="150"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="{Binding CommenterId}" Grid.Column="0" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Content}" Grid.Column="1" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding CreatedAt, StringFormat=yyyy-MM-dd}" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- 하단 버튼들 -->
+            <Button Content="코멘트 추가" Width="120" Height="40" Canvas.Left="50" Canvas.Top="880"
+                    Click="AddCommentButton_Click"/>
+            <Button Content="이슈 수정" Width="120" Height="40" Canvas.Left="200" Canvas.Top="880"
+                    Click="EditIssueButton_Click"/>
+            <Button Content="이슈 삭제" Width="120" Height="40" Canvas.Left="350" Canvas.Top="880"
+                    Click="DeleteIssueButton_Click"/>
+            <Button Content="닫기" Width="120" Height="40" Canvas.Left="510" Canvas.Top="880"
+                    Click="CloseButton_Click"/>
+        </Canvas>
+    </Viewbox>
+</UserControl>

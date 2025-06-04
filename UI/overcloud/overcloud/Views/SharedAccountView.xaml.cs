@@ -58,6 +58,10 @@ namespace overcloud.Views
             _controller = controller;
             _user_id = user_id;
 
+            this.KeyDown += SharedAccountView_KeyDown;
+            this.Focusable = true;
+            this.Focus();
+
             // 초기 서비스 설정
         }
 
@@ -464,7 +468,8 @@ namespace overcloud.Views
                                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                                 {
                                     LoadFolderContents(currentFolderId, _currentAccountId);
-                                    SelectFolderInTree(folder.FileId);
+                                    SelectFolderInTree(_currentAccountId, folder.FileId);
+
                                 });
                             });
                         }
@@ -481,68 +486,64 @@ namespace overcloud.Views
 
 
 
-        private void SelectFolderInTree(int folderId)
+        private void SelectFolderInTree(string accountId, int folderId)
         {
             foreach (var item in FileExplorerTree.Items)
             {
                 if (item is TreeViewItem rootItem)
                 {
-                    if (SelectFolderInTreeRecursive(rootItem, folderId))
+                    if (SelectFolderInTreeRecursive(rootItem, accountId, folderId))
                         break;
                 }
             }
         }
 
-        private bool SelectFolderInTreeRecursive(TreeViewItem parent, int folderId)
+
+        private bool SelectFolderInTreeRecursive(TreeViewItem parent, string accountId, int folderId)
         {
-            if (parent.Tag is int id && id == folderId)
+            if (parent.Tag is AccountFolderTag tag)
             {
-                parent.IsSelected = true;
-                parent.BringIntoView();
-                return true;
-            }
-
-            foreach (var childObj in parent.Items)
-            {
-                if (childObj is TreeViewItem childItem)
+                if (tag.AccountId == accountId && tag.FolderId == folderId)
                 {
-                    // 하위 항목이 "Loading..."이고 아직 로드되지 않은 경우만 처리
-                    if (childItem.Items.Count == 1 && childItem.Items[0] is string s && s == "Loading...")
+                    parent.IsSelected = true;
+                    parent.BringIntoView();
+                    return true;
+                }
+
+                foreach (var childObj in parent.Items)
+                {
+                    if (childObj is TreeViewItem childItem)
                     {
-                        // 여기서 childItem.Tag 기준으로 로드해야 함!
-                        if (childItem.Tag is int childId)
+                        if (childItem.Items.Count == 1 && childItem.Items[0] is string s && s == "Loading...")
                         {
-                            childItem.Items.Clear();
-
-                            // ⚠️ 하위 항목을 중복해서 추가하지 않도록 체크
-                            var children = _controller.FileRepository.all_file_list(childId, _currentAccountId)
-                                           .Where(f => f.IsFolder && f.FileId != childId) // 자기 자신은 제외
-                                           .ToList();
-
-                            foreach (var child in children)
+                            // 동적 로드
+                            if (childItem.Tag is AccountFolderTag childTag)
                             {
-                                // 중복 방지: 같은 FileId의 항목이 이미 존재하면 추가하지 않음
-                                bool alreadyExists = childItem.Items.OfType<TreeViewItem>()
-                                                      .Any(x => x.Tag is int tag && tag == child.FileId);
-                                if (alreadyExists) continue;
+                                childItem.Items.Clear();
 
-                                var newChild = new TreeViewItem
+                                var children = _controller.FileRepository.all_file_list(childTag.FolderId, childTag.AccountId)
+                                    .Where(f => f.IsFolder)
+                                    .ToList();
+
+                                foreach (var child in children)
                                 {
-                                    Header = child.FileName,
-                                    Tag = child.FileId
-                                };
-                                newChild.Items.Add("Loading...");
-                                newChild.Expanded += Folder_Expanded;
-                                childItem.Items.Add(newChild);
+                                    var newChild = new TreeViewItem
+                                    {
+                                        Header = $"📁 {child.FileName}",
+                                        Tag = new AccountFolderTag(childTag.AccountId, child.FileId)
+                                    };
+                                    newChild.Items.Add("Loading...");
+                                    newChild.Expanded += Folder_Expanded;
+                                    childItem.Items.Add(newChild);
+                                }
                             }
                         }
-                    }
 
-                    if (SelectFolderInTreeRecursive(childItem, folderId))
-                        return true;
+                        if (SelectFolderInTreeRecursive(childItem, accountId, folderId))
+                            return true;
+                    }
                 }
             }
-
             return false;
         }
 
@@ -996,6 +997,82 @@ namespace overcloud.Views
             window.Owner = Window.GetWindow(this);
             window.ShowDialog();
         }
+
+        private void Button_CreateIssue_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedFiles = GetCheckedFiles();
+            if (selectedFiles.Count == 0)
+            {
+                System.Windows.MessageBox.Show("이슈를 생성할 파일을 선택하세요.");
+                return;
+            }
+
+            // 현재 협업 계정 ID 사용
+            string coopId = _currentAccountId;
+            List<string> userList = _controller.CoopUserRepository.GetUsersByCoopId(coopId);
+
+            var issueDialog = new AddIssueDialog(userList)
+            {
+                Owner = Window.GetWindow(this)
+            };
+
+            if (issueDialog.ShowDialog() == true)
+            {
+                string title = issueDialog.IssueTitle;
+                string description = issueDialog.IssueDescription;
+                string assignedTo = string.IsNullOrWhiteSpace(issueDialog.AssignedTo) ? null : issueDialog.AssignedTo;
+                DateTime? dueDate = issueDialog.DueDate;
+
+                // 이슈 객체 1개 생성 (파일 여러 개에 대해 동일 이슈 등록)
+                var newIssue = new FileIssueInfo
+                {
+                    ID = coopId,   // 협업 클라우드 ID
+                    Title = title,
+                    Description = description,
+                    CreatedBy = _user_id,
+                    AssignedTo = assignedTo,
+                    Status = "OPEN",
+                    CreatedAt = DateTime.Now,
+                    DueDate = dueDate
+                };
+
+                // 이슈 등록
+                int issueId = _controller.FileIssueRepository.AddIssue(newIssue);
+
+                if (issueId == -1)
+                {
+                    System.Windows.MessageBox.Show("이슈 등록 실패");
+                    return;
+                }
+
+                // 선택된 모든 파일에 대해 매핑 등록
+                foreach (var file in selectedFiles)
+                {
+                    bool mappingResult = _controller.FileIssueMappingRepository.AddMapping(issueId, file.FileId);
+                    if (!mappingResult)
+                    {
+                        System.Windows.MessageBox.Show($"파일 '{file.FileName}' 매핑 실패");
+                    }
+                }
+
+                System.Windows.MessageBox.Show("이슈 등록 성공");
+            }
+        }
+
+
+        private void SharedAccountView_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.F5)
+            {
+                // 현재 폴더 내용 새로고침
+                LoadFolderContents(currentFolderId, _currentAccountId);
+            }
+        }
+
+
+
+
+
 
     }
 
