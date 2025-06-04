@@ -240,6 +240,21 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </Grid>
+            <Button x:Name="DownloadLinkButton복사__C_" Width="101" Height="31"
+                Canvas.Left="834" Canvas.Top="178"
+                Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
+                Click="Button_transfer_show" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image Source="/asset/transfer.png"
+                        Width="16" Height="16" Margin="0,0,5,0"/>
+                    <TextBlock FontSize="12"><Run Language="ko-kr" Text="전송 관리자"/></TextBlock>
+                </StackPanel>
+            </Button>
 
         </Canvas>
     </Viewbox>

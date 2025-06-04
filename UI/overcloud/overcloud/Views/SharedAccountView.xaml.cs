@@ -1076,7 +1076,10 @@ namespace overcloud.Views
         }
 
 
-
+        private async void Button_transfer_show(object sender, RoutedEventArgs e)
+        {
+            ShowTransferWindow();
+        }
 
 
 
