@@ -109,6 +109,33 @@ namespace DB.overcloud.Repository
             return issues;
         }
 
+        public bool UpdateIssue(FileIssueInfo issue)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                UPDATE FileIssueInfo
+                SET 
+                    title = @title,
+                    description = @description,
+                    assigned_to = @assignedTo,
+                    status = @status,
+                    due_date = @dueDate
+                WHERE issue_id = @issueId";
+
+            using var cmd = new MySqlCommand(query, conn);
+            
+            cmd.Parameters.AddWithValue("@title", issue.Title);
+            cmd.Parameters.AddWithValue("@description", issue.Description ?? "");
+            cmd.Parameters.AddWithValue("@assignedTo", (object?)issue.AssignedTo ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@status", issue.Status);
+            cmd.Parameters.AddWithValue("@dueDate", (object?)issue.DueDate ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@issueId", issue.IssueId);
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
         public bool UpdateIssueStatus(int issueId, string status)
         {
             using var conn = new MySqlConnection(connectionString);
