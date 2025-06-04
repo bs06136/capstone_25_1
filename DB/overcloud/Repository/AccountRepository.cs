@@ -140,6 +140,19 @@ namespace DB.overcloud.Repository
             return result != null ? result.ToString() : null;
         }
 
+        public string get_password_by_id(string ID)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "SELECT password FROM Account WHERE ID = @id LIMIT 1";
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@id", ID);
+
+            var result = cmd.ExecuteScalar();
+            return result != null ? result.ToString() : null;
+        }
+
 
     }
 }
