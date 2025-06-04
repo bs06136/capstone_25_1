@@ -16,6 +16,13 @@ namespace overcloud.Views
         {
             string userId = IdBox.Text.Trim();
             string password = PasswordBox.Password.Trim();
+            string confirm = ConfirmBox.Password.Trim();
+
+            if (password != confirm)
+            {
+                System.Windows.MessageBox.Show("비밀번호가 일치하지 않습니다. 다시 입력해주세요.", "입력 오류", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(password))
             {
