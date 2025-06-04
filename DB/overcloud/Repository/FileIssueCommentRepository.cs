@@ -21,11 +21,11 @@ namespace DB.overcloud.Repository
 
             string query = @"
             INSERT INTO FileIssueComment (issue_id, writer_id, content, created_at)
-            VALUES (@issueId, @writerId, @content, @createdAt)";
+            VALUES (@issueId, @commenterId, @content, @createdAt)";
 
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@issueId", comment.IssueId);
-            cmd.Parameters.AddWithValue("@writerId", comment.WriterId);
+            cmd.Parameters.AddWithValue("@commenterId", comment.CommenterId);
             cmd.Parameters.AddWithValue("@content", comment.Content);
             cmd.Parameters.AddWithValue("@createdAt", comment.CreatedAt);
 
@@ -53,7 +53,7 @@ namespace DB.overcloud.Repository
                 {
                     CommentId = Convert.ToInt32(reader["comment_id"]),
                     IssueId = Convert.ToInt32(reader["issue_id"]),
-                    WriterId = reader["writer_id"].ToString(),
+                    CommenterId = reader["commenter_id"].ToString(),
                     Content = reader["content"].ToString(),
                     CreatedAt = Convert.ToDateTime(reader["created_at"])
                 };
@@ -94,7 +94,7 @@ namespace DB.overcloud.Repository
                 {
                     CommentId = Convert.ToInt32(reader["comment_id"]),
                     IssueId = Convert.ToInt32(reader["issue_id"]),
-                    WriterId = reader["writer_id"].ToString(),
+                    CommenterId = reader["commenter_id"].ToString(),
                     Content = reader["content"].ToString(),
                     CreatedAt = Convert.ToDateTime(reader["created_at"])
                 };
