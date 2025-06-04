@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using DB.overcloud.Repository;
+using OverCloud.Services;
 
 namespace overcloud.Views
 {
@@ -30,10 +31,17 @@ namespace overcloud.Views
                 return;
             }
 
-            bool success = _accountRepository.assign_overcloud(userId, password);
+
+            string salt = PasswordHasher.GenerateSalt(); // 새 salt 생성
+            string hashed = PasswordHasher.HashPassword(userId, password, salt);
+
+
+
+            bool success = _accountRepository.assign_overcloud(userId, hashed, salt);
 
             if (success)
-            {
+            {   
+
                 System.Windows.MessageBox.Show("회원가입이 완료되었습니다. 로그인해주세요.", "성공", MessageBoxButton.OK, MessageBoxImage.Information);
                 this.Close();
             }

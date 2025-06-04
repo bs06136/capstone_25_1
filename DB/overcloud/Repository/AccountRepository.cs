@@ -76,7 +76,7 @@ namespace DB.overcloud.Repository
             return cmd.ExecuteNonQuery() > 0;
         }
 
-        public bool assign_overcloud(string ID, string password)
+        public bool assign_overcloud(string ID, string password, string salt)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
@@ -86,10 +86,11 @@ namespace DB.overcloud.Repository
             try
             {
                 // 1. Account 테이블에 사용자 삽입
-                string insertAccountQuery = @"INSERT INTO Account (ID, password) VALUES (@id, @pw)";
+                string insertAccountQuery = @"INSERT INTO Account (ID, password, salt) VALUES (@id, @pw, @salt)";
                 using var cmd = new MySqlCommand(insertAccountQuery, conn, transaction);
                 cmd.Parameters.AddWithValue("@id", ID);
                 cmd.Parameters.AddWithValue("@pw", password);
+                cmd.Parameters.AddWithValue("@salt", salt);
                 cmd.ExecuteNonQuery();
 
                 // 2. CloudStorageInfo에 시스템 전용 더미 계정 삽입
@@ -125,5 +126,20 @@ namespace DB.overcloud.Repository
             var result = cmd.ExecuteScalar();
             return result != null ? result.ToString() : null;
         }
+
+        public string get_salt_by_id(string ID)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "SELECT salt FROM Account WHERE ID = @id LIMIT 1";
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@id", ID);
+
+            var result = cmd.ExecuteScalar();
+            return result != null ? result.ToString() : null;
+        }
+
+
     }
 }
