@@ -20,10 +20,17 @@ namespace overcloud.Views
         {
             string userId = IdBox.Text.Trim();
             string password = PasswordBox.Password.Trim();
+            string confirm = ConfirmBox.Password.Trim();
 
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(password))
             {
                 System.Windows.MessageBox.Show("협업 클라우드 이름과 접근 코드를 모두 입력해주세요.", "입력 오류", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (password != confirm)
+            {
+                System.Windows.MessageBox.Show("접근 코드가 일치하지 않습니다. 다시 입력해주세요.", "입력 오류", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
