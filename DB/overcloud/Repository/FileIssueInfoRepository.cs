@@ -60,10 +60,10 @@ namespace DB.overcloud.Repository
                     Title = reader.GetString("title"),
                     Description = reader.GetString("description"),
                     CreatedBy = reader.GetString("created_by"),
-                    AssignedTo = reader.IsDBNull("assigned_to") ? null : reader.GetString("assigned_to"),
+                    AssignedTo = reader.IsDBNull(reader.GetOrdinal("assigned_to")) ? null : reader.GetString("assigned_to"),
                     Status = reader.GetString("status"),
                     CreatedAt = reader.GetDateTime("created_at"),
-                    DueDate = reader.IsDBNull("due_date") ? null : reader.GetDateTime("due_date")
+                    DueDate = reader.IsDBNull(reader.GetOrdinal("due_date")) ? null : reader.GetDateTime("due_date")
                 });
             }
 

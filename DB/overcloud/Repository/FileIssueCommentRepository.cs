@@ -20,7 +20,7 @@ namespace DB.overcloud.Repository
             conn.Open();
 
             string query = @"
-            INSERT INTO FileIssueComment (issue_id, writer_id, content, created_at)
+            INSERT INTO FileIssueComment (issue_id, commenter_id, content, created_at)
             VALUES (@issueId, @commenterId, @content, @createdAt)";
 
             using var cmd = new MySqlCommand(query, conn);
