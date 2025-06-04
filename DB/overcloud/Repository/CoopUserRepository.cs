@@ -24,8 +24,8 @@ namespace DB.overcloud.Repository
             {
                 // 1. Account 테이블에 협업 클라우드 계정 추가
                 string insertAccountQuery = @"
-                    INSERT INTO Account (ID, password, is_shared)
-                    VALUES (@insert_id, @pw, 1);";
+                    INSERT INTO Account (ID, password)
+                    VALUES (@insert_id, @pw);";
 
                 using var accountCmd = new MySqlCommand(insertAccountQuery, conn, transaction);
                 accountCmd.Parameters.AddWithValue("@insert_id", user_id_insert);
@@ -57,21 +57,20 @@ namespace DB.overcloud.Repository
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
 
-            // 1. 협업 클라우드 계정 여부 확인
-            string checkSharedQuery = @"
-                SELECT ID FROM Account 
-                WHERE ID = @id AND is_shared = 1";
+            // 1. 해당 협업 클라우드에 해당 사용자가 참여 중인지 확인
+            string checkQuery = @"SELECT coop_num FROM CoopUserInfo 
+                                WHERE coop_id = @coop_id AND user_id = @user_id";
 
-            using var checkCmd = new MySqlCommand(checkSharedQuery, conn);
-            checkCmd.Parameters.AddWithValue("@id", user_id_insert);
+            using var checkCmd = new MySqlCommand(checkQuery, conn);
+            checkCmd.Parameters.AddWithValue("@coop_id", user_id_insert);
+            checkCmd.Parameters.AddWithValue("@user_id", user_id_mine);
 
             object checkResult = checkCmd.ExecuteScalar();
             if (checkResult == null) return false;
 
             // 2. CoopUserInfo에서 연결 해제
-            string deleteQuery = @"
-                DELETE FROM CoopUserInfo
-                WHERE coop_id = @coop_id AND user_id = @user_id;";
+            string deleteQuery = @"DELETE FROM CoopUserInfo 
+                                WHERE coop_id = @coop_id AND user_id = @user_id";
 
             using var delCmd = new MySqlCommand(deleteQuery, conn);
             delCmd.Parameters.AddWithValue("@coop_id", user_id_insert);
@@ -88,7 +87,7 @@ namespace DB.overcloud.Repository
             // 1. 협업 클라우드 ID와 비밀번호 확인 (is_shared = 1)
             string checkQuery = @"
                 SELECT ID FROM Account
-                WHERE ID = @id AND password = @pw AND is_shared = 1";
+                WHERE ID = @id AND password = @pw";
 
             using var checkCmd = new MySqlCommand(checkQuery, conn);
             checkCmd.Parameters.AddWithValue("@id", user_id_insert);
@@ -132,5 +131,30 @@ namespace DB.overcloud.Repository
 
             return result;
         }
+
+        public List<string> GetUsersByCoopId(string coop_id)
+        {
+            var result = new List<string>();
+
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                SELECT user_id
+                FROM CoopUserInfo
+                WHERE coop_id = @coop_id;";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@coop_id", coop_id);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                result.Add(reader["user_id"].ToString());
+            }
+
+            return result;
+        }
+
     }
 }

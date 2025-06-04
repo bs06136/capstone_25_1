@@ -19,7 +19,7 @@
         </Style>
     </Window.Resources>
 
-    <Viewbox>
+    <Viewbox Stretch="Fill">
         <Canvas Width="1920" Height="1080">
 
             <!-- 최좌측 네비게이션 바 -->
@@ -47,7 +47,7 @@
             </StackPanel>
 
             <!-- 공유 관리 메뉴 -->
-            <StackPanel Canvas.Left="20" Canvas.Top="327" MouseLeftButtonUp="SharedManageMenu_Click">
+            <StackPanel Canvas.Left="20" Canvas.Top="337" MouseLeftButtonUp="SharedManageMenu_Click">
                 <Image Source="pack://application:,,,/overcloud;component/asset/co_manage.png" Width="36" Height="36"/>
                 <TextBlock Text="공유 관리" FontSize="14" HorizontalAlignment="Center"/>
             </StackPanel>
@@ -57,7 +57,11 @@
                    Canvas.Left="100" Canvas.Top="0"
                    Width="1820" Height="1080"
                    NavigationUIVisibility="Hidden"/>
-            
+            <StackPanel Canvas.Left="20" Canvas.Top="417" MouseLeftButtonUp="IssueManageMenu_Click" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Image Source="/asset/issue.png" Width="36" Height="36"/>
+                <TextBlock Text="이슈 관리" FontSize="14" HorizontalAlignment="Center"/>
+            </StackPanel>
+
 
         </Canvas>
     </Viewbox>

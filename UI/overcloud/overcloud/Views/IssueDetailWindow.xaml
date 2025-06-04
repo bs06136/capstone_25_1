@@ -1,0 +1,12 @@
+<Window x:Class="overcloud.Views.IssueDetailWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="이슈 상세정보"
+        Height="1000" Width="1200"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+
+	<Grid>
+		<ContentControl x:Name="MainContentArea"/>
+	</Grid>
+</Window>
