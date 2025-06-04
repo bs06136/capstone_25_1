@@ -254,8 +254,8 @@
 
 
             <!-- 💡 여기 바로 아래 추가 -->
-            <Button x:Name="CurrentCooperationAccountsButton" Width="130" Height="31"
-                Canvas.Left="1302" Canvas.Top="130"
+            <Button x:Name="CurrentCooperationAccountsButton" Width="146" Height="31"
+                Canvas.Left="1257" Canvas.Top="130"
                 Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
                 Click="CurrentCooperationAccountsButton_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Resources>
@@ -265,7 +265,7 @@
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Source="/asset/invite.png" Width="16" Height="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="현재 참여중인 협업" FontSize="12"/>
+                    <TextBlock FontSize="12"><Run Text="협업"/><Run Text="별 참가자 리스"/><Run Language="ko-kr" Text="트"/></TextBlock>
                 </StackPanel>
             </Button>
 
@@ -304,8 +304,23 @@
                     <TextBlock Text="링크 다운로드" FontSize="12"/>
                 </StackPanel>
             </Button>
-            
-            
+            <Button x:Name="UploadButton복사__C_3" Width="90" Height="31"
+                Canvas.Left="1151" Canvas.Top="130"
+                Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
+                Click="Button_CreateIssue_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image Source="/asset/issue.png"
+                        Width="16" Height="16" Margin="0,0,5,0"/>
+                    <TextBlock FontSize="12"><Run Text="이슈 생"/><Run Language="ko-kr" Text="성"/></TextBlock>
+                </StackPanel>
+            </Button>
+
+
 
 
         </Canvas>

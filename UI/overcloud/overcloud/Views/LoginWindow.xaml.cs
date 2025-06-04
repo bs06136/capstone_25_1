@@ -9,6 +9,7 @@ using DB.overcloud.Models;
 using System.IO;
 using System;
 using Microsoft.Win32;
+using Org.BouncyCastle.Crypto.Parameters;
 
 namespace overcloud.Views
 {
@@ -27,6 +28,18 @@ namespace overcloud.Views
             // 아이디, 비밀번호는 나중에 사용할 수 있도록 받아두기만 함
             string userId = IdBox.Text;
             string password = PasswordBox.Password;
+
+            string stored_salt =_controller.AccountRepository.get_salt_by_id(userId);
+
+
+            var hashed = PasswordHasher.HashPassword(userId, password, stored_salt);
+
+
+            if (hashed != password)
+            {
+                System.Windows.MessageBox.Show("아이디 또는 비밀번호가 올바르지 않습니다. 다시 시도해주세요.", "로그인 실패", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
             
             string loginResult = _controller.AccountRepository.login_overcloud(userId, password);
 
@@ -57,6 +70,7 @@ namespace overcloud.Views
 
             App.TransferManager = new TransferManager(_controller.FileUploadManager, _controller.FileDownloadManager, _controller.CloudTierManager);
 
+            _controller.user_id = userId;
             // MainWindow 실행
             var main = new MainWindow(_controller,userId);
             System.Windows.Application.Current.MainWindow = main;

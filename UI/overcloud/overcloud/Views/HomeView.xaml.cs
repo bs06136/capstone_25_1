@@ -58,6 +58,10 @@ namespace overcloud.Views
             _controller = controller;
             _user_id = user_id;
 
+            this.KeyDown += HomeView_KeyDown;
+            this.Focusable = true;
+            this.Focus();
+
             // 초기 서비스 설정
         }
 
@@ -1034,5 +1038,16 @@ namespace overcloud.Views
             };
             dialog.ShowDialog();
         }
+
+
+        private void HomeView_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.F5)
+            {
+                // 현재 폴더 내용 새로고침
+                LoadFolderContents(currentFolderId);
+            }
+        }
+
     }
 }

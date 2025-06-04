@@ -30,6 +30,14 @@ namespace OverCloud.Services
         public CoopUserRepository CoopUserRepository { get; }
         public CooperationManager CooperationManager { get; }
 
+        public IFileIssueCommentRepository FileIssueCommentRepository { get; }
+
+        public IFileIssueRepository FileIssueRepository { get; }
+
+        public IFileIssueMappingRepository FileIssueMappingRepository { get; }
+
+        public string user_id;
+
         public LoginController() {
             var connStr = DbConfig.ConnectionString;
             var storageRepo = new StorageRepository(connStr);
@@ -56,7 +64,13 @@ namespace OverCloud.Services
             FileCopyManager = new FileCopyManager(FileRepository, CloudTierManager, cloudSvcs, QuotaManager, AccountRepository, FileUploadManager, storageRepo);
 
             TransferManager = new TransferManager(FileUploadManager, FileDownloadManager, CloudTierManager);
+
+            FileIssueCommentRepository = new FileIssueCommentRepository(connStr);
+            FileIssueRepository = new FileIssueRepository(connStr);
+            FileIssueMappingRepository = new FileIssueMappingRepository(connStr);
+
         }
+
     }
 
 }

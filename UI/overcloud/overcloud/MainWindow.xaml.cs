@@ -152,5 +152,10 @@ namespace overcloud
             }
         }
 
+        private void IssueManageMenu_Click(object sender, MouseButtonEventArgs e)
+        {
+            MainFrame.Navigate(new Views.IssueManageView(_controller, _user_id));
+        }
+
     }
 }

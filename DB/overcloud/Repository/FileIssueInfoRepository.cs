@@ -128,7 +128,7 @@ namespace DB.overcloud.Repository
             
             cmd.Parameters.AddWithValue("@title", issue.Title);
             cmd.Parameters.AddWithValue("@description", issue.Description ?? "");
-            cmd.Parameters.AddWithValue("@assignedTo", (object?)issue.AssignedTo ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@assignedTo", string.IsNullOrWhiteSpace(issue.AssignedTo) ? DBNull.Value : issue.AssignedTo);
             cmd.Parameters.AddWithValue("@status", issue.Status);
             cmd.Parameters.AddWithValue("@dueDate", (object?)issue.DueDate ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@issueId", issue.IssueId);
