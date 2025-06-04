@@ -7,7 +7,7 @@ namespace DB.overcloud.Repository
         List<CloudStorageInfo> GetAllAccounts(string ID);
         bool DeleteAccountById(string ID);
         bool UpdateAccountUsage(string ID, ulong totalSize, ulong usedSize);
-        bool assign_overcloud(string ID, string password);
+        bool assign_overcloud(string ID, string password, string salt);
         string login_overcloud(string ID, string password);
     }
 }

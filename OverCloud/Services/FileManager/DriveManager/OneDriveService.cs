@@ -217,15 +217,23 @@ namespace OverCloud.Services.FileManager.DriveManager
         public async Task<bool> DeleteFileAsync(int cloudStorageNum, string cloudFileId, string userId)
         {
             var cloud = storageRepository.GetCloud(cloudStorageNum, userId);
-               // .FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
+            // .FirstOrDefault(c => c.CloudStorageNum == cloudStorageNum);
             if (cloud == null) return false;
             if (!await EnsureAccessTokenAsync(cloud)) return false;
 
             var client = CreateClient();
             var response = await client.DeleteAsync($"https://graph.microsoft.com/v1.0/me/drive/items/{cloudFileId}");
-
+            
+            // 파일 삭제 성공 시 휴지통 비우기 (전체 휴지통 비움 주의)
+            if (response.IsSuccessStatusCode)
+            {
+                await EmptyRecycleBinAsync(cloudStorageNum, userId);
+            }
             return response.IsSuccessStatusCode;
         }
+
+
+
 
         public async Task<(ulong, ulong)> GetDriveQuotaAsync(int CloudStorageNum,string userId)
         {
@@ -249,5 +257,56 @@ namespace OverCloud.Services.FileManager.DriveManager
 
             return (total, used);
         }
+
+        //휴지통 비우기.
+        public async Task<bool> EmptyRecycleBinAsync(int cloudStorageNum, string userId)
+        {
+            var cloud = storageRepository.GetCloud(cloudStorageNum, userId);
+            if (cloud == null)
+            {
+                Console.WriteLine("❌ 클라우드 계정 정보 없음");
+                return false;
+            }
+
+            if (!await EnsureAccessTokenAsync(cloud))
+            {
+                Console.WriteLine("❌ AccessToken 확보 실패");
+                return false;
+            }
+
+            var client = CreateClient();
+
+            Console.WriteLine("📂 휴지통 목록 조회 시작...");
+            var response = await client.GetAsync("https://graph.microsoft.com/v1.0/me/drive/root/recycleBin");
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"❌ 휴지통 조회 실패: {response.StatusCode}");
+                return false;
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            dynamic recycleItems = Newtonsoft.Json.JsonConvert.DeserializeObject(content);
+            bool allDeleted = true;
+
+            foreach (var item in recycleItems.value)
+            {
+                string itemId = item.id;
+                Console.WriteLine($"🗑️ 휴지통 아이템 삭제 시도: {itemId}");
+                var delResponse = await client.DeleteAsync($"https://graph.microsoft.com/v1.0/me/drive/items/{itemId}");
+                if (!delResponse.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"❌ 삭제 실패: {itemId} ({delResponse.StatusCode})");
+                    allDeleted = false;
+                }
+                else
+                {
+                    Console.WriteLine($"✅ 삭제 성공: {itemId}");
+                }
+            }
+
+            Console.WriteLine("🧹 휴지통 비우기 완료");
+            return allDeleted;
+        }
+
     }
 }

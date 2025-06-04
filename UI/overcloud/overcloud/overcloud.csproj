@@ -41,6 +41,7 @@
 
 	<ItemGroup>
 	  <Compile Remove="..\..\..\DB\overcloud\Models\FileChunkInfo.cs" />
+	  <Compile Remove="..\..\..\OverCloud\Services\FileManager\DriveManager\DropboxTokenProvider.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -61,6 +62,7 @@
 	  <None Remove="asset\home.png" />
 	  <None Remove="asset\Icon.png" />
 	  <None Remove="asset\invite.png" />
+	  <None Remove="asset\issue.png" />
 	  <None Remove="asset\overcloud_logo.png" />
 	  <None Remove="asset\pir.png" />
 	  <None Remove="asset\search.png" />
@@ -125,6 +127,7 @@
 	  <Resource Include="asset\invite.png">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Resource>
+	  <Resource Include="asset\issue.png" />
 	  <Resource Include="asset\overcloud_logo.png">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Resource>

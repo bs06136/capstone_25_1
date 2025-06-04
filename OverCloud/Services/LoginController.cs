@@ -30,6 +30,14 @@ namespace OverCloud.Services
         public CoopUserRepository CoopUserRepository { get; }
         public CooperationManager CooperationManager { get; }
 
+        public IFileIssueCommentRepository FileIssueCommentRepository { get; }
+
+        public IFileIssueRepository FileIssueRepository { get; }
+
+        public IFileIssueMappingRepository FileIssueMappingRepository { get; }
+
+        public string user_id;
+
         public LoginController() {
             var connStr = DbConfig.ConnectionString;
             var storageRepo = new StorageRepository(connStr);
@@ -43,9 +51,9 @@ namespace OverCloud.Services
 
             // 이 부분은 CloudStorageNum 구분된 인스턴스 방식으로 확장 가능
             var googleSvc = new GoogleDriveService(tokenFactory.CreateGoogleTokenProvider(), storageRepo, AccountRepository);
-            var oneDriveSvc1 = new OneDriveService(tokenFactory.CreateOneDriveTokenRefresher(), storageRepo, AccountRepository);
-            var oneDriveSvc2 = new OneDriveService(tokenFactory.CreateOneDriveTokenRefresher(), storageRepo, AccountRepository);
-            var cloudSvcs = new List<ICloudFileService> { googleSvc, oneDriveSvc1, oneDriveSvc2 };
+            var oneDriveSvc = new OneDriveService(tokenFactory.CreateOneDriveTokenRefresher(), storageRepo, AccountRepository);
+            var dropboxSvc = new DropboxService(tokenFactory.CreateDropboxTokenRefresher(), storageRepo, AccountRepository);
+            var cloudSvcs = new List<ICloudFileService> { googleSvc, oneDriveSvc, dropboxSvc };
 
             CloudTierManager = new CloudTierManager(AccountRepository);
             QuotaManager = new QuotaManager(cloudSvcs, storageRepo, AccountRepository,FileRepository,CloudTierManager);
@@ -56,7 +64,13 @@ namespace OverCloud.Services
             FileCopyManager = new FileCopyManager(FileRepository, CloudTierManager, cloudSvcs, QuotaManager, AccountRepository, FileUploadManager, storageRepo);
 
             TransferManager = new TransferManager(FileUploadManager, FileDownloadManager, CloudTierManager);
+
+            FileIssueCommentRepository = new FileIssueCommentRepository(connStr);
+            FileIssueRepository = new FileIssueRepository(connStr);
+            FileIssueMappingRepository = new FileIssueMappingRepository(connStr);
+
         }
+
     }
 
 }

@@ -24,7 +24,10 @@ namespace OverCloud.Services
             return new OneDriveTokenRefresher();
         }
 
-
+        public DropboxTokenRefresher CreateDropboxTokenRefresher()
+        {
+            return new DropboxTokenRefresher();
+        }
     }
 
 }
