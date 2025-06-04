@@ -30,11 +30,26 @@ namespace overcloud.Views
             string password = PasswordBox.Password;
 
             string stored_salt =_controller.AccountRepository.get_salt_by_id(userId);
-
+            if (stored_salt == null)
+            {
+                Console.WriteLine("저장된 hashed값 x");
+                return;
+            }
 
             var hashed = PasswordHasher.HashPassword(userId, password, stored_salt);
+            if (hashed == null)
+            {
+                Console.WriteLine("hashed값 x");
+                return;
+            }
 
             var getPassword = _controller.AccountRepository.get_password_by_id(userId);
+
+            if (getPassword == null)
+            {
+                Console.WriteLine("pw값 없음");
+                return;
+            }
 
             if (hashed != getPassword)
             {
@@ -42,7 +57,7 @@ namespace overcloud.Views
                 return;
             }
             
-            string loginResult = _controller.AccountRepository.login_overcloud(userId, password);
+            string loginResult = _controller.AccountRepository.login_overcloud(userId, hashed);
 
             if (string.IsNullOrEmpty(loginResult))
             {
