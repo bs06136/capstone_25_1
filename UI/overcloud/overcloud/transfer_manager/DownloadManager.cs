@@ -1,10 +1,7 @@
-﻿using System;
+﻿using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DB.overcloud.Models;
 using System.Windows;
 using OverCloud.Services.FileManager;
 using OverCloud.transfer_manager;
@@ -14,17 +11,20 @@ namespace overcloud.transfer_manager
     public class DownloadManager
     {
         private readonly ObservableCollection<TransferItemViewModel> _downloads = new();
-        private readonly SemaphoreSlim _semaphore = new(2); // 최대 2개 동시 다운로드
+        private readonly BlockingCollection<(TransferItemViewModel Item, DownloadTaskInfo Task)> _queue = new();
+        private readonly SemaphoreSlim _semaphore = new(2);
+        private readonly FileDownloadManager _fileDownloadManager;
 
         public ObservableCollection<TransferItemViewModel> Downloads => _downloads;
-
-        private FileDownloadManager _fileDownloadManager;
 
         public DownloadManager(FileDownloadManager fileDownloadManager)
         {
             _fileDownloadManager = fileDownloadManager;
+
+            Task.Run(ProcessQueue);
         }
 
+        // ✅ 기존 EnqueueDownloads 시그니처 유지
         public void EnqueueDownloads(List<(int FileID, string FileName, string CloudFileId, int CloudStorageNum, string LocalPath, bool IsDistributed)> files, string user_id)
         {
             foreach (var file in files)
@@ -37,62 +37,57 @@ namespace overcloud.transfer_manager
                     LocalPath = file.LocalPath
                 };
 
-                // UI 스레드에서 다운로드 목록에 추가
+                System.Windows.Application.Current.Dispatcher.Invoke(() => _downloads.Add(item));
+
+                // ✅ 내부에서 DownloadTaskInfo로 변환해서 큐에 삽입
+                var taskInfo = new DownloadTaskInfo(
+                    file.FileID, file.FileName, file.CloudFileId, file.CloudStorageNum, file.LocalPath, file.IsDistributed, user_id
+                );
+
+                _queue.Add((item, taskInfo));
+            }
+        }
+
+        private async Task ProcessQueue()
+        {
+            foreach (var (item, task) in _queue.GetConsumingEnumerable())
+            {
+                await _semaphore.WaitAsync();
+                _ = ProcessDownload(item, task);
+            }
+        }
+
+        private async Task ProcessDownload(TransferItemViewModel item, DownloadTaskInfo file)
+        {
+            try
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { item.Status = "다운로드 중"; });
+
+                if (file.IsDistributed)
+                    await _fileDownloadManager.DownloadAndMergeFile(file.FileID, file.LocalPath, file.UserId, file.CloudStorageNum);
+                else
+                    await _fileDownloadManager.DownloadFile(file.UserId, file.CloudFileId, file.CloudStorageNum, file.LocalPath);
+
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    _downloads.Add(item);
+                    item.Status = "완료";
+                    item.Progress = 100;
+                    App.TransferManager.Completed.Add(item);
                 });
-
-                // 다운로드 비동기 처리
-                Task.Run(async () =>
-                {
-                    await _semaphore.WaitAsync();
-                    try
-                    {
-                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            item.Status = "다운로드 중";
-                            item.Progress = 0;
-                        });
-
-                        if (file.IsDistributed)
-                            {
-                                await _fileDownloadManager.DownloadAndMergeFile(file.FileID, file.LocalPath, user_id, file.CloudStorageNum);
-                            }
-                        else
-                            {
-                                await _fileDownloadManager.DownloadFile(
-                                userId: user_id,
-                                cloudFileId: file.CloudFileId,
-                                CloudStorageNum: file.CloudStorageNum,
-                                savePath: file.LocalPath
-                            );
-
-
-
-                            System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                item.Status = "완료";
-                                item.Progress = 100;
-
-                                // 완료 목록에 추가
-                                App.TransferManager.Completed.Add(item);
-                            });
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            item.Status = "오류: " + ex.Message;
-                        });
-                    }
-                    finally
-                    {
-                        _semaphore.Release();
-                    }
-                });
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { item.Status = "오류: " + ex.Message; });
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
     }
+
+    // ✅ 내부 전용 TaskInfo 정의
+    public record DownloadTaskInfo(
+        int FileID, string FileName, string CloudFileId, int CloudStorageNum,
+        string LocalPath, bool IsDistributed, string UserId);
 }

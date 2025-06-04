@@ -24,7 +24,7 @@ namespace OverCloud.Services
         public QuotaManager QuotaManager { get; }
         public IFileRepository FileRepository { get; }
         public CloudTierManager CloudTierManager { get; }
-        public TransferManager TransferManager { get; }
+        //public TransferManager TransferManager { get; }
 
         public AccountRepository AccountRepository { get; }
         public CoopUserRepository CoopUserRepository { get; }
@@ -63,7 +63,7 @@ namespace OverCloud.Services
             FileDeleteManager = new FileDeleteManager(AccountRepository, QuotaManager, storageRepo, FileRepository, cloudSvcs);
             FileCopyManager = new FileCopyManager(FileRepository, CloudTierManager, cloudSvcs, QuotaManager, AccountRepository, FileUploadManager, storageRepo);
 
-            TransferManager = new TransferManager(FileUploadManager, FileDownloadManager, CloudTierManager);
+            //TransferManager = new TransferManager(FileUploadManager, FileDownloadManager, CloudTierManager);
 
             FileIssueCommentRepository = new FileIssueCommentRepository(connStr);
             FileIssueRepository = new FileIssueRepository(connStr);
