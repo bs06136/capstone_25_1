@@ -17,6 +17,9 @@
             <TextBlock Text="접근 코드" Margin="0,10,0,5"/>
             <PasswordBox x:Name="PasswordBox" Width="250" Height="30"/>
 
+            <TextBlock Text="접근 코드 확인" Margin="0,10,0,5"/>
+            <PasswordBox x:Name="ConfirmBox" Width="250" Height="30"/>
+
             <Button Content="회원가입" Width="100" Height="30" Margin="0,20,0,0"
                     Click="RegisterButton_Click" HorizontalAlignment="Center"/>
         </StackPanel>
