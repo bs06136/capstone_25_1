@@ -77,18 +77,25 @@ namespace OverCloud.Services.FileManager
                 if (dbDeleted)
                 {
                     quotaManager.UpdateQuotaAfterUploadOrDelete(cloudInfo.CloudStorageNum, (ulong)((file.FileSize)/1024), false, userId);
+                    await quotaManager.SaveDriveQuotaToDB(userId, file.CloudStorageNum);
                 }
 
+
                 return dbDeleted;
-                }
+             }
 
             else
             {
                 var fileInfo = storageRepository.GetCloud(file.CloudStorageNum,userId);
                 
                 bool dbDeleted = fileRepository.DeleteFile(fileId);
-                    return dbDeleted;               
+
+                await quotaManager.SaveDriveQuotaToDB(userId, file.CloudStorageNum);
+
+                return dbDeleted;               
             }
+
+
         }
 
 
