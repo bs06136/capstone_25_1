@@ -5,7 +5,7 @@
         <ListView ItemsSource="{Binding Uploads}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="파일명" DisplayMemberBinding="{Binding FileName}" Width="300"/>
+                    <GridViewColumn Header="파일명" DisplayMemberBinding="{Binding FileName}" Width="300" />
                     <GridViewColumn Header="상태" DisplayMemberBinding="{Binding Status}" Width="150"/>
                     <GridViewColumn Header="진행률" DisplayMemberBinding="{Binding Status}" Width="150">
                         <GridViewColumn.CellTemplate>

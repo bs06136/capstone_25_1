@@ -22,10 +22,10 @@
             <!-- 좌측 디렉토리 영역 -->
             <Rectangle Width="200" Height="1080" Fill="#F7F7F7" Canvas.Left="0" Canvas.Top="0"/>
             <TextBlock Text="모든 폴더"
-                       Canvas.Left="38" Canvas.Top="65"
-                       FontSize="16" FontWeight="Bold" Foreground="Black"/>
+                       Canvas.Left="38" Canvas.Top="110"
+                       FontSize="18" FontWeight="Bold" Foreground="Black"/>
             <TreeView x:Name="FileExplorerTree"
-                      Canvas.Left="0" Canvas.Top="110"
+                      Canvas.Left="0" Canvas.Top="155"
                       Width="200" Height="785"
                       Background="#F7F7F7"
                       BorderThickness="0"
@@ -53,15 +53,15 @@
             <TextBlock x:Name="PageTitleTextBlock"
                        Text="공유 폴더"
                        FontSize="22" FontWeight="Bold"
-                       Canvas.Left="252" Canvas.Top="187" Foreground="Black"/>
+                       Canvas.Left="252" Canvas.Top="180" Foreground="Black"/>
 
             <!-- 상단 검색창 -->
-            <Rectangle Width="1300" Height="60" RadiusX="10" RadiusY="10" Fill="White" Stroke="DarkGray"
+            <Rectangle Width="1300" Height="60" RadiusX="10" RadiusY="10" Fill="White" Stroke="LightGray"
                        Canvas.Left="240" Canvas.Top="32"/>
             <Image Source="pack://application:,,,/overcloud;component/asset/search.png" 
-                   Width="24" Height="24" Canvas.Left="260" Canvas.Top="55"/>
+                   Width="24" Height="24" Canvas.Left="260" Canvas.Top="50"/>
             <TextBlock Text="검색" FontSize="18"
-                       Canvas.Left="300" Canvas.Top="55" Foreground="Gray"/>
+                       Canvas.Left="300" Canvas.Top="50" Foreground="Gray"/>
 
             <!-- 상단 버튼들 -->
             <Button x:Name="UploadButton" Width="90" Height="40"
@@ -161,10 +161,12 @@
 
 
             <!-- 파일 리스트 헤더 -->
+            <Rectangle Width="1550" Height="1" Fill="lightGray" Canvas.Left="220" Canvas.Top="235"/>
             <TextBlock Text="이름" FontSize="16" FontWeight="Bold"
-                       Canvas.Left="360" Canvas.Top="250"/>
+                Canvas.Left="317" Canvas.Top="250"/>
             <TextBlock Text="수정 날짜" FontSize="16" FontWeight="Bold"
-                       Canvas.Left="1600" Canvas.Top="250"/>
+                Canvas.Left="1625" Canvas.Top="250"/>
+            <Rectangle Width="1550" Height="1" Fill="lightGray" Canvas.Left="220" Canvas.Top="285"/>
 
             <!-- 파일 리스트 그리드 -->
             <Grid Canvas.Left="240" Canvas.Top="318" Width="1500" Height="632">
@@ -176,7 +178,7 @@
                 <ListBox x:Name="RightFileListPanel"
                          ItemContainerStyle="{StaticResource UnifiedListItemStyle}"
                          Grid.Column="0"
-                         Background="Transparent"
+                         Background="#eeeeee"
                          BorderThickness="0"
                          SelectionMode="Single">
                     <ListBox.ItemTemplate>
@@ -189,7 +191,7 @@
                                    Margin="5,0"
                                    xml:space="preserve"
                                    />
-                                <TextBlock Text="{Binding FileName}" FontSize="16" Margin="20,0,0,0"/>
+                                <TextBlock Text="{Binding FileName}" FontSize="16" Margin="20,0,0,3"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -211,6 +213,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </Grid>
+            
             <Button x:Name="UploadButton복사__C_" Width="100" Height="40"
                 Canvas.Left="1654" Canvas.Top="120" 
                 Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
