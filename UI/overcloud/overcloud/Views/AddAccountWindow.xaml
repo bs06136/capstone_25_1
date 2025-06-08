@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters="clr-namespace:overcloud.Converters"
-        Title="계정 추가" Height="250" Width="300" WindowStartupLocation="CenterOwner" 
+        Title="계정 추가" Height="280" Width="300" WindowStartupLocation="CenterOwner" 
         Loaded="AddAccountWindow_Loaded">
 
     <Window.Resources>
@@ -27,10 +27,10 @@
 
         <!-- 아이디 입력 -->
         <Grid Grid.Row="0" Margin="0,10,0,5">
-            <TextBox x:Name="txtID" Height="30"/>
-            <TextBlock Text="아이디 입력"
+            <TextBox x:Name="txtID" Height="40" />
+            <TextBlock Text="아이디 입력" 
                        Foreground="Gray"
-                       Margin="5,0,0,0"
+                       Margin="10,0,0,0"
                        VerticalAlignment="Center"
                        IsHitTestVisible="False"
                        Visibility="{Binding Text, ElementName=txtID, Converter={StaticResource EmptyStringToVisibilityConverter}}"/>
@@ -38,43 +38,45 @@
 
         <!-- 비밀번호 입력 -->
         <Grid Grid.Row="1" Margin="0,5,0,5">
-            <PasswordBox x:Name="txtPassword" Height="30"/>
+            <PasswordBox x:Name="txtPassword" Height="40"/>
             <TextBlock Text="비밀번호 입력"
                        Foreground="Gray"
-                       Margin="5,0,0,0"
+                       Margin="10,0,0,0"
                        VerticalAlignment="Center"
                        IsHitTestVisible="False"
                        Visibility="{Binding Password, ElementName=txtPassword, Converter={StaticResource EmptyStringToVisibilityConverter}}"/>
         </Grid>
 
         <!-- 클라우드 선택 -->
-        <ComboBox x:Name="cloudComboBox" Grid.Row="2" Margin="0,5,0,5" Height="30">
-            <ComboBoxItem Content="GoogleDrive" IsSelected="True"/>
-            <ComboBoxItem Content="OneDrive"/>
-            <ComboBoxItem Content="Dropbox"/>
+        <ComboBox x:Name="cloudComboBox" Grid.Row="2" Height="40">
+            <ComboBoxItem IsSelected="True">
+                <TextBlock Text="GoogleDrive" Margin="5,5,0,0"/>
+            </ComboBoxItem>
+            <ComboBoxItem>
+                <TextBlock Text="OneDrive" Margin="5,5,0,0"/>
+            </ComboBoxItem>
+            <ComboBoxItem>
+                <TextBlock Text="Dropbox" Margin="5,5,0,0"/>
+            </ComboBoxItem>
         </ComboBox>
+
 
         <Grid Grid.Row="3" Margin="0,5,0,5">
             <ComboBox x:Name="cooperationComboBox"
           Height="30"
           Visibility="Collapsed"
           Panel.ZIndex="1"/>
-
-            <TextBlock Text="협업 계정 선택"
-               Foreground="Gray"
-               Margin="5,0,0,0"
-               Panel.ZIndex="0"
-               VerticalAlignment="Center"
-               IsHitTestVisible="False"
-               Visibility="{Binding SelectedItem, ElementName=cooperationComboBox, Converter={StaticResource EmptySelectionToVisibilityConverter}}"/>
         </Grid>
 
         <!-- 확인 버튼 -->
         <Button Content="확인"
-        Grid.Row="4"
-        Width="60" Height="30"
-        HorizontalAlignment="Right"
-        Margin="0,10,0,0"
-        Click="Confirm_Click"/>
+                Grid.Row="4"
+                Width="150" Height="35"
+                FontWeight="Bold"
+                Background="Black"
+                Foreground="White" 
+                HorizontalAlignment="Center"
+                Margin="0,20,0,0"
+                Click="Confirm_Click"/>
     </Grid>
 </Window>
