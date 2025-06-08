@@ -1,4 +1,7 @@
-﻿using System.Windows.Controls;
+﻿using System.Globalization;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using overcloud.transfer_manager;
 
 namespace overcloud.Views
@@ -12,3 +15,5 @@ namespace overcloud.Views
         }
     }
 }
+
+
