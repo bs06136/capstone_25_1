@@ -1,106 +1,72 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using DB.overcloud.Repository;
 using DB.overcloud.Models;  // CloudAccountInfo 클래스 사용을 위해 추가
-//using static overcloud.temp_class.TempClass;  // CloudAccountInfo 클래스 사용을 위해 추가
 using OverCloud.Services;
+using SourceChord.FluentWPF; // AcrylicWindow 상속을 위해 추가
 
 namespace overcloud.Views
 {
-    public partial class AddAccountWindow : Window
+    public partial class AddAccountWindow : AcrylicWindow
     {
-        private LoginController _controller; 
-        private string _user_id;                    //수정 필요
-        bool _isCooperationMode; 
+        private readonly LoginController _controller;
+        private readonly string _userId;
+        private readonly bool _isCoopMode;
 
-        public AddAccountWindow(LoginController controller, string user_id ,  bool coop)
+        public AddAccountWindow(LoginController controller, string userId, bool coop)
         {
-
             InitializeComponent();
             _controller = controller;
-            _user_id = user_id;
-            _isCooperationMode = coop;
+            _userId = userId;
+            _isCoopMode = coop;
 
+            // 창 드래그 가능
+            this.MouseDown += (s, e) => { if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed) this.DragMove(); };
         }
 
         private void AddAccountWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("_isCooperationMode: " + _isCooperationMode);
-            if (_isCooperationMode)
+            if (_isCoopMode)
             {
-                // 협업 계정 리스트 보여주기
                 cooperationComboBox.Visibility = Visibility.Visible;
-
-                List<string> cooperationAccounts = _controller.CoopUserRepository.connected_cooperation_account_nums(_user_id);
-                Console.WriteLine("협업 계정 수: " + cooperationAccounts.Count);
-                cooperationComboBox.Items.Clear();
-                foreach (var acc in cooperationAccounts)
-                {
-                    cooperationComboBox.Items.Add(new ComboBoxItem { Content = acc });
-                }
-
-                if (cooperationComboBox.Items.Count > 0)
-                {
-                    (cooperationComboBox.Items[0] as ComboBoxItem).IsSelected = true;
-                }
+                var coopAccounts = _controller.CoopUserRepository.connected_cooperation_account_nums(_userId);
+                cooperationComboBox.ItemsSource = coopAccounts;
             }
             else
             {
-                Console.WriteLine("🔒 협업 모드가 아닌 경우 숨김 처리");
-                // 🔒 협업 모드가 아닌 경우 숨김 처리
                 cooperationComboBox.Visibility = Visibility.Collapsed;
-
-                foreach (var child in LogicalTreeHelper.GetChildren(this))
-                {
-                    if (child is Grid grid)
-                    {
-                        foreach (var sub in LogicalTreeHelper.GetChildren(grid))
-                        {
-                            if (sub is TextBlock tb && tb.Text == "협업 계정 선택")
-                            {
-                                tb.Visibility = Visibility.Collapsed;
-                            }
-                        }
-                    }
-                }
             }
         }
 
         private async void Confirm_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Confirm_Click call");
             string id = txtID.Text;
             string password = txtPassword.Password;
-            string cloudType = (cloudComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+            string cloudType = (cloudComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? string.Empty;
 
-            string cooperationTargetId = null;
-            if (_isCooperationMode && cooperationComboBox.SelectedItem is ComboBoxItem item)
+            string targetId = _isCoopMode && cooperationComboBox.SelectedItem != null
+                ? cooperationComboBox.SelectedItem.ToString()
+                : _userId;
+
+            var accountInfo = new CloudStorageInfo
             {
-                cooperationTargetId = item.Content.ToString();
-            }
-            else
-            {
-                // 협업 모드가 아니거나 선택된 항목이 없을 때
-                cooperationTargetId = _user_id;  // 현재 사용자 ID로 설정
-            }
+                ID = targetId,
+                AccountId = id,
+                AccountPassword = password,
+                CloudType = cloudType,
+                TotalCapacity = 0,
+                UsedCapacity = 0
+            };
 
-                CloudStorageInfo accountInfo = new CloudStorageInfo
-                {
-                    ID = cooperationTargetId,
-                    AccountId = id,
-                    AccountPassword = password,
-                    CloudType = cloudType,
-                    TotalCapacity = 0,
-                    UsedCapacity = 0
-                };
+            bool success = await _controller.AccountService.Add_Cloud_Storage(accountInfo, _userId);
+            System.Windows.MessageBox.Show(success ? "계정 추가 성공" : "계정 추가 실패");
+            this.Close();
+        }
 
-            bool result;
-            result = await _controller.AccountService.Add_Cloud_Storage(accountInfo, _user_id);
-
-            System.Diagnostics.Debug.WriteLine(cloudType);
-            // ⭐ 객체 생성 없이 정적 메서드 직접 호출
-            System.Windows.MessageBox.Show(result ? "계정 추가 성공" : "계정 추가 실패");
-
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
             this.Close();
         }
     }
