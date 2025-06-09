@@ -6,10 +6,11 @@ using System.Windows;
 using DB.overcloud.Models;
 using overcloud.transfer_manager;
 using OverCloud.Services;
+using SourceChord.FluentWPF;
 
 namespace overcloud.Windows
 {
-    public partial class DownloadFromLinkWindow : Window
+    public partial class DownloadFromLinkWindow : AcrylicWindow
     {
         private string _currentUserId;
         private LoginController _controller;
@@ -101,6 +102,10 @@ namespace overcloud.Windows
             }
         }
 
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
 
 
     }

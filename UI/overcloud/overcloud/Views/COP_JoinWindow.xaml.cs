@@ -1,10 +1,11 @@
 ﻿using System.Windows;
 using DB.overcloud.Repository;
 using OverCloud.Services;
+using SourceChord.FluentWPF;
 
 namespace overcloud.Views
 {
-    public partial class COP_JoinWindow : Window
+    public partial class COP_JoinWindow : AcrylicWindow
     {
         private LoginController _controller;
         private string user_id = null;
@@ -38,6 +39,11 @@ namespace overcloud.Views
             {
                 System.Windows.MessageBox.Show("참가에 문제가 발생했습니다.", "실패", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

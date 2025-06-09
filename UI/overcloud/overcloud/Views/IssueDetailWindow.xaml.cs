@@ -1,10 +1,11 @@
 ﻿using System.Windows;
 using DB.overcloud.Models;
 using OverCloud.Services;
+using SourceChord.FluentWPF;
 
 namespace overcloud.Views
 {
-    public partial class IssueDetailWindow : Window
+    public partial class IssueDetailWindow : AcrylicWindow
     {
         private readonly LoginController _controller;
         private readonly FileIssueInfo _issueInfo;

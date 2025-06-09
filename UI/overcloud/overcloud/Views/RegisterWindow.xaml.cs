@@ -50,5 +50,10 @@ namespace overcloud.Views
                 System.Windows.MessageBox.Show("이미 존재하는 아이디입니다. 다른 아이디를 사용해주세요.", "실패", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }

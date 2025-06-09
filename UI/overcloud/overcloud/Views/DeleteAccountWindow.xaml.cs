@@ -5,10 +5,11 @@ using DB.overcloud.Models;
 using OverCloud.Services;
 using DB.overcloud.Repository;
 using System.Diagnostics;
+using SourceChord.FluentWPF;
 
 namespace overcloud.Views
 {
-    public partial class DeleteAccountWindow : Window
+    public partial class DeleteAccountWindow : AcrylicWindow
     {
         private LoginController _controller;
         private string _user_id;    
@@ -68,6 +69,11 @@ namespace overcloud.Views
             bool result = await _controller.AccountService.Delete_Cloud_Storage(CloudStorageNum, _user_id);
 
             System.Windows.MessageBox.Show(result ? "계정 삭제 성공" : "계정 삭제 실패");
+            this.Close();
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
             this.Close();
         }
     }

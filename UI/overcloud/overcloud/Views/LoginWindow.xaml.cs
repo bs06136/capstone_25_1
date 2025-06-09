@@ -103,5 +103,10 @@ namespace overcloud.Views
             registerWindow.ShowDialog();
         }
 
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
     }
 }

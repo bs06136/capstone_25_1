@@ -6,66 +6,78 @@
              mc:Ignorable="d"
              Loaded="SharedAccountListView_Loaded"
              d:DesignHeight="800" d:DesignWidth="1200">
-	
-	<Grid Margin="16">
-		<Grid.RowDefinitions>
-			<!-- 1: 검색창 + 액션 버튼 -->
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <!-- 1: 검색창 + 액션 버튼 -->
             <RowDefinition Height="Auto"/>
 
             <!-- 2: 제목 + 탭 -->
-			<RowDefinition Height="Auto"/>
-			<!-- 3: DataGrid -->
-			<RowDefinition Height="*"/>
-			<!-- 4: (선택) 하단 사용량 바 -->
-			<RowDefinition Height="Auto"/>
-		</Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- 3: DataGrid -->
+            <RowDefinition Height="*"/>
+            <!-- 4: (선택) 하단 사용량 바 -->
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-		<!-- 1. 검색창 & 버튼 -->
-		<Grid Grid.Row="0" Margin="0,0,0,12">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto"/>
-			</Grid.ColumnDefinitions>
+        <!-- 1. 검색창 & 버튼 -->
+        <!-- 1. 검색창 & 버튼 -->
+        <Grid Grid.Row="0" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-			<!-- 검색창 -->
-			<Border CornerRadius="10" Background="White" BorderBrush="#D4D2D0" BorderThickness="1" Height="40" VerticalAlignment="Center">
-				<Grid Margin="8,0">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto"/>
-						<ColumnDefinition Width="*"/>
-					</Grid.ColumnDefinitions>
-					<Image Source="pack://application:,,,/overcloud;component/asset/search.png"
-                           Width="20" Height="20" VerticalAlignment="Center"/>
-					<TextBox Grid.Column="1"
-                             Margin="8,0,0,0"
-                             VerticalAlignment="Center"
-                             FontSize="14"
-                             Foreground="Gray"
-                             Text="검색"
-                             BorderThickness="0"
-                             Background="Transparent"/>
-				</Grid>
-			</Border>
+            <!-- 검색창 (기존 그대로) -->
+            <Border CornerRadius="10"
+            Background="White"
+            BorderBrush="#D4D2D0"
+            BorderThickness="1"
+            Height="40"
+            VerticalAlignment="Center">
+                <Grid Margin="8,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Source="pack://application:,,,/overcloud;component/asset/search.png"
+                   Width="20" Height="20" VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="1"
+                     Margin="8,0,0,0"
+                     VerticalAlignment="Center"
+                     FontSize="14"
+                     Foreground="Gray"
+                     Text="검색"
+                     BorderThickness="0"
+                     Background="Transparent"/>
+                </Grid>
+            </Border>
 
-			<!-- 계정 추가 -->
-			<Button Grid.Column="1"
-                    Width="100" Height="32"
-                    Margin="12,0,0,0"
-                    Content="계정 추가"
-                    Click="Button_Add_Click"/>
+            <!-- 계정 추가 버튼 -->
+            <Button x:Name="Button_Add"
+            Grid.Column="1"
+            Width="100" Height="40"
+            Margin="12,0,0,0"
+            Content="계정 추가"
+            Style="{StaticResource RoundButton}"
+            Click="Button_Add_Click"
+            Cursor="Hand"/>
 
-			<!-- 계정 삭제 -->
-			<Button Grid.Column="2"
-                    Width="100" Height="32"
-                    Margin="8,0,0,0"
-                    Content="계정 삭제"
-                    Click="Button_Delete_Click"/>
-		</Grid>
+            <!-- 계정 삭제 버튼 -->
+            <Button x:Name="Button_Delete"
+            Grid.Column="2"
+            Width="100" Height="40"
+            Margin="8,0,0,0"
+            Content="계정 삭제"
+            Style="{StaticResource RoundButton}"
+            Click="Button_Delete_Click"
+            Cursor="Hand"/>
+        </Grid>
 
-		<!-- 2. 제목 + 탭 -->
-		<StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,12">
-			<TextBlock Text="계정 목록"
+        <!-- 2. 제목 + 탭 -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,12">
+            <TextBlock Text="계정 목록"
                        FontSize="20"
                        FontWeight="Bold"
                        VerticalAlignment="Center"/>
@@ -77,45 +89,45 @@
           SelectionChanged="CoopSelector_SelectionChanged"/>
         </StackPanel>
 
-		<!-- 3. DataGrid -->
-		<DataGrid x:Name="AccountsGrid"
+        <!-- 3. DataGrid -->
+        <DataGrid x:Name="AccountsGrid"
                   Grid.Row="2"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   HeadersVisibility="Column"
                   GridLinesVisibility="None"
                   SelectionMode="Extended">
-			<DataGrid.Columns>
-				<DataGridCheckBoxColumn Binding="{Binding IsSelected}" Width="30"/>
-				<DataGridTextColumn Header="CLOUD" Binding="{Binding CloudName}" Width="*"/>
+            <DataGrid.Columns>
+                <DataGridCheckBoxColumn Binding="{Binding IsSelected}" Width="30"/>
+                <DataGridTextColumn Header="CLOUD" Binding="{Binding CloudName}" Width="*"/>
                 <DataGridTextColumn Header="OWNER" Binding="{Binding Owner}" Width="150"/>
-				<DataGridTextColumn Header="ACTIVE" Binding="{Binding IsActive}" Width="100"/>
-				<DataGridTextColumn Header="ID" Binding="{Binding AccountId}" Width="150"/>
-				<DataGridTemplateColumn Header="USAGE" Width="200">
-					<DataGridTemplateColumn.CellTemplate>
-						<DataTemplate>
-							<Grid>
-								<ProgressBar Value="{Binding UsagePercent}" Maximum="100" Height="4"/>
-								<TextBlock Text="{Binding UsageDisplay}"
+                <DataGridTextColumn Header="ACTIVE" Binding="{Binding IsActive}" Width="100"/>
+                <DataGridTextColumn Header="ID" Binding="{Binding AccountId}" Width="150"/>
+                <DataGridTemplateColumn Header="USAGE" Width="200">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <ProgressBar Value="{Binding UsagePercent}" Maximum="100" Height="4"/>
+                                <TextBlock Text="{Binding UsageDisplay}"
                                            FontSize="12"
                                            HorizontalAlignment="Right"
                                            Margin="0,4,0,0"/>
-							</Grid>
-						</DataTemplate>
-					</DataGridTemplateColumn.CellTemplate>
-				</DataGridTemplateColumn>
-				<DataGridTextColumn Header="LAST LOGIN DATE"
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="LAST LOGIN DATE"
                                     Binding="{Binding LastLoginDate, StringFormat='{}{0:MMM dd, hh\\:mm tt}'}"
                                     Width="200"/>
-				<DataGridTemplateColumn Width="Auto">
-					<DataGridTemplateColumn.CellTemplate>
-						<DataTemplate>
-							<Button Content="⋮" Width="24" Height="24"/>
-						</DataTemplate>
-					</DataGridTemplateColumn.CellTemplate>
-				</DataGridTemplateColumn>
-			</DataGrid.Columns>
-		</DataGrid>
+                <DataGridTemplateColumn Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="⋮" Width="24" Height="24"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
 
-	</Grid>
+    </Grid>
 </UserControl>

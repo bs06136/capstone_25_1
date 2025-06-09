@@ -58,7 +58,7 @@
                 </Setter>
             </Style>
 
-            <!-- Rounded ComboBox -->
+            <!-- Rounded ComboBox (테두리 하늘색으로) -->
             <Style x:Key="RoundComboBox" TargetType="ComboBox">
                 <Setter Property="Background" Value="White"/>
                 <Setter Property="BorderBrush" Value="SkyBlue"/>
@@ -75,7 +75,6 @@
                                 <Grid>
                                     <ToggleButton x:Name="ToggleButton"
                                                   Template="{StaticResource ComboBoxToggleButton}"
-                                                  Grid.Column="2"
                                                   Focusable="False"
                                                   IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
                                     <ContentPresenter x:Name="ContentSite"
@@ -91,7 +90,7 @@
                                            Focusable="False"
                                            PopupAnimation="Slide">
                                         <Border x:Name="DropDown"
-                                                Background="SkyBlue"
+                                                Background="White"
                                                 BorderBrush="SkyBlue"
                                                 BorderThickness="1"
                                                 CornerRadius="4"
@@ -112,7 +111,7 @@
                                     <Setter Property="Opacity" Value="0.5"/>
                                 </Trigger>
                                 <Trigger Property="IsKeyboardFocusWithin" Value="true">
-                                    <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="#999"/>
+                                    <Setter TargetName="ComboBoxBorder" Property="BorderBrush" Value="SkyBlue"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>

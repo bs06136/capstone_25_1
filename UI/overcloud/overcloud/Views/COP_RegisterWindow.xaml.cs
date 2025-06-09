@@ -1,10 +1,11 @@
 ﻿using System.Windows;
 using DB.overcloud.Repository;
 using OverCloud.Services;
+using SourceChord.FluentWPF;
 
 namespace overcloud.Views
 {
-    public partial class COP_RegisterWindow : Window
+    public partial class COP_RegisterWindow : AcrylicWindow
     {
         private LoginController _controller;
         private string user_id = null;
@@ -45,6 +46,11 @@ namespace overcloud.Views
             {
                 System.Windows.MessageBox.Show("이미 존재하는 클라우드 이름입니다. 다른 이름을 사용해주세요.", "실패", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }
