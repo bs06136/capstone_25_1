@@ -1,4 +1,8 @@
 ﻿using System.Windows.Controls;
+using System;
+using System.Globalization;
+using System.Windows;
+using System.Windows.Data;
 
 namespace overcloud.Views
 {
@@ -9,4 +13,6 @@ namespace overcloud.Views
             InitializeComponent(); // XAML 연결 핵심!
         }
     }
+
+   
 }
