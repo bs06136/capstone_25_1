@@ -156,6 +156,9 @@ namespace OverCloud.Services.FileManager
                     allSuccess = false;
                 }
 
+                //분산 파일 삭제할때도 용량 호출
+                await quotaManager.SaveDriveQuotaToDB(userId, chunk.CloudStorageNum);
+                
                 // 4. 용량 회복
                 quotaManager.UpdateQuotaAfterUploadOrDelete(chunk.CloudStorageNum, chunk.FileSize / 1024 , false, userId);
             }
