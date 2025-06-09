@@ -1025,8 +1025,16 @@ namespace overcloud.Views
             string fullLink = string.Join("|", linkParts);
             string url = $"http://ec2-54-180-122-223.ap-northeast-2.compute.amazonaws.com/?link={Uri.EscapeDataString(fullLink)}";
 
+
+
             System.Windows.Clipboard.SetText(url);
-            System.Windows.MessageBox.Show("링크가 복사되었습니다:\n" + url);
+            var alert = new AcrylicAlertWindow($"링크가 복사되었습니다:\n{url}")
+            {
+                Owner = Window.GetWindow(this)   // 모달로 띄우려면 Owner 지정
+            };
+            alert.ShowDialog();
+            //System.Windows.MessageBox.Show("링크가 복사되었습니다:\n" + url);
+
         }
 
 

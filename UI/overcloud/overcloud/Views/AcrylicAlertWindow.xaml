@@ -1,0 +1,42 @@
+<fw:AcrylicWindow x:Class="overcloud.Views.AcrylicAlertWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:converters="clr-namespace:overcloud.Converters"
+                 xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
+                 Title="알림"
+                 Height="180" Width="340"
+                 WindowStartupLocation="CenterOwner"
+                 AcrylicWindowStyle="None"
+                 Background="Transparent">
+
+	<Border
+		Background="{StaticResource AcrylicBG}"
+		CornerRadius="12"
+		Margin="10,10,10,0"
+		Padding="20">
+
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+
+			<!-- 경고 메시지: 둥근 텍스트박스 -->
+			<TextBox x:Name="MessageTextBox"
+					 Grid.Row="0"
+					 Style="{StaticResource RoundTextBox}"
+					 IsReadOnly="True"
+					 TextWrapping="Wrap"
+					 VerticalScrollBarVisibility="Auto"
+					 Margin="0,0,0,10"/>
+
+			<!-- 확인 버튼: 라운드 버튼 -->
+			<Button Grid.Row="1"
+					Style="{StaticResource RoundButton}"
+					Content="확인"
+					Width="80" Height="30"
+					HorizontalAlignment="Right"
+					Click="OkButton_Click"/>
+		</Grid>
+	</Border>
+</fw:AcrylicWindow>

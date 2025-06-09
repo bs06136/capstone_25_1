@@ -190,6 +190,49 @@
                                    xml:space="preserve"
                                    />
                                 <TextBlock Text="{Binding FileName}" FontSize="16" Margin="20,0,0,0"/>
+                                <!-- 여기부터 추가 -->
+                                <Border CornerRadius="10"
+        Padding="6,2"
+        Margin="10,0,0,0"
+        VerticalAlignment="Center">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <!-- 기본값: 보이도록, 투명 배경 -->
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <!-- 1) IssueStatus가 null이면 숨김 -->
+                                                <DataTrigger Binding="{Binding IssueStatus}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+
+                                                <!-- 2) IssueStatus가 빈 문자열이면 숨김 -->
+                                                <DataTrigger Binding="{Binding IssueStatus}" Value="">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+
+                                                <!-- 3) 상태별 배경색 지정 -->
+                                                <DataTrigger Binding="{Binding IssueStatus}" Value="OPEN">
+                                                    <Setter Property="Background" Value="Red"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IssueStatus}" Value="IN_PROGRESS">
+                                                    <Setter Property="Background" Value="Orange"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IssueStatus}" Value="RESOLVED">
+                                                    <Setter Property="Background" Value="Green"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IssueStatus}" Value="CLOSED">
+                                                    <Setter Property="Background" Value="Black"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+
+                                    <!-- 흰 글씨 상태 텍스트 -->
+                                    <TextBlock Text="{Binding IssueStatus}"
+             Foreground="White"
+             FontSize="14"/>
+                                </Border>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
