@@ -176,8 +176,8 @@
             </Grid.RowDefinitions>
 
             <!-- ID Input -->
-            <StackPanel Grid.Row="0" Margin="0,0,0,10">
-                <TextBox x:Name="txtID" Style="{StaticResource RoundTextBox}" Height="30"/>
+            <StackPanel Grid.Row="0" Margin="0,0,0,15">
+                <TextBox x:Name="txtID" Style="{StaticResource RoundTextBox}" Height="40"/>
                 <TextBlock Text="아이디 입력"
                            Foreground="Gray"
                            Margin="10,-30,0,0"
@@ -186,8 +186,8 @@
             </StackPanel>
 
             <!-- Password Input -->
-            <StackPanel Grid.Row="1" Margin="0,0,0,10">
-                <PasswordBox x:Name="txtPassword" Style="{StaticResource RoundPasswordBox}" Height="30"/>
+            <StackPanel Grid.Row="1" Margin="0,0,0,15">
+                <PasswordBox x:Name="txtPassword" Style="{StaticResource RoundPasswordBox}" Height="40"/>
                 <TextBlock Text="비밀번호 입력"
                            Foreground="Gray"
                            Margin="10,-30,0,0"
@@ -196,10 +196,10 @@
             </StackPanel>
 
             <!-- Cloud Selection -->
-            <StackPanel Grid.Row="2" Margin="0,0,0,10">
+            <StackPanel Grid.Row="2" Margin="0,0,0,15">
                 <ComboBox x:Name="cloudComboBox"
                           Style="{StaticResource RoundComboBox}"
-                          Height="30"
+                          Height="40"
                           SelectedIndex="0">
                     <ComboBoxItem Content="GoogleDrive"/>
                     <ComboBoxItem Content="OneDrive"/>
@@ -208,10 +208,10 @@
             </StackPanel>
 
             <!-- Cooperation Account Selection -->
-            <StackPanel Grid.Row="3" Margin="0,0,0,10" Visibility="{Binding ElementName=cooperationComboBox, Path=Visibility}">
+            <StackPanel Grid.Row="3" Margin="0,0,0,15" Visibility="{Binding ElementName=cooperationComboBox, Path=Visibility}">
                 <ComboBox x:Name="cooperationComboBox"
                           Style="{StaticResource RoundComboBox}"
-                          Height="30"
+                          Height="40"
                           ItemsSource="{Binding CooperationAccounts}"/>
                 <TextBlock Text="협업 계정 선택"
                            Foreground="Gray"
