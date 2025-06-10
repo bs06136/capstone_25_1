@@ -628,7 +628,8 @@ namespace overcloud.Views
                         CloudFileId: f.cloud_file_id,
                         CloudStorageNum: f.CloudStorageNum,
                         LocalPath: Path.Combine(localBase, f.FileName),
-                        IsDistributed: f.IsDistributed
+                        IsDistributed: f.IsDistributed,
+                        FileSize: f.FileSize
                     )).ToList();
 
                 App.TransferManager.DownloadManager.EnqueueDownloads(enqueueList, _user_id);
@@ -671,9 +672,9 @@ namespace overcloud.Views
                 if (!string.IsNullOrEmpty(dir))
                     Directory.CreateDirectory(dir);
 
-                App.TransferManager.DownloadManager.EnqueueDownloads(new List<(int FileId, string FileName, string CloudFileId, int CloudStorageNum, string LocalPath, bool IsDistributed)>
+                App.TransferManager.DownloadManager.EnqueueDownloads(new List<(int FileId, string FileName, string CloudFileId, int CloudStorageNum, string LocalPath, bool IsDistributed,ulong FileSize)>
                     {
-                        (fileId ,file.FileName, file.CloudFileId, file.CloudStorageNum, localPath, _IsDistributed)
+                        (fileId ,file.FileName, file.CloudFileId, file.CloudStorageNum, localPath, _IsDistributed, file.FileSize)
                     }, _user_id);
             }
         }
