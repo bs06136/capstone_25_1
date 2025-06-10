@@ -98,9 +98,30 @@
 
 
             <DataGrid.Columns >
-				<DataGridCheckBoxColumn Binding="{Binding IsSelected}" Width="40"/>
-				<DataGridTextColumn Header="CLOUD" Binding="{Binding CloudName}" Width="*"/>
-				<DataGridTextColumn Header="ACTIVE" Binding="{Binding IsActive}" Width="100"/>
+                <DataGridTemplateColumn Width="30">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsSelected}"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+
+                <DataGridTextColumn Header="CLOUD" Binding="{Binding CloudName}" Width="*">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <!-- 셀 안 정렬 -->
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                            <!-- 텍스트 자체 정렬 -->
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Header="ACTIVE" Binding="{Binding IsActive}" Width="100"/>
 				<DataGridTextColumn Header="ID" Binding="{Binding AccountId}" Width="150"/>
 				<DataGridTemplateColumn Header="USAGE" Width="200">
 					<DataGridTemplateColumn.CellTemplate>
