@@ -7,10 +7,11 @@ using DB.overcloud.Repository;
 using System.Windows.Controls;
 using System.Windows;
 using OverCloud.Services;
+using SourceChord.FluentWPF;
 
 namespace overcloud.Views
 {
-    public partial class FolderSelectDialog : Window
+    public partial class FolderSelectDialog : AcrylicWindow
     {
         private LoginController _controller;
         public int? SelectedFolderId { get; private set; } = null;

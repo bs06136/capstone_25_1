@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using SourceChord.FluentWPF;
 
 namespace overcloud.Windows
 {
-    public partial class AddIssueDialog : Window
+    public partial class AddIssueDialog : AcrylicWindow
     {
         public string IssueTitle { get; private set; }
         public string IssueDescription { get; private set; }

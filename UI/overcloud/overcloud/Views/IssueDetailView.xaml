@@ -1,8 +1,10 @@
 <UserControl x:Class="overcloud.Views.IssueDetailView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:overcloud.Views">
-
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="1000" d:DesignWidth="1400">
     <Viewbox>
         <Canvas Width="1400" Height="1000" Background="#FAFAFA">
 
@@ -56,14 +58,30 @@
             </ListBox>
 
             <!-- 하단 버튼들 -->
-            <Button Content="코멘트 추가" Width="120" Height="40" Canvas.Left="50" Canvas.Top="880"
-                    Click="AddCommentButton_Click"/>
-            <Button Content="이슈 수정" Width="120" Height="40" Canvas.Left="200" Canvas.Top="880"
-                    Click="EditIssueButton_Click"/>
-            <Button Content="이슈 삭제" Width="120" Height="40" Canvas.Left="350" Canvas.Top="880"
-                    Click="DeleteIssueButton_Click"/>
-            <Button Content="닫기" Width="120" Height="40" Canvas.Left="510" Canvas.Top="880"
-                    Click="CloseButton_Click"/>
+            <Button Content="코멘트 추가"
+                    Style="{StaticResource RoundButton}"
+                    Width="120" Height="40"
+                    Canvas.Left="50" Canvas.Top="880"
+                    Click="AddCommentButton_Click"
+                    Cursor="Hand"/>
+            <Button Content="이슈 수정"
+                    Style="{StaticResource RoundButton}"
+                    Width="120" Height="40"
+                    Canvas.Left="200" Canvas.Top="880"
+                    Click="EditIssueButton_Click"
+                    Cursor="Hand"/>
+            <Button Content="이슈 삭제"
+                    Style="{StaticResource RoundButton}"
+                    Width="120" Height="40"
+                    Canvas.Left="350" Canvas.Top="880"
+                    Click="DeleteIssueButton_Click"
+                    Cursor="Hand"/>
+            <Button Content="닫기"
+                    Style="{StaticResource RoundButton}"
+                    Width="120" Height="40"
+                    Canvas.Left="510" Canvas.Top="880"
+                    Click="CloseButton_Click"
+                    Cursor="Hand"/>
         </Canvas>
     </Viewbox>
 </UserControl>

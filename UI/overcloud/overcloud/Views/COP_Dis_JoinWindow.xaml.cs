@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using OverCloud.Services;
+using SourceChord.FluentWPF;
 
 namespace overcloud.Views
 {
-    public partial class COP_Dis_JoinWindow : Window
+    public partial class COP_Dis_JoinWindow : AcrylicWindow
     {
         private string _user_id_mine;
         private LoginController _controller;
@@ -42,5 +43,11 @@ namespace overcloud.Views
             System.Windows.MessageBox.Show(result ? "탈퇴 성공" : "탈퇴 실패");
             if (result) this.Close();
         }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
     }
 }

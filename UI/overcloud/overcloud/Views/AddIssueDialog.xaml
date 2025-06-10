@@ -1,40 +1,75 @@
-<Window x:Class="overcloud.Windows.AddIssueDialog"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="이슈 생성" Height="360" Width="400" WindowStartupLocation="CenterOwner">
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+<fw:AcrylicWindow x:Class="overcloud.Windows.AddIssueDialog"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
+                  Title="이슈 생성"
+                  Height="398" Width="351"
+                  WindowStartupLocation="CenterOwner"
+                  AcrylicWindowStyle="None"
+                  Background="Transparent">
 
-        <StackPanel Margin="0,0,0,10">
-            <TextBlock Text="제목:" Margin="0,0,0,5"/>
-            <TextBox Name="TitleTextBox" Width="300"/>
-        </StackPanel>
+    <!-- 공통 Acrylic 배경 -->
+    <Border Background="{StaticResource AcrylicBG}"
+            CornerRadius="6"
+            Padding="15"
+            Margin="5">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="1" Margin="0,0,0,10">
-            <TextBlock Text="상세 내용:" Margin="0,0,0,5"/>
-            <TextBox Name="DescriptionTextBox" Width="300" Height="80" TextWrapping="Wrap"/>
-        </StackPanel>
+            <!-- 제목 -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,10">
+                <TextBlock Text="제목:" Margin="0,0,0,5"/>
+                <TextBox x:Name="TitleTextBox"
+                         Style="{StaticResource RoundTextBox}"
+                         Width="300"
+                         Height="30"/>
+            </StackPanel>
 
-        <StackPanel Grid.Row="2" Margin="0,0,0,10">
-            <TextBlock Text="작업할 사람 (담당자):" Margin="0,0,0,5"/>
-            <ComboBox Name="AssigneeComboBox" Width="300"/>
-        </StackPanel>
+            <!-- 상세 내용 -->
+            <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                <TextBlock Text="상세 내용:" Margin="0,0,0,5"/>
+                <TextBox x:Name="DescriptionTextBox"
+                         Style="{StaticResource RoundTextBox}"
+                         Width="300" Height="80"
+                         TextWrapping="Wrap"/>
+            </StackPanel>
 
-        <StackPanel Grid.Row="3" Margin="0,0,0,10">
-            <TextBlock Text="기한:" Margin="0,0,0,5"/>
-            <DatePicker Name="DueDatePicker" Width="150"/>
-        </StackPanel>
+            <!-- 담당자 -->
+            <StackPanel Grid.Row="2" Margin="0,0,0,10">
+                <TextBlock Text="작업할 사람 (담당자):" Margin="0,0,0,5"/>
+                <ComboBox x:Name="AssigneeComboBox"
+                          Style="{StaticResource RoundComboBox}"
+                          Width="300"/>
+            </StackPanel>
 
-        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
-            <Button Content="확인" Width="80" Margin="0,0,10,0" Click="Confirm_Click"/>
-            <Button Content="취소" Width="80" Click="Cancel_Click"/>
-        </StackPanel>
-    </Grid>
-</Window>
+            <!-- 기한 -->
+            <StackPanel Grid.Row="3" Margin="0,0,0,10">
+                <TextBlock Text="기한:" Margin="0,0,0,5"/>
+                <!-- DatePicker는 기본 스타일 유지하거나, 필요 시 별도 스타일 정의 -->
+                <DatePicker x:Name="DueDatePicker"
+                            Width="150"
+                            Height="30"/>
+            </StackPanel>
+
+            <!-- 확인/취소 버튼 -->
+            <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                <Button Content="확인"
+                        Width="80" Height="32"
+                        Margin="0,0,10,0"
+                        Style="{StaticResource RoundButton}"
+                        Click="Confirm_Click"/>
+                <Button Content="취소"
+                        Width="80" Height="32"
+                        Style="{StaticResource RoundButton}"
+                        Click="Cancel_Click"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</fw:AcrylicWindow>

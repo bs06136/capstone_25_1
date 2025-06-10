@@ -1,8 +1,9 @@
 ﻿using System.Windows;
+using SourceChord.FluentWPF;
 
 namespace overcloud.Views
 {
-    public partial class AddFolderDialog : Window
+    public partial class AddFolderDialog : AcrylicWindow
     {
         public string FolderName => FolderNameTextBox.Text.Trim();
 
@@ -18,12 +19,12 @@ namespace overcloud.Views
                 System.Windows.MessageBox.Show("폴더 이름을 입력해주세요.", "경고", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            DialogResult = true;
+            this.DialogResult = true;
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = false;
+            this.DialogResult = false;
         }
     }
 }

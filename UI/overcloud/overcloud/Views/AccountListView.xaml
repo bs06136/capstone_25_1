@@ -51,6 +51,7 @@
                     Width="100" Height="32"
                     Margin="12,0,0,0"
                     Content="계정 추가"
+                    Style="{StaticResource RoundButton}"
                     Click="Button_Add_Click"/>
 
 			<!-- 계정 삭제 -->
@@ -58,6 +59,7 @@
                     Width="100" Height="32"
                     Margin="8,0,0,0"
                     Content="계정 삭제"
+                    Style="{StaticResource RoundButton}"
                     Click="Button_Delete_Click"/>
 		</Grid>
 
