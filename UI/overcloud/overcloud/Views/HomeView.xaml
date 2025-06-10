@@ -17,7 +17,7 @@
     </UserControl.Resources>
 
     <Viewbox>
-        <Canvas x:Name="MainCanvas" Width="1820" Height="1080">
+        <Canvas Width="1820" Height="1080">
 
             <!-- 좌측 디렉토리 영역 -->
             <Rectangle Width="200" Height="1080" Fill="#F7F7F7" Canvas.Left="0" Canvas.Top="0"/>
@@ -57,7 +57,7 @@
 
             <!-- 상단 검색창 -->
             <ContentControl x:Name="SearchHost"
-                Width="1300" Height="60"
+                Width="1300" Height="100"
                 Canvas.Left="240" Canvas.Top="32"/>
 
             <!-- 상단 버튼들 -->

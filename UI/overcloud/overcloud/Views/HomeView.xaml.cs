@@ -68,13 +68,6 @@ namespace overcloud.Views
             // FileSearchView 생성 및 위치 지정
             var searchView = new FileSearchView(_controller, _user_id);
             SearchHost.Content = searchView;
-
-            Canvas.SetLeft(_fileSearchView, 240);
-            Canvas.SetTop(_fileSearchView, 32);
-            _fileSearchView.Width = 1300;
-            _fileSearchView.Height = 60;
-
-            MainCanvas.Children.Add(_fileSearchView);
         }
 
 
