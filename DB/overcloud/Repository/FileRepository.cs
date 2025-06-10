@@ -476,7 +476,7 @@ namespace DB.overcloud.Repository
 
         public List<CloudFileInfo> FindByFileName(string fileName, string ID)
         {
-            List<CloudFileInfo> result = new();
+            var files = new List<CloudFileInfo>();
 
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
@@ -490,26 +490,25 @@ namespace DB.overcloud.Repository
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
-                CloudFileInfo info = new CloudFileInfo
+                files.Add(new CloudFileInfo
                 {
-                    FileId = reader.GetInt32("file_id"),
-                    FileName = reader.GetString("file_name"),
-                    FileSize = (ulong)reader.GetInt64("file_size"),
-                    UploadedAt = reader.GetDateTime("uploaded_at"),
-                    CloudStorageNum = reader.GetInt32("cloud_storage_num"),
-                    ID = reader.GetString("ID"),
-                    IsFolder = reader.GetBoolean("is_folder"),
-                    CloudFileId = reader.GetString("cloud_file_id"),
-                    IsDistributed = reader.GetBoolean("is_distributed"),
-                    ParentFolderId = reader.GetInt32("parent_folder_id"),
-                    RootFileId = reader.IsDBNull(reader.GetInt32("root_file_id")) ? null : reader.GetInt32("root_file_id"),
-                    ChunkIndex = reader.IsDBNull(reader.GetInt32("chunk_index")) ? null : reader.GetInt32("chunk_index"),
-                    ChunkSize = reader.IsDBNull(reader.GetInt32("chunk_size")) ? null : (ulong?)reader.GetInt64("chunk_size")
-                };
-                result.Add(info);
+                    FileId = Convert.ToInt32(reader["file_id"]),
+                    FileName = reader["file_name"].ToString(),
+                    FileSize = Convert.ToUInt32(reader["file_size"]),
+                    UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
+                    CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ID = reader["ID"].ToString(),
+                    ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
+                    IsFolder = Convert.ToBoolean(reader["is_folder"]),
+                    CloudFileId = reader["cloud_file_id"]?.ToString(),
+                    RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
+                    ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
+                    ChunkSize = reader["chunk_size"] is DBNull ? (ulong?)null : Convert.ToUInt64(reader["chunk_size"]),
+                    IsDistributed = Convert.ToBoolean(reader["is_distributed"])
+                });
             }
 
-            return result;
+            return files;
         }
 
         public string GetFullPath(int fileId)
