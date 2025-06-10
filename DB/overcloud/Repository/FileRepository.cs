@@ -517,13 +517,13 @@ namespace DB.overcloud.Repository
             if (file == null) return string.Empty;
 
             var pathParts = new List<string>();
-            while (file != null && file.ParentFolderId != -1) // -1은 루트 폴더
+            while (file.ParentFolderId != -2)
             {
                 pathParts.Insert(0, file.FileName);
                 file = GetFileById(file.ParentFolderId);
             }
 
-            return "/" + string.Join("/", pathParts);
+            return string.Join("/", pathParts);
         }
 
 
