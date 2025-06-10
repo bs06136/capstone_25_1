@@ -1078,8 +1078,8 @@ namespace overcloud.Views
             var viewModels = results.Select(f =>
             {
                 var vm = ToViewModel(f);
-                // 기존 파일명 뒤에 “ / 절대경로”를 하드코딩
-                vm.FileName = $"{vm.FileName} / {_controller.FileRepository.GetFullPath(vm.FileId)}";
+                // 기존 파일명 뒤에 “ /절대경로”를 하드코딩
+                vm.FileName = $"{vm.FileName} /{_controller.FileRepository.GetFullPath(vm.FileId)}";
                 return vm;
             }).ToList();
 
