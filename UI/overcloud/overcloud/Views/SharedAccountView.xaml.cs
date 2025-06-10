@@ -1026,7 +1026,7 @@ namespace overcloud.Views
             }
 
             string fullLink = string.Join("|", linkParts);
-            string url = $"http://ec2-54-180-122-223.ap-northeast-2.compute.amazonaws.com/?link={Uri.EscapeDataString(fullLink)}";
+            string url = $"http://http://capstonedesign.duckdns.org/download/?link={Uri.EscapeDataString(fullLink)}";
 
             System.Windows.Clipboard.SetText(url);
 
