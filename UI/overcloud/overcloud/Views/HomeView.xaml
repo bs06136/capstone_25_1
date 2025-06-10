@@ -205,6 +205,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <ListBox x:Name="RightFileListPanel"
@@ -230,17 +231,35 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
 
+                <ListBox x:Name="PathColumnPanel"
+           Grid.Column="1"
+           ItemContainerStyle="{StaticResource UnifiedListItemStyle}"
+           Background="#eeeeee"
+           BorderThickness="0"
+           SelectionMode="Single"
+           >
+                    <!-- 초기에는 숨김 -->
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding FullPath}"
+                   FontSize="12"
+                   Foreground="#eeeeee"
+                   TextTrimming="CharacterEllipsis"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
                 <ListBox x:Name="DateColumnPanel"
                          ItemContainerStyle="{StaticResource UnifiedListItemStyle}"
-                         Grid.Column="1"
-                         Background="Transparent"
+                         Grid.Column="2"
+                         Background="#eeeeee"
                          BorderThickness="0"
                          SelectionMode="Single"
                          IsHitTestVisible="False">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding UploadedAt, StringFormat='yyyy-MM-dd HH:mm'}"
-                                       FontSize="14" Foreground="Gray"
+                                       FontSize="14" Foreground="#eeeeee"
                                        HorizontalAlignment="Right"/>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

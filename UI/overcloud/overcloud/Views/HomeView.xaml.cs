@@ -121,6 +121,20 @@ namespace overcloud.Views
 
             public string IconText => IsFolder ? "📁" : "📄";
 
+            private string _fullPath = string.Empty;
+            public string FullPath
+            {
+                get => _fullPath;
+                set
+                {
+                    if (_fullPath != value)
+                    {
+                        _fullPath = value;
+                        OnPropertyChanged(nameof(FullPath));
+                    }
+                }
+            }
+
         }
 
         //////변환기
@@ -453,13 +467,21 @@ namespace overcloud.Views
 
         private void LoadFolderContents(int folderId)
         {
-            var contents = _controller.FileRepository.all_file_list(folderId, _user_id)
-                .Select(file => ToViewModel(file))
+            var contents = _controller.FileRepository
+                .all_file_list(folderId, _user_id)
+                .Select(f =>
+                {
+                    var vm = ToViewModel(f);
+                    vm.FullPath = string.Empty;                    // 평소에는 빈 문자열
+                    return vm;
+                })
                 .ToList();
 
             RightFileListPanel.ItemsSource = contents;
             DateColumnPanel.ItemsSource = contents;
+            PathColumnPanel.ItemsSource = contents;          // 3열 패널에도 바인딩
         }
+
 
 
 
@@ -1072,22 +1094,20 @@ namespace overcloud.Views
 
         private void OnSearchKeywordSubmitted(string keyword)
         {
-            // 1) FindByFileName 으로 CloudFileInfo 리스트를 가져온다.
             var results = _controller.FileRepository.FindByFileName(keyword, _user_id);
 
-            // 2) 기존 ToViewModel을 써서 ViewModel을 만들고, FileName에 절대경로를 덧붙인다.
             var viewModels = results.Select(f =>
             {
                 var vm = ToViewModel(f);
-                // 기존 파일명 뒤에 “ / 절대경로”를 하드코딩
-                vm.FileName = $"{vm.FileName} / {_controller.FileRepository.GetFullPath(vm.FileId)}";
+                vm.FullPath = _controller.FileRepository.GetFullPath(f.FileId);
                 return vm;
             }).ToList();
 
-            // 3) 우측 리스트(ListBox)에 바인딩
             RightFileListPanel.ItemsSource = viewModels;
             DateColumnPanel.ItemsSource = viewModels;
+            PathColumnPanel.ItemsSource = viewModels;
         }
+
 
 
 

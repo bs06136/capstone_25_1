@@ -41,6 +41,8 @@ namespace overcloud.Views
 
         private bool _isFolderChanging = false;
 
+        private FileSearchView _fileSearchView; // 파일 검색 뷰
+
         public SharedAccountView(LoginController controller,
             string user_id)
 
@@ -61,6 +63,10 @@ namespace overcloud.Views
             this.KeyDown += SharedAccountView_KeyDown;
             this.Focusable = true;
             this.Focus();
+
+            _fileSearchView = new FileSearchView();
+            _fileSearchView.SearchSubmitted += OnSearchKeywordSubmitted;
+            SearchHost.Content = _fileSearchView;
 
             // 초기 서비스 설정
         }
@@ -135,6 +141,20 @@ namespace overcloud.Views
             public bool IsDistributed { get; set; }
 
             public string IconText => IsFolder ? "📁" : "📄";
+
+            private string _fullPath = string.Empty;
+            public string FullPath
+            {
+                get => _fullPath;
+                set
+                {
+                    if (_fullPath != value)
+                    {
+                        _fullPath = value;
+                        OnPropertyChanged(nameof(FullPath));
+                    }
+                }
+            }
         }
 
         //////변환기
@@ -406,37 +426,39 @@ namespace overcloud.Views
 
         private void LoadFolderContents(int folderId, string accountId)
         {
-            var files = _controller.FileRepository
-                          .all_file_list(folderId, accountId)
-                          .ToList();
-
-            var vms = files.Select(f =>
-            {
-                var vm = ToViewModel(f);
-
-                // 1) 이슈 조회
-                var issues = _controller.FileIssueRepository
-                               .GetIssuesByFileId(f.FileId);
-
-                if (issues != null && issues.Any())
+            var vms = _controller.FileRepository
+                .all_file_list(folderId, accountId)
+                .Select(f =>
                 {
-                    // 2) 문자열 상태를 enum으로 파싱 → 최소값 선택
-                    var lowestStatus = issues
-                        .Select(i => Enum.Parse<IssueStatusEnum>(i.Status))
-                        .Min();
+                    // 1) CloudFileInfo → VM 생성
+                    var vm = ToViewModel(f);
 
-                    vm.IssueStatus = lowestStatus.ToString();
-                }
-                else
-                {
-                    vm.IssueStatus = string.Empty;
-                }
+                    // 2) 평소에는 빈 문자열
+                    vm.FullPath = string.Empty;
 
-                return vm;
-            }).ToList();
+                    // 3) 이슈 조회 & 상태 세팅
+                    var issues = _controller.FileIssueRepository
+                                   .GetIssuesByFileId(f.FileId);
+
+                    if (issues != null && issues.Any())
+                    {
+                        var lowestStatus = issues
+                            .Select(i => Enum.Parse<IssueStatusEnum>(i.Status))
+                            .Min();
+                        vm.IssueStatus = lowestStatus.ToString();
+                    }
+                    else
+                    {
+                        vm.IssueStatus = string.Empty;
+                    }
+
+                    return vm;
+                })
+                .ToList();
 
             RightFileListPanel.ItemsSource = vms;
             DateColumnPanel.ItemsSource = vms;
+            PathColumnPanel.ItemsSource = vms;    // PathColumnPanel 이 있다면 빈 문자열만 바인딩
         }
 
 
@@ -1139,6 +1161,22 @@ namespace overcloud.Views
             IN_PROGRESS = 1,
             RESOLVED = 2,
             CLOSED = 3
+        }
+
+        private void OnSearchKeywordSubmitted(string keyword)
+        {
+            var results = _controller.FileRepository.FindByFileName(keyword, _currentAccountId);
+
+            var viewModels = results.Select(f =>
+            {
+                var vm = ToViewModel(f);
+                vm.FullPath = _controller.FileRepository.GetFullPath(f.FileId);
+                return vm;
+            }).ToList();
+
+            RightFileListPanel.ItemsSource = viewModels;
+            DateColumnPanel.ItemsSource = viewModels;
+            PathColumnPanel.ItemsSource = viewModels;
         }
 
     }
