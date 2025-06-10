@@ -56,7 +56,9 @@
                        Canvas.Left="252" Canvas.Top="180" Foreground="Black"/>
 
             <!-- 상단 검색창 -->
-            <local:FileSearchView Width="1300" Height="60" Canvas.Left="240" Canvas.Top="32"/>
+            <ContentControl x:Name="SearchHost"
+                Width="1300" Height="60"
+                Canvas.Left="240" Canvas.Top="32"/>
 
             <!-- 상단 버튼들 -->
             <Button x:Name="UploadButton" Width="90" Height="40"

@@ -502,9 +502,9 @@ namespace DB.overcloud.Repository
                     CloudFileId = reader.GetString("cloud_file_id"),
                     IsDistributed = reader.GetBoolean("is_distributed"),
                     ParentFolderId = reader.GetInt32("parent_folder_id"),
-                    RootFileId = reader.IsDBNull("root_file_id") ? null : reader.GetInt32("root_file_id"),
-                    ChunkIndex = reader.IsDBNull("chunk_index") ? null : reader.GetInt32("chunk_index"),
-                    ChunkSize = reader.IsDBNull("chunk_size") ? null : (ulong?)reader.GetInt64("chunk_size")
+                    RootFileId = reader.IsDBNull(reader.GetInt32("root_file_id")) ? null : reader.GetInt32("root_file_id"),
+                    ChunkIndex = reader.IsDBNull(reader.GetInt32("chunk_index")) ? null : reader.GetInt32("chunk_index"),
+                    ChunkSize = reader.IsDBNull(reader.GetInt32("chunk_size")) ? null : (ulong?)reader.GetInt64("chunk_size")
                 };
                 result.Add(info);
             }
