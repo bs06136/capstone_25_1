@@ -22,5 +22,7 @@ namespace DB.overcloud.Repository
         public List<CloudFileInfo> GetFilesByStorageNum(int cloudStorageNum);
 
         public void updateFile(CloudFileInfo file_info);
+        List<CloudFileInfo> FindByFileName(string fileName, string ID);
+        string GetFullPath(int fileId);
     }
 }
