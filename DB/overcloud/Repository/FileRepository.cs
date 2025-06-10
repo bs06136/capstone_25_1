@@ -474,6 +474,57 @@ namespace DB.overcloud.Repository
             return files;
         }
 
+        public List<CloudFileInfo> FindByFileName(string fileName, string ID)
+        {
+            var files = new List<CloudFileInfo>();
+
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "SELECT * FROM CloudFileInfo WHERE ID = @id AND file_name LIKE CONCAT('%', @fileName, '%')";
+
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@id", ID);
+            cmd.Parameters.AddWithValue("@fileName", fileName);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                files.Add(new CloudFileInfo
+                {
+                    FileId = Convert.ToInt32(reader["file_id"]),
+                    FileName = reader["file_name"].ToString(),
+                    FileSize = Convert.ToUInt32(reader["file_size"]),
+                    UploadedAt = Convert.ToDateTime(reader["uploaded_at"]),
+                    CloudStorageNum = Convert.ToInt32(reader["cloud_storage_num"]),
+                    ID = reader["ID"].ToString(),
+                    ParentFolderId = Convert.ToInt32(reader["parent_folder_id"]),
+                    IsFolder = Convert.ToBoolean(reader["is_folder"]),
+                    CloudFileId = reader["cloud_file_id"]?.ToString(),
+                    RootFileId = reader["root_file_id"] is DBNull ? null : Convert.ToInt32(reader["root_file_id"]),
+                    ChunkIndex = reader["chunk_index"] is DBNull ? null : Convert.ToInt32(reader["chunk_index"]),
+                    ChunkSize = reader["chunk_size"] is DBNull ? (ulong?)null : Convert.ToUInt64(reader["chunk_size"]),
+                    IsDistributed = Convert.ToBoolean(reader["is_distributed"])
+                });
+            }
+
+            return files;
+        }
+
+        public string GetFullPath(int fileId)
+        {
+            var file = GetFileById(fileId);
+            if (file == null) return string.Empty;
+
+            var pathParts = new List<string>();
+            while (file != null && file.ParentFolderId != -1) // -1은 루트 폴더
+            {
+                pathParts.Insert(0, file.FileName);
+                file = GetFileById(file.ParentFolderId);
+            }
+
+            return "/" + string.Join("/", pathParts);
+        }
 
 
     }

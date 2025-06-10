@@ -31,6 +31,7 @@ namespace overcloud.Views
         private static TransferManagerWindow _transferWindow;
 
         private string _user_id;
+        private FileSearchView _fileSearchView;
 
 
         // 탐색기 상태
@@ -41,7 +42,7 @@ namespace overcloud.Views
 
         private bool _isFolderChanging = false;
 
-        public HomeView(LoginController controller ,
+        public HomeView(LoginController controller,
             string user_id)
 
         {
@@ -63,6 +64,11 @@ namespace overcloud.Views
             this.Focus();
 
             // 초기 서비스 설정
+
+            // FileSearchView 생성 및 위치 지정
+            _fileSearchView = new FileSearchView();
+            _fileSearchView.SearchSubmitted += OnSearchKeywordSubmitted;
+            SearchHost.Content = _fileSearchView;
         }
 
 
@@ -1061,6 +1067,28 @@ namespace overcloud.Views
         {
             ShowTransferWindow();
         }
+
+
+        private void OnSearchKeywordSubmitted(string keyword)
+        {
+            // 1) FindByFileName 으로 CloudFileInfo 리스트를 가져온다.
+            var results = _controller.FileRepository.FindByFileName(keyword, _user_id);
+
+            // 2) 기존 ToViewModel을 써서 ViewModel을 만들고, FileName에 절대경로를 덧붙인다.
+            var viewModels = results.Select(f =>
+            {
+                var vm = ToViewModel(f);
+                // 기존 파일명 뒤에 “ / 절대경로”를 하드코딩
+                vm.FileName = $"{vm.FileName} / {_controller.FileRepository.GetFullPath(vm.FileId)}";
+                return vm;
+            }).ToList();
+
+            // 3) 우측 리스트(ListBox)에 바인딩
+            RightFileListPanel.ItemsSource = viewModels;
+            DateColumnPanel.ItemsSource = viewModels;
+        }
+
+
 
     }
 }
