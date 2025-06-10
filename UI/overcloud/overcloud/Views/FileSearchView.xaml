@@ -2,25 +2,14 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:conv="clr-namespace:overcloud.Converters"
-             Height="Auto" Width="Auto">
-    <Grid Background="White">
-        <!-- 검색창 및 결과를 Grid.Row로 배치 -->
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
-            <!-- 검색창 높이 -->
-            <RowDefinition Height="*" />
-            <!-- 결과 리스트 영역 -->
-        </Grid.RowDefinitions>
-
-        <!-- 검색창 (Row 0) -->
-        <Border Grid.Row="0"
-                Background="White"
+             Height="40" MinWidth="200">
+    <Grid>
+        <Border Background="White"
                 BorderBrush="Gray"
                 BorderThickness="1"
                 CornerRadius="5"
                 VerticalAlignment="Top"
-                HorizontalAlignment="Stretch"
-                Margin="0">
+                HorizontalAlignment="Stretch">
             <Grid>
                 <!-- 텍스트박스 -->
                 <TextBox x:Name="SearchTextBox"
@@ -47,27 +36,12 @@
                         Padding="5"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        Click="SearchButton_Click"
+                        Click="OnSearchButtonClick"
                         ToolTip="검색">
                     <Image Source="pack://application:,,,/overcloud;component/asset/search.png"
                            Width="18" Height="18"/>
                 </Button>
             </Grid>
         </Border>
-
-        <!-- 검색 결과 리스트 (Row 1) -->
-        <ListBox x:Name="SearchResultList"
-                 Grid.Row="1"
-                 Margin="0"
-                 FontSize="14">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Vertical" Margin="5">
-                        <TextBlock Text="{Binding FileName}" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding FullPath}" FontStyle="Italic" Foreground="Gray"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
     </Grid>
 </UserControl>

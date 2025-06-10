@@ -66,8 +66,9 @@ namespace overcloud.Views
             // 초기 서비스 설정
 
             // FileSearchView 생성 및 위치 지정
-            var searchView = new FileSearchView(_controller, _user_id);
-            SearchHost.Content = searchView;
+            _fileSearchView = new FileSearchView();
+            _fileSearchView.SearchSubmitted += OnSearchKeywordSubmitted;
+            SearchHost.Content = _fileSearchView;
         }
 
 
@@ -1066,6 +1067,27 @@ namespace overcloud.Views
         {
             ShowTransferWindow();
         }
+
+
+        private void OnSearchKeywordSubmitted(string keyword)
+        {
+            // 1) FindByFileName 으로 CloudFileInfo 리스트를 가져온다.
+            List<CloudFileInfo> results = _controller.FileRepository
+                .FindByFileName(keyword, _user_id);
+
+            // 2) ViewModel 로 변환: 파일 이름과 절대 경로를 담는다.
+            var viewModels = results.Select(f => new
+            {
+                FileName = f.FileName,
+                FullPath = _controller.FileRepository.GetFullPath(f.FileId)
+            }).ToList();
+
+            // 3) 우측 리스트(ListBox)에 바인딩
+            RightFileListPanel.ItemsSource = viewModels;
+            DateColumnPanel.ItemsSource = viewModels;  // 두 번째 열에도 같은 소스를 쓰되,
+                                                       // ItemTemplate 에서 FullPath 를 표시하도록 바꿀 수도 있습니다.
+        }
+
 
     }
 }
