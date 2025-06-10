@@ -130,6 +130,14 @@ namespace OverCloud.transfer_manager
             Status = "완료";
         }
 
+        public void CompleteDownload()
+        {
+            _fakeProgressTimer?.Stop();
+           
+            Progress = 100;
+            Status = "완료";
+            StartSmoothAnimation();
+        }
         /// <summary>
         /// 저장될 로컬 경로
         /// </summary>

@@ -77,10 +77,6 @@ namespace OverCloud.transfer_manager
                     item.StartFakeProgress(expectedSeconds);
                 });
 
-
-               
-
-
                 ulong fileSize = (ulong)new FileInfo(file.LocalPath).Length;
                 var bestStorage = _cloudTierManager.SelectBestStorage(fileSize / 1024, userId);
 

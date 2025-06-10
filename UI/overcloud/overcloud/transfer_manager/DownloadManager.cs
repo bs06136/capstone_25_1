@@ -79,8 +79,8 @@ namespace overcloud.transfer_manager
 
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    item.Status = "완료";
-                    item.Progress = 100;
+                    
+                    item.CompleteDownload();
                     App.TransferManager.Completed.Add(item);
                 });
             }
