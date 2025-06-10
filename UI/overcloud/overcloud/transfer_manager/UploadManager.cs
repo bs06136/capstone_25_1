@@ -68,7 +68,18 @@ namespace OverCloud.transfer_manager
         {
             try
             {
-                System.Windows.Application.Current.Dispatcher.Invoke(() => { item.Status = "업로드 중"; });
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { 
+                    item.Status = "업로드 중";
+                    // 💡 파일 크기로 예상 업로드 시간 계산 (20MB/sec 기준)
+                    ulong fileSizeBytes = (ulong)new FileInfo(file.LocalPath).Length;
+                    double fileSizeMB = fileSizeBytes / (1024.0 * 1024.0);
+                    double expectedSeconds = Math.Max(3, fileSizeMB / 20.0); // 최소 3초 보장
+                    item.StartFakeProgress(expectedSeconds);
+                });
+
+
+               
+
 
                 ulong fileSize = (ulong)new FileInfo(file.LocalPath).Length;
                 var bestStorage = _cloudTierManager.SelectBestStorage(fileSize / 1024, userId);
@@ -82,7 +93,15 @@ namespace OverCloud.transfer_manager
                     item.Status = result ? "완료" : "실패";
                     item.Progress = result ? 100 : 0;
                     if (result)
+                    {
+                        item.CompleteUpload();
                         App.TransferManager.Completed.Add(item);
+                    }
+                    else
+                    {
+                        item.Status = "실패";
+                        item.Progress = 0;
+                    }
                 });
             }
             catch (Exception ex)
