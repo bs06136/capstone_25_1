@@ -1072,21 +1072,22 @@ namespace overcloud.Views
         private void OnSearchKeywordSubmitted(string keyword)
         {
             // 1) FindByFileName 으로 CloudFileInfo 리스트를 가져온다.
-            List<CloudFileInfo> results = _controller.FileRepository
-                .FindByFileName(keyword, _user_id);
+            var results = _controller.FileRepository.FindByFileName(keyword, _user_id);
 
-            // 2) ViewModel 로 변환: 파일 이름과 절대 경로를 담는다.
-            var viewModels = results.Select(f => new
+            // 2) 기존 ToViewModel을 써서 ViewModel을 만들고, FileName에 절대경로를 덧붙인다.
+            var viewModels = results.Select(f =>
             {
-                FileName = f.FileName,
-                FullPath = _controller.FileRepository.GetFullPath(f.FileId)
+                var vm = ToViewModel(f);
+                // 기존 파일명 뒤에 “ / 절대경로”를 하드코딩
+                vm.FileName = $"{vm.FileName} / {_controller.FileRepository.GetFullPath(vm.FileId)}";
+                return vm;
             }).ToList();
 
             // 3) 우측 리스트(ListBox)에 바인딩
             RightFileListPanel.ItemsSource = viewModels;
-            DateColumnPanel.ItemsSource = viewModels;  // 두 번째 열에도 같은 소스를 쓰되,
-                                                       // ItemTemplate 에서 FullPath 를 표시하도록 바꿀 수도 있습니다.
+            DateColumnPanel.ItemsSource = viewModels;
         }
+
 
 
     }
