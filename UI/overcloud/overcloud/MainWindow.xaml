@@ -26,30 +26,30 @@
             <Rectangle Width="100" Height="1080" Fill="#F7F7F7"
                        Canvas.Left="0" Canvas.Top="0"/>
             <Image Source="pack://application:,,,/overcloud;component/asset/overcloud_logo.png"
-                   Width="96" Height="96" Canvas.Left="2" Canvas.Top="5"/>
+                   Width="103" Height="116" Canvas.Left="2" Canvas.Top="5"/>
 
             <!-- 홈 메뉴 -->
             <StackPanel Canvas.Left="38" Canvas.Top="120" MouseLeftButtonUp="HomeMenu_Click">
-                <Image Source="pack://application:,,,/overcloud;component/asset/home.png" Width="24" Height="24"/>
-                <TextBlock Text="홈" FontSize="14" HorizontalAlignment="Center"/>
+                <Image Source="pack://application:,,,/overcloud;component/asset/home.png" Width="30" Height="30"/>
+                <TextBlock Text="홈" FontSize="18" HorizontalAlignment="Center"/>
             </StackPanel>
 
             <!-- 계정 관리 메뉴 -->
-            <StackPanel Canvas.Left="20" Canvas.Top="189" MouseLeftButtonUp="AccountMenu_Click">
-                <Image Source="pack://application:,,,/overcloud;component/asset/accounts.png" Width="24" Height="24"/>
-                <TextBlock Text="계정 관리" FontSize="14" HorizontalAlignment="Center"/>
+            <StackPanel Canvas.Left="15" Canvas.Top="200" MouseLeftButtonUp="AccountMenu_Click">
+                <Image Source="pack://application:,,,/overcloud;component/asset/accounts.png" Width="30" Height="30"/>
+                <TextBlock Text="계정 관리" FontSize="18" HorizontalAlignment="Center"/>
             </StackPanel>
 
             <!-- 공유 계정 메뉴 -->
-            <StackPanel Canvas.Left="20" Canvas.Top="258" MouseLeftButtonUp="SharedAccountMenu_Click">
+            <StackPanel Canvas.Left="15" Canvas.Top="280" MouseLeftButtonUp="SharedAccountMenu_Click">
                 <Image Source="pack://application:,,,/overcloud;component/asset/co.png" Width="36" Height="36"/>
-                <TextBlock Text="공유 계정" FontSize="14" HorizontalAlignment="Center"/>
+                <TextBlock Text="공유 계정" FontSize="18" HorizontalAlignment="Center"/>
             </StackPanel>
 
             <!-- 공유 관리 메뉴 -->
-            <StackPanel Canvas.Left="20" Canvas.Top="337" MouseLeftButtonUp="SharedManageMenu_Click">
-                <Image Source="pack://application:,,,/overcloud;component/asset/co_manage.png" Width="36" Height="36"/>
-                <TextBlock Text="공유 관리" FontSize="14" HorizontalAlignment="Center"/>
+            <StackPanel Canvas.Left="15" Canvas.Top="366" MouseLeftButtonUp="SharedManageMenu_Click">
+                <Image Source="pack://application:,,,/overcloud;component/asset/co_manage.png" Width="40" Height="40"/>
+                <TextBlock Text="공유 관리" FontSize="18" HorizontalAlignment="Center"/>
             </StackPanel>
 
             <!-- 콘텐츠 영역: HomeView / AccountView를 로드하는 Frame -->
@@ -57,9 +57,9 @@
                    Canvas.Left="100" Canvas.Top="0"
                    Width="1820" Height="1080"
                    NavigationUIVisibility="Hidden"/>
-            <StackPanel Canvas.Left="20" Canvas.Top="417" MouseLeftButtonUp="IssueManageMenu_Click" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Image Source="/asset/issue.png" Width="36" Height="36"/>
-                <TextBlock Text="이슈 관리" FontSize="14" HorizontalAlignment="Center"/>
+            <StackPanel Canvas.Left="15" Canvas.Top="456" MouseLeftButtonUp="IssueManageMenu_Click" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Image Source="/asset/issue.png" Width="40" Height="40"/>
+                <TextBlock Text="이슈 관리" FontSize="18" HorizontalAlignment="Center"/>
             </StackPanel>
 
 

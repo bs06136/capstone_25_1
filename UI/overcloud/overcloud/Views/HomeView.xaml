@@ -198,9 +198,9 @@
             <!-- 파일 리스트 헤더 -->
             <Rectangle Width="1550" Height="1" Fill="lightGray" Canvas.Left="220" Canvas.Top="235"/>
             <TextBlock Text="이름" FontSize="16" FontWeight="Bold"
-                       Canvas.Left="360" Canvas.Top="250"/>
+                       Canvas.Left="317" Canvas.Top="250"/>
             <TextBlock Text="수정 날짜" FontSize="16" FontWeight="Bold"
-                       Canvas.Left="1600" Canvas.Top="250"/>
+                       Canvas.Left="1625" Canvas.Top="250"/>
             <Rectangle Width="1550" Height="1" Fill="lightGray" Canvas.Left="220" Canvas.Top="285"/>
 
             <!-- 파일 리스트 그리드 -->
@@ -218,16 +218,17 @@
                          SelectionMode="Single">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Margin="5"
+                            <Border BorderBrush="LightGray" BorderThickness="0,1,0,1" Padding="0">
+                                <StackPanel Orientation="Horizontal" Margin="5"
                                         MouseLeftButtonDown="RightFileItem_Click">
                                 <CheckBox IsChecked="{Binding IsChecked}" Click="CheckBox_Click"/>
-                                <TextBlock Text="{Binding IconText}" 
-                                   FontSize="18" 
-                                   Margin="5,0"
-                                   xml:space="preserve"
-                                   />
-                                <TextBlock Text="{Binding FileName}" FontSize="16" Margin="20,0,0,3"/>
-                            </StackPanel>
+                                    <TextBlock Text="{Binding IconText}" 
+                                        FontSize="18" 
+                                        Margin="5,0"
+                                        xml:space="preserve"/>
+                                    <TextBlock Text="{Binding FileName}" FontSize="16" Margin="20,0,0,3"/>
+                                </StackPanel>
+                            </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
