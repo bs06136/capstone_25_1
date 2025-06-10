@@ -89,7 +89,15 @@
                   HeadersVisibility="Column"
                   GridLinesVisibility="None"
                   SelectionMode="Extended" SelectionChanged="AccountsGrid_SelectionChanged">
-			<DataGrid.Columns >
+
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.CellStyle>
+
+
+            <DataGrid.Columns >
 				<DataGridCheckBoxColumn Binding="{Binding IsSelected}" Width="40"/>
 				<DataGridTextColumn Header="CLOUD" Binding="{Binding CloudName}" Width="*"/>
 				<DataGridTextColumn Header="ACTIVE" Binding="{Binding IsActive}" Width="100"/>
