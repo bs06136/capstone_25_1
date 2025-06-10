@@ -169,8 +169,8 @@
             <Grid Canvas.Left="240" Canvas.Top="318" Width="1500" Height="632">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="500"/>
                     <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <ListBox x:Name="RightFileListPanel"
@@ -250,7 +250,7 @@
                         <DataTemplate>
                             <TextBlock Text="{Binding FullPath}"
                                 FontSize="12"
-                                Foreground="#eeeeee"
+                                Foreground="Black"
                                 TextTrimming="CharacterEllipsis"/>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -266,7 +266,7 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding UploadedAt, StringFormat='yyyy-MM-dd HH:mm'}"
-                                       FontSize="14" Foreground="#eeeeee"
+                                       FontSize="14" Foreground="Black"
                                        HorizontalAlignment="Right"/>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
