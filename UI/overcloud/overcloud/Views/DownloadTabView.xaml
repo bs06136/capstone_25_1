@@ -2,15 +2,35 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
-        <ListView ItemsSource="{Binding Uploads}">
+        <ListView ItemsSource="{Binding Downloads}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="파일명" DisplayMemberBinding="{Binding FileName}" Width="300"/>
-                    <GridViewColumn Header="상태" DisplayMemberBinding="{Binding Status}" Width="100"/>
-                    <GridViewColumn Header="진행률">
+                    <GridViewColumn Header="상태" DisplayMemberBinding="{Binding Status}" Width="150"/>
+                    <GridViewColumn Header="진행률" Width="300">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <ProgressBar Value="{Binding Progress}" Maximum="100" Height="10"/>
+                                <Grid Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="300">
+                                    <ProgressBar
+                                        Value="{Binding AnimatedProgress}"
+                                        Maximum="100"
+                                        Height="28"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Center"
+                                        Foreground="SkyBlue"
+                                        Background="#f0f0f0"
+                                        BorderBrush="#ccc"
+                                        BorderThickness="1" />
+                                        
+                                    <TextBlock
+                                        Text="{Binding Progress, StringFormat={}{0}%}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontWeight="Bold"
+                                        FontSize="14"
+                                        Padding="4,2" 
+                                        Foreground="Black"/>
+                                </Grid>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

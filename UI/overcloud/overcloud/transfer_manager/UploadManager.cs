@@ -73,7 +73,7 @@ namespace OverCloud.transfer_manager
                     // 💡 파일 크기로 예상 업로드 시간 계산 (20MB/sec 기준)
                     ulong fileSizeBytes = (ulong)new FileInfo(file.LocalPath).Length;
                     double fileSizeMB = fileSizeBytes / (1024.0 * 1024.0);
-                    double expectedSeconds = Math.Max(3, fileSizeMB / 20.0); // 최소 3초 보장
+                    double expectedSeconds = Math.Max(3, fileSizeMB / 10.0); // 최소 3초 보장
                     item.StartFakeProgress(expectedSeconds);
                 });
 

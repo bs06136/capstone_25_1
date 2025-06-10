@@ -74,7 +74,7 @@ namespace overcloud
 
         private void EnqueueDownloadsFromPending()
         {
-            List<(int FileID, string FileName, string CloudFileId, int CloudStorageNum, string LocalPath, bool IsDistributed)> downloadList = new();
+            List<(int FileID, string FileName, string CloudFileId, int CloudStorageNum, string LocalPath, bool IsDistributed, ulong FileSize)> downloadList = new();
 
             foreach (var item in App.PendingDownloads)
             {
@@ -93,7 +93,8 @@ namespace overcloud
                             CloudFileId: fileInfo.CloudFileId,
                             CloudStorageNum: fileInfo.CloudStorageNum,
                             LocalPath: savePath,
-                            IsDistributed: fileInfo.IsDistributed
+                            IsDistributed: fileInfo.IsDistributed,
+                            FileSize: fileInfo.FileSize
                         ));
                     }
                 }

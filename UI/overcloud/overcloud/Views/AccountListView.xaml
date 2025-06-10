@@ -82,13 +82,23 @@
 		<!-- 3. DataGrid -->
 		<DataGrid x:Name="AccountsGrid"
                   Grid.Row="2"
+                  FontSize= "16"
+                  RowHeight="36"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   HeadersVisibility="Column"
                   GridLinesVisibility="None"
-                  SelectionMode="Extended">
-			<DataGrid.Columns>
-				<DataGridCheckBoxColumn Binding="{Binding IsSelected}" Width="30"/>
+                  SelectionMode="Extended" SelectionChanged="AccountsGrid_SelectionChanged">
+
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.CellStyle>
+
+
+            <DataGrid.Columns >
+				<DataGridCheckBoxColumn Binding="{Binding IsSelected}" Width="40"/>
 				<DataGridTextColumn Header="CLOUD" Binding="{Binding CloudName}" Width="*"/>
 				<DataGridTextColumn Header="ACTIVE" Binding="{Binding IsActive}" Width="100"/>
 				<DataGridTextColumn Header="ID" Binding="{Binding AccountId}" Width="150"/>
@@ -98,7 +108,7 @@
 							<Grid>
 								<ProgressBar Value="{Binding UsagePercent}" Maximum="100" Height="4"/>
 								<TextBlock Text="{Binding UsageDisplay}"
-                                           FontSize="12"
+                                           FontSize="16"
                                            HorizontalAlignment="Right"
                                            Margin="0,4,0,0"/>
 							</Grid>

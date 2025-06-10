@@ -138,5 +138,10 @@ namespace overcloud.Views
             }
             _view.Refresh();
         }
+
+        private void AccountsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

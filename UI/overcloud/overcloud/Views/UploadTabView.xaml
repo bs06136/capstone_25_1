@@ -14,14 +14,13 @@
                             <DataTemplate>
                                 <Grid Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="290">
                                     <ProgressBar 
-                                            
                                             Value="{Binding AnimatedProgress}"
                                             Maximum="100" 
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Stretch"
                                             Height="28"
                                             Width="Auto"
-                                            Foreground="#3b82f6"
+                                            Foreground="SkyBlue"
                                             Background="#f0f0f0"
                                             BorderBrush="#ccc"
                                             BorderThickness="1"/>
