@@ -6,7 +6,7 @@
              mc:Ignorable="d"
              Loaded="UserControl_Loaded"
              Padding="16"
-             d:DesignHeight="1080" d:DesignWidth="1820">
+             d:DesignHeight="1080" d:DesignWidth="1820"> 
 
     <Grid>
         <Grid.RowDefinitions>
