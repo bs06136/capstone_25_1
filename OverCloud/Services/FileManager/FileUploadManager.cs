@@ -144,7 +144,10 @@ namespace OverCloud.Services.FileManager
                 }
 
                 // 업로드용 임시 파일 생성
-                string tempFile = Path.GetTempFileName(); //임의 경로 지정 
+                string tempDir = Path.GetTempPath(); //임의 경로 지정 
+                string distribute_fileName = $"{fileName}.part{chunkIndex}";
+                string tempFile = Path.Combine(tempDir, distribute_fileName);
+
                 await File.WriteAllBytesAsync(tempFile, buffer); //버퍼 크기만큼(분산저장 chunk크기만큼) 잘라서 파일 쓰기.
                 string cloudFileId = await service.UploadFileAsync(cloud, tempFile, userId); // 잘린 파일 업로드
                 File.Delete(tempFile); //업로드 후 로컬에서 파일 삭제.

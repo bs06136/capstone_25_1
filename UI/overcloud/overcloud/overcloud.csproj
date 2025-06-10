@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="Google.Apis" Version="1.69.0" />
     <PackageReference Include="Google.Apis.Auth" Version="1.69.0" />
     <PackageReference Include="Google.Apis.Core" Version="1.69.0" />
@@ -67,6 +68,7 @@
 	  <None Remove="asset\pir.png" />
 	  <None Remove="asset\search.png" />
 	  <None Remove="asset\switch_left.png" />
+	  <None Remove="asset\transfer.png" />
 	  <None Remove="asset\upload.png" />
 	  <None Remove="asset\Vector.png" />
 	</ItemGroup>
@@ -138,6 +140,9 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Resource>
 	  <Resource Include="asset\switch_left.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="asset\transfer.png">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Resource>
 	  <Resource Include="asset\upload.png">

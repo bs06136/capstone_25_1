@@ -108,6 +108,25 @@ namespace overcloud.Views
             public string Icon => IsFolder ? "asset/folder.png" : "asset/file.png";
 
             public event PropertyChangedEventHandler PropertyChanged;
+
+            private string _issueStatus;
+            /// <summary>
+            /// 파일에 매핑된 이슈가 있을 경우, 콤마(,)로 구분한 상태 문자열.
+            /// 이슈가 없으면 null 또는 빈 문자열.
+            /// </summary>
+            public string IssueStatus
+            {
+                get => _issueStatus;
+                set
+                {
+                    if (_issueStatus != value)
+                    {
+                        _issueStatus = value;
+                        OnPropertyChanged(nameof(IssueStatus));
+                    }
+                }
+            }
+
             protected void OnPropertyChanged(string name)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -387,12 +406,37 @@ namespace overcloud.Views
 
         private void LoadFolderContents(int folderId, string accountId)
         {
-            var contents = _controller.FileRepository.all_file_list(folderId, accountId)
-                .Select(file => ToViewModel(file))
-                .ToList();
+            var files = _controller.FileRepository
+                          .all_file_list(folderId, accountId)
+                          .ToList();
 
-            RightFileListPanel.ItemsSource = contents;
-            DateColumnPanel.ItemsSource = contents;
+            var vms = files.Select(f =>
+            {
+                var vm = ToViewModel(f);
+
+                // 1) 이슈 조회
+                var issues = _controller.FileIssueRepository
+                               .GetIssuesByFileId(f.FileId);
+
+                if (issues != null && issues.Any())
+                {
+                    // 2) 문자열 상태를 enum으로 파싱 → 최소값 선택
+                    var lowestStatus = issues
+                        .Select(i => Enum.Parse<IssueStatusEnum>(i.Status))
+                        .Min();
+
+                    vm.IssueStatus = lowestStatus.ToString();
+                }
+                else
+                {
+                    vm.IssueStatus = string.Empty;
+                }
+
+                return vm;
+            }).ToList();
+
+            RightFileListPanel.ItemsSource = vms;
+            DateColumnPanel.ItemsSource = vms;
         }
 
 
@@ -797,6 +841,12 @@ namespace overcloud.Views
         ///폴더 추가
         private void Button_AddFolder_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(_currentAccountId))
+            {
+                System.Windows.MessageBox.Show("협업 클라우드를 먼저 선택해 주세요.", "알림", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             // 다이얼로그 띄우기
             var dlg = new AddFolderDialog();
             // this가 아니라 이 UserControl을 포함하고 있는 Window를 Owner로 지정
@@ -979,7 +1029,14 @@ namespace overcloud.Views
             string url = $"http://ec2-54-180-122-223.ap-northeast-2.compute.amazonaws.com/?link={Uri.EscapeDataString(fullLink)}";
 
             System.Windows.Clipboard.SetText(url);
-            System.Windows.MessageBox.Show("링크가 복사되었습니다:\n" + url);
+
+            var alert = new AcrylicAlertWindow($"링크가 복사되었습니다:\n{url}")
+            {
+                Owner = Window.GetWindow(this)   // 모달로 띄우려면 Owner 지정
+            };
+            alert.ShowDialog();
+
+            //System.Windows.MessageBox.Show("링크가 복사되었습니다:\n" + url);
         }
 
         private void Button_DownloadLink_Click(object sender, RoutedEventArgs e)
@@ -1070,9 +1127,18 @@ namespace overcloud.Views
         }
 
 
+        private async void Button_transfer_show(object sender, RoutedEventArgs e)
+        {
+            ShowTransferWindow();
+        }
 
-
-
+        public enum IssueStatusEnum
+        {
+            OPEN = 0,
+            IN_PROGRESS = 1,
+            RESOLVED = 2,
+            CLOSED = 3
+        }
 
     }
 

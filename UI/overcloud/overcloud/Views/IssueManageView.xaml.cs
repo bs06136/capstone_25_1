@@ -24,6 +24,10 @@ namespace overcloud.Views
             _controller = controller;
             _userId = userId;
             Loaded += IssueManageView_Loaded;
+
+            this.KeyDown += HomeView_KeyDown;
+            this.Focusable = true;
+            this.Focus();
         }
 
         private void IssueManageView_Loaded(object sender, RoutedEventArgs e)
@@ -131,6 +135,15 @@ namespace overcloud.Views
         public class CoopAccountViewModel
         {
             public string AccountId { get; set; }
+        }
+
+        private void HomeView_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.F5)
+            {
+                // 현재 폴더 내용 새로고침
+                LoadIssues();
+            }
         }
     }
 }

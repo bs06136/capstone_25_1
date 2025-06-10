@@ -22,10 +22,10 @@
             <!-- 좌측 디렉토리 영역 -->
             <Rectangle Width="200" Height="1080" Fill="#F7F7F7" Canvas.Left="0" Canvas.Top="0"/>
             <TextBlock Text="모든 폴더"
-                       Canvas.Left="38" Canvas.Top="65"
-                       FontSize="16" FontWeight="Bold" Foreground="Black"/>
+                       Canvas.Left="38" Canvas.Top="110"
+                       FontSize="18" FontWeight="Bold" Foreground="Black"/>
             <TreeView x:Name="FileExplorerTree"
-                      Canvas.Left="0" Canvas.Top="110"
+                      Canvas.Left="0" Canvas.Top="155"
                       Width="200" Height="785"
                       Background="#F7F7F7"
                       BorderThickness="0"
@@ -51,21 +51,21 @@
 
             <!-- 페이지 제목 -->
             <TextBlock x:Name="PageTitleTextBlock"
-                       Text="홈"
-                       FontSize="20" FontWeight="Bold"
-                       Canvas.Left="252" Canvas.Top="187" Foreground="Black"/>
+                       Text="공유 폴더"
+                       FontSize="22" FontWeight="Bold"
+                       Canvas.Left="252" Canvas.Top="180" Foreground="Black"/>
 
             <!-- 상단 검색창 -->
-            <Rectangle Width="1300" Height="74" RadiusX="10" RadiusY="10" Fill="White"
+            <Rectangle Width="1300" Height="60" RadiusX="10" RadiusY="10" Fill="White" Stroke="LightGray"
                        Canvas.Left="240" Canvas.Top="32"/>
-            <Image Source="pack://application:,,,/overcloud;component/asset/search.png"
-                   Width="24" Height="24" Canvas.Left="260" Canvas.Top="55"/>
-            <TextBlock Text="검색" FontSize="16"
-                       Canvas.Left="300" Canvas.Top="55" Foreground="Gray"/>
+            <Image Source="pack://application:,,,/overcloud;component/asset/search.png" 
+                   Width="24" Height="24" Canvas.Left="260" Canvas.Top="50"/>
+            <TextBlock Text="검색" FontSize="18"
+                       Canvas.Left="300" Canvas.Top="50" Foreground="Gray"/>
 
             <!-- 상단 버튼들 -->
-            <Button x:Name="UploadButton" Width="90" Height="31"
-                    Canvas.Left="1176" Canvas.Top="178"
+            <Button x:Name="UploadButton" Width="90" Height="40"
+                    Canvas.Left="1154" Canvas.Top="170"
                     Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
                     Click="Button_Save_Click">
                 <Button.Resources>
@@ -75,12 +75,13 @@
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Source="pack://application:,,,/overcloud;component/asset/upload.png"
-                           Width="16" Height="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="업로드" FontSize="12"/>
+                           Width="18" Height="18" Margin="0,0,5,0"/>
+                    <TextBlock Text="업로드" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
-            <Button x:Name="DownloadButton" Width="90" Height="31"
-                    Canvas.Left="1283" Canvas.Top="178"
+            
+            <Button x:Name="DownloadButton" Width="100" Height="40"
+                    Canvas.Left="1258" Canvas.Top="170"
                     Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
                     Click="Button_Down_Click">
                 <Button.Resources>
@@ -90,12 +91,13 @@
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Source="pack://application:,,,/overcloud;component/asset/download.png"
-                           Width="16" Height="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="다운로드" FontSize="12"/>
+                           Width="18" Height="18" Margin="0,0,5,0"/>
+                    <TextBlock Text="다운로드" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
-            <Button x:Name="DeleteButton" Width="72" Height="31"
-                    Canvas.Left="1387" Canvas.Top="178"
+            
+            <Button x:Name="DeleteButton" Width="80" Height="40"
+                    Canvas.Left="1372" Canvas.Top="170"
                     Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
                     Click="Button_DeleteSelected_Click">
                 <Button.Resources>
@@ -105,12 +107,13 @@
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Source="pack://application:,,,/overcloud;component/asset/delete.png"
-                           Width="16" Height="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="삭제" FontSize="12"/>
+                           Width="18" Height="18" Margin="0,0,5,0"/>
+                    <TextBlock Text="삭제" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
-            <Button x:Name="MoveButton" Width="72" Height="31"
-                    Canvas.Left="1476" Canvas.Top="178"
+            
+            <Button x:Name="MoveButton" Width="80" Height="40"
+                    Canvas.Left="1466" Canvas.Top="170"
                     Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
                     Click="Button_DeleteSelected_Click">
                 <Button.Resources>
@@ -120,13 +123,14 @@
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Source="pack://application:,,,/overcloud;component/asset/arrow_back.png"
-                           Width="16" Height="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="이동" FontSize="12"/>
+                           Width="18" Height="18" Margin="0,0,5,0"/>
+                    <TextBlock Text="이동" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
-            <Button x:Name="CopyButton" Width="77" Height="31"
+            
+            <Button x:Name="CopyButton" Width="80" Height="40"
                     Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
-                    Canvas.Left="1563" Canvas.Top="178">
+                    Canvas.Left="1560" Canvas.Top="170">
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="5"/>
@@ -134,13 +138,14 @@
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Source="pack://application:,,,/overcloud;component/asset/Icon.png"
-                           Width="16" Height="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="복사" FontSize="12"/>
+                           Width="18" Height="18" Margin="0,0,5,0"/>
+                    <TextBlock Text="복사" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
-            <Button x:Name="AddFolderButton" Width="90" Height="31"
+            
+            <Button x:Name="AddFolderButton" Width="100" Height="40"
                     Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
-                    Canvas.Left="1654" Canvas.Top="178"
+                    Canvas.Left="1654" Canvas.Top="170"
                     Click="Button_AddFolder_Click">
                 <Button.Resources>
                     <Style TargetType="Border">
@@ -149,17 +154,19 @@
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Source="pack://application:,,,/overcloud;component/asset/folder.png"
-                           Width="16" Height="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="폴더 추가" FontSize="12"/>
+                           Width="18" Height="18" Margin="0,0,5,0"/>
+                    <TextBlock Text="폴더 추가" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
 
 
             <!-- 파일 리스트 헤더 -->
-            <TextBlock Text="이름" FontSize="14" FontWeight="Bold"
-                       Canvas.Left="360" Canvas.Top="250"/>
-            <TextBlock Text="수정 날짜" FontSize="14" FontWeight="Bold"
-                       Canvas.Left="1600" Canvas.Top="250"/>
+            <Rectangle Width="1550" Height="1" Fill="lightGray" Canvas.Left="220" Canvas.Top="235"/>
+            <TextBlock Text="이름" FontSize="16" FontWeight="Bold"
+                Canvas.Left="317" Canvas.Top="250"/>
+            <TextBlock Text="수정 날짜" FontSize="16" FontWeight="Bold"
+                Canvas.Left="1625" Canvas.Top="250"/>
+            <Rectangle Width="1550" Height="1" Fill="lightGray" Canvas.Left="220" Canvas.Top="285"/>
 
             <!-- 파일 리스트 그리드 -->
             <Grid Canvas.Left="240" Canvas.Top="318" Width="1500" Height="632">
@@ -171,7 +178,7 @@
                 <ListBox x:Name="RightFileListPanel"
                          ItemContainerStyle="{StaticResource UnifiedListItemStyle}"
                          Grid.Column="0"
-                         Background="Transparent"
+                         Background="#eeeeee"
                          BorderThickness="0"
                          SelectionMode="Single">
                     <ListBox.ItemTemplate>
@@ -185,6 +192,49 @@
                                    xml:space="preserve"
                                    />
                                 <TextBlock Text="{Binding FileName}" FontSize="16" Margin="20,0,0,0"/>
+                                <!-- 여기부터 추가 -->
+                                <Border CornerRadius="10"
+        Padding="6,2"
+        Margin="10,0,0,0"
+        VerticalAlignment="Center">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <!-- 기본값: 보이도록, 투명 배경 -->
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <!-- 1) IssueStatus가 null이면 숨김 -->
+                                                <DataTrigger Binding="{Binding IssueStatus}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+
+                                                <!-- 2) IssueStatus가 빈 문자열이면 숨김 -->
+                                                <DataTrigger Binding="{Binding IssueStatus}" Value="">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+
+                                                <!-- 3) 상태별 배경색 지정 -->
+                                                <DataTrigger Binding="{Binding IssueStatus}" Value="OPEN">
+                                                    <Setter Property="Background" Value="Red"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IssueStatus}" Value="IN_PROGRESS">
+                                                    <Setter Property="Background" Value="Orange"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IssueStatus}" Value="RESOLVED">
+                                                    <Setter Property="Background" Value="Green"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IssueStatus}" Value="CLOSED">
+                                                    <Setter Property="Background" Value="Black"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+
+                                    <!-- 흰 글씨 상태 텍스트 -->
+                                    <TextBlock Text="{Binding IssueStatus}"
+             Foreground="White"
+             FontSize="14"/>
+                                </Border>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -206,10 +256,11 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </Grid>
-            <Button x:Name="UploadButton복사__C_" Width="90" Height="31"
-       Canvas.Left="1654" Canvas.Top="130" 
-       Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
-       Click="CreateCooperationAccount_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
+            
+            <Button x:Name="UploadButton복사__C_" Width="100" Height="40"
+                Canvas.Left="1654" Canvas.Top="120" 
+                Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
+                Click="CreateCooperationAccount_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Resources>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="CornerRadius" Value="5"/>
@@ -217,12 +268,13 @@
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Source="/asset/create_co.png"
-                        Width="16" Height="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="협업 생성" FontSize="12"/>
+                        Width="18" Height="18" Margin="0,0,5,0"/>
+                    <TextBlock Text="협업 생성" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
-            <Button x:Name="UploadButton복사__C_1" Width="90" Height="31"
-                Canvas.Left="1550" Canvas.Top="130"
+            
+            <Button x:Name="UploadButton복사__C_1" Width="100" Height="40"
+                Canvas.Left="1540" Canvas.Top="120"
                 Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
                 Click="DisJoinCooperationAccount_Click" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Button.Resources>
@@ -232,12 +284,14 @@
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Source="/asset/disconnect.png"
-                        Width="16" Height="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="협업 탈퇴" FontSize="12"/>
+                        Width="18" Height="18" Margin="0,0,5,0"/>
+                    <TextBlock Text="협업 탈퇴" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
-            <Button x:Name="UploadButton복사__C_2" Width="90" Height="31"
-                Canvas.Left="1446" Canvas.Top="130"
+            
+            
+            <Button x:Name="UploadButton복사__C_2" Width="100" Height="40"
+                Canvas.Left="1426" Canvas.Top="120"
                 Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
                 Click="JoinCooperationAccount_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Resources>
@@ -247,15 +301,15 @@
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Source="/asset/invite.png"
-                        Width="16" Height="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="협업 참가" FontSize="12"/>
+                        Width="18" Height="18" Margin="0,0,5,0"/>
+                    <TextBlock Text="협업 참가" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
 
 
             <!-- 💡 여기 바로 아래 추가 -->
-            <Button x:Name="CurrentCooperationAccountsButton" Width="146" Height="31"
-                Canvas.Left="1257" Canvas.Top="130"
+            <Button x:Name="CurrentCooperationAccountsButton" Width="180" Height="40"
+                Canvas.Left="1232" Canvas.Top="120"
                 Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
                 Click="CurrentCooperationAccountsButton_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Resources>
@@ -264,8 +318,8 @@
                     </Style>
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Image Source="/asset/invite.png" Width="16" Height="16" Margin="0,0,5,0"/>
-                    <TextBlock FontSize="12"><Run Text="협업"/><Run Text="별 참가자 리스"/><Run Language="ko-kr" Text="트"/></TextBlock>
+                    <Image Source="/asset/invite.png" Width="18" Height="18" Margin="0,0,5,0"/>
+                    <TextBlock FontSize="15" FontWeight="Bold"><Run Text="협업"/><Run Text="별 참가자 리스"/><Run Language="ko-kr" Text="트"/></TextBlock>
                 </StackPanel>
             </Button>
 
@@ -273,10 +327,10 @@
 
 
 
-            <Button x:Name="GenerateLinkButton" Width="93" Height="31"
-        Canvas.Left="1069" Canvas.Top="178"
-        Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
-        Click="Button_GenerateLink_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <Button x:Name="GenerateLinkButton" Width="100" Height="40"
+                Canvas.Left="1040" Canvas.Top="170"
+                Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
+                Click="Button_GenerateLink_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Resources>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="CornerRadius" Value="5"/>
@@ -284,15 +338,15 @@
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Source="pack://application:,,,/overcloud;component/asset/upload.png"
-               Width="16" Height="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="링크 생성" FontSize="12"/>
+                        Width="18" Height="18" Margin="0,0,5,0"/>
+                    <TextBlock Text="링크 생성" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
 
-            <Button x:Name="DownloadLinkButton" Width="106" Height="31"
-        Canvas.Left="949" Canvas.Top="178"
-        Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
-        Click="Button_DownloadLink_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <Button x:Name="DownloadLinkButton" Width="120" Height="40"
+                Canvas.Left="906" Canvas.Top="170"
+                Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
+                Click="Button_DownloadLink_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Resources>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="CornerRadius" Value="5"/>
@@ -300,12 +354,13 @@
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Source="pack://application:,,,/overcloud;component/asset/download.png"
-               Width="16" Height="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="링크 다운로드" FontSize="12"/>
+                        Width="18" Height="18" Margin="0,0,5,0"/>
+                    <TextBlock Text="링크 다운로드" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
-            <Button x:Name="UploadButton복사__C_3" Width="90" Height="31"
-                Canvas.Left="1151" Canvas.Top="130"
+            
+            <Button x:Name="UploadButton복사__C_3" Width="100" Height="40"
+                Canvas.Left="1118" Canvas.Top="120"
                 Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
                 Click="Button_CreateIssue_Click" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Button.Resources>
@@ -315,8 +370,24 @@
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Source="/asset/issue.png"
-                        Width="16" Height="16" Margin="0,0,5,0"/>
-                    <TextBlock FontSize="12"><Run Text="이슈 생"/><Run Language="ko-kr" Text="성"/></TextBlock>
+                        Width="18" Height="18" Margin="0,0,5,0"/>
+                    <TextBlock FontSize="15" FontWeight="Bold"><Run Text="이슈 생"/><Run Language="ko-kr" Text="성"/></TextBlock>
+                </StackPanel>
+            </Button>
+            
+            <Button x:Name="DownloadLinkButton복사__C_" Width="110" Height="40"
+                Canvas.Left="782" Canvas.Top="170"
+                Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
+                Click="Button_transfer_show" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image Source="/asset/transfer.png"
+                        Width="18" Height="18" Margin="0,0,5,0"/>
+                    <TextBlock FontSize="15" FontWeight="Bold"><Run Language="ko-kr" Text="전송 관리자"/></TextBlock>
                 </StackPanel>
             </Button>
 
