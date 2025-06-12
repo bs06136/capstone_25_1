@@ -230,7 +230,7 @@
 
                                     <!-- 흰 글씨 상태 텍스트 -->
                                     <TextBlock Text="{Binding IssueStatus}"
-                                         Foreground="Gray"
+                                         Foreground="White"
                                          FontSize="14"/>
                                 </Border>
                             </StackPanel>
