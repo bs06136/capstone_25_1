@@ -57,8 +57,8 @@
 
             <!-- 상단 검색창 -->
             <ContentControl x:Name="SearchHost"
-    Width="1300" Height="100"
-    Canvas.Left="240" Canvas.Top="32"/>
+                Width="1500" Height="100"
+                Canvas.Left="240" Canvas.Top="32"/>
 
             <!-- 상단 버튼들 -->
             <Button x:Name="UploadButton" Width="90" Height="40"
