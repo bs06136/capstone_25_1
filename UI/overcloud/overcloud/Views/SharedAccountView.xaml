@@ -408,6 +408,39 @@
             </Button>
 
 
+            <!-- 4. 차트 + 우측 사용량 요약 영역 -->
+            <Grid Grid.Row="4" HorizontalAlignment="Center" Canvas.Top="978" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+
+
+                <!-- 우측: 총합만 보여주기 -->
+                <Border
+Background="Transparent"
+CornerRadius="8"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+Padding="0">
+                    <StackPanel Margin="0">
+                        <TextBlock Text="전체 용량 사용 현황"
+           FontSize="16"
+           FontWeight="Bold"
+           Margin="0,0,0,12"/>
+
+                        <!-- 합산된 프로그래스바 -->
+                        <ProgressBar x:Name="TotalUsageBar"
+             Height="6"
+             Maximum="100"
+             Margin="0,0,0,8"/>
+
+                        <!-- 텍스트로 총합 표시 -->
+                        <TextBlock x:Name="TotalUsageText"
+           FontSize="14"
+           HorizontalAlignment="Right"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
 
 
         </Canvas>

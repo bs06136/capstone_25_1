@@ -69,6 +69,8 @@ namespace overcloud.Views
             _fileSearchView = new FileSearchView();
             _fileSearchView.SearchSubmitted += OnSearchKeywordSubmitted;
             SearchHost.Content = _fileSearchView;
+
+            LoadUsageDetails(_user_id);
         }
 
 
@@ -1109,7 +1111,19 @@ namespace overcloud.Views
         }
 
 
+        private void LoadUsageDetails(string coopId)
+        {
+            // 기존 그룹화 로직에서 총합 계산
+            var clouds = _controller.AccountService.Get_Clouds_For_User(coopId);
 
+            double totalGB = clouds.Sum(c => (double)c.TotalCapacity) / 1024 / 1024;
+            double usedGB = clouds.Sum(c => (double)c.UsedCapacity) / 1024 / 1024;
+            int percent = totalGB > 0 ? (int)(usedGB * 100.0 / totalGB) : 0;
+
+            // ProgressBar & 텍스트 설정
+            TotalUsageBar.Value = percent;
+            TotalUsageText.Text = $"{usedGB:F2}GB / {totalGB:F2}GB ({percent}%)";
+        }
 
     }
 }

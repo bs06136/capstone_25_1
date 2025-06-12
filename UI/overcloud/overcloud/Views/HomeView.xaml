@@ -76,7 +76,7 @@
                     <TextBlock Text="업로드" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
-            
+
             <Button x:Name="DownloadButton" Width="100" Height="40"
                     Canvas.Left="1258" Canvas.Top="170"
                     Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
@@ -92,7 +92,7 @@
                     <TextBlock Text="다운로드" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
-            
+
             <Button x:Name="DeleteButton" Width="80" Height="40"
                     Canvas.Left="1372" Canvas.Top="170"
                     Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
@@ -108,7 +108,7 @@
                     <TextBlock Text="삭제" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
-            
+
             <Button x:Name="MoveButton" Width="80" Height="40"
                     Canvas.Left="1466" Canvas.Top="170"
                     Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
@@ -124,7 +124,7 @@
                     <TextBlock Text="이동" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
-            
+
             <Button x:Name="CopyButton" Width="80" Height="40"
                     Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
                     Canvas.Left="1560" Canvas.Top="170"
@@ -140,7 +140,7 @@
                     <TextBlock Text="복사" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
-            
+
             <Button x:Name="AddFolderButton" Width="100" Height="40"
                     Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
                     Canvas.Left="1654" Canvas.Top="170"
@@ -156,7 +156,7 @@
                     <TextBlock Text="폴더 추가" FontSize="15" FontWeight="Bold"/>
                 </StackPanel>
             </Button>
-            
+
             <!-- 링크 생성 버튼 -->
             <Button x:Name="GenerateLinkButton" Width="100" Height="40"
                     Canvas.Left="1040" Canvas.Top="170"
@@ -219,7 +219,7 @@
                             <Border BorderBrush="LightGray" BorderThickness="0,1,0,1" Padding="0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                                 <StackPanel Orientation="Horizontal" Margin="5"
                                         MouseLeftButtonDown="RightFileItem_Click">
-                                <CheckBox IsChecked="{Binding IsChecked}" Click="CheckBox_Click"/>
+                                    <CheckBox IsChecked="{Binding IsChecked}" Click="CheckBox_Click"/>
                                     <TextBlock Text="{Binding IconText}" 
                                         FontSize="18" 
                                         Margin="5,0"
@@ -269,14 +269,14 @@
                                     <TextBlock Text="{Binding UploadedAt, StringFormat='yyyy-MM-dd HH:mm'}"
                                        FontSize="18" Foreground="Black"
                                        HorizontalAlignment="Right"
-                                               />                
+                                               />
                                 </StackPanel>
                             </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
             </Grid>
-            
+
             <Button x:Name="DownloadLinkButton복사__C_" Width="110" Height="40"
                 Canvas.Left="782" Canvas.Top="170"
                 Background="White" BorderBrush="#DDE2E4" BorderThickness="1"
@@ -292,6 +292,41 @@
                     <TextBlock FontSize="15" FontWeight="Bold"><Run Language="ko-kr" Text="전송 관리자"/></TextBlock>
                 </StackPanel>
             </Button>
+
+
+            <!-- 4. 차트 + 우측 사용량 요약 영역 -->
+            <Grid Grid.Row="4" HorizontalAlignment="Center" Canvas.Top="978" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+
+
+                <!-- 우측: 총합만 보여주기 -->
+                <Border
+            Background="Transparent"
+            CornerRadius="8"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+            Padding="0">
+                    <StackPanel Margin="0">
+                        <TextBlock Text="전체 용량 사용 현황"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       Margin="0,0,0,12"/>
+
+                        <!-- 합산된 프로그래스바 -->
+                        <ProgressBar x:Name="TotalUsageBar"
+                         Height="6"
+                         Maximum="100"
+                         Margin="0,0,0,8"/>
+
+                        <!-- 텍스트로 총합 표시 -->
+                        <TextBlock x:Name="TotalUsageText"
+                       FontSize="14"
+                       HorizontalAlignment="Right"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
 
         </Canvas>
     </Viewbox>
