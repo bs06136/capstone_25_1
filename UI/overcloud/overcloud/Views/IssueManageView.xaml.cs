@@ -39,7 +39,11 @@ namespace overcloud.Views
         {
             var coopList = _controller.CoopUserRepository
                             .connected_cooperation_account_nums(_userId)
-                            .Select(id => new CoopAccountViewModel { AccountId = id })
+                            .Select(id => new CoopAccountViewModel { 
+                                AccountId = id,
+                                ImagePath = "pack://application:,,,/overcloud;component/asset/box.png"
+                            })
+                                
                             .ToList();
 
             CoopListBox.ItemsSource = coopList;
@@ -135,6 +139,7 @@ namespace overcloud.Views
         public class CoopAccountViewModel
         {
             public string AccountId { get; set; }
+            public string ImagePath { get; set; }
         }
 
         private void HomeView_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)

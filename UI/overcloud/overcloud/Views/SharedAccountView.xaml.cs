@@ -41,7 +41,6 @@ namespace overcloud.Views
 
         private bool _isFolderChanging = false;
 
-        private FileSearchView _fileSearchView; // 파일 검색 뷰
 
         public SharedAccountView(LoginController controller,
             string user_id)

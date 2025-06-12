@@ -201,7 +201,7 @@
             <Rectangle Width="1550" Height="1" Fill="lightGray" Canvas.Left="220" Canvas.Top="285"/>
 
             <!-- 파일 리스트 그리드 -->
-            <Grid Canvas.Left="240" Canvas.Top="318" Width="1500" Height="632">
+            <Grid Canvas.Left="240" Canvas.Top="318" Width="1500" Height="732">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="770"/>
                     <ColumnDefinition Width="500"/>
