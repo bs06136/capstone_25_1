@@ -40,10 +40,10 @@
                 <TextBlock Text="계정 관리" FontSize="18" HorizontalAlignment="Center"/>
             </StackPanel>
 
-            <!-- 공유 계정 메뉴 -->
+            <!-- 협업 공간 메뉴 -->
             <StackPanel Canvas.Left="15" Canvas.Top="280" MouseLeftButtonUp="SharedAccountMenu_Click">
                 <Image Source="pack://application:,,,/overcloud;component/asset/co.png" Width="36" Height="36"/>
-                <TextBlock Text="공유 계정" FontSize="18" HorizontalAlignment="Center"/>
+                <TextBlock Text="협업 공간" FontSize="18" HorizontalAlignment="Center"/>
             </StackPanel>
 
             <!-- 공유 관리 메뉴 -->
