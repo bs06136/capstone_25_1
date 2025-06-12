@@ -160,17 +160,18 @@ namespace overcloud.Views
 
         private void ToggleChart_Click(object sender, RoutedEventArgs e)
         {
-            // 모드 토글
             _isBarMode = !_isBarMode;
-
-            // 버튼 텍스트 변경
             ToggleChartButton.Content = _isBarMode
                 ? "파이 차트"
                 : "막대 차트";
 
-            // 현재 필터 기준으로 차트만 다시 렌더
-            LoadChart(_currentFilter);
+            // 토글 시에도 실제 선택된 계정 ID를 넘깁니다.
+            if (!string.IsNullOrEmpty(_selectedCoopId))
+            {
+                LoadChart(_selectedCoopId);
+            }
         }
+
 
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {

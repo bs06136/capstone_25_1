@@ -463,6 +463,7 @@ namespace overcloud.Views
                 .ToList();
 
             RightFileListPanel.ItemsSource = vms;
+            IssueColumnPanel.ItemsSource = vms;
             DateColumnPanel.ItemsSource = vms;
             PathColumnPanel.ItemsSource = vms;    // PathColumnPanel 이 있다면 빈 문자열만 바인딩
         }
@@ -1055,7 +1056,7 @@ namespace overcloud.Views
             }
 
             string fullLink = string.Join("|", linkParts);
-            string url = $"http://http://capstonedesign.duckdns.org/download/?link={Uri.EscapeDataString(fullLink)}";
+            string url = $"http://capstonedesign.duckdns.org/download/?link={Uri.EscapeDataString(fullLink)}";
 
             System.Windows.Clipboard.SetText(url);
 
@@ -1070,7 +1071,7 @@ namespace overcloud.Views
 
         private void Button_DownloadLink_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new DownloadFromLinkWindow(_user_id, _controller)
+            var dialog = new DownloadFromLinkWindow(_currentAccountId, _controller)
             {
                 Owner = Window.GetWindow(this)
             };
@@ -1181,6 +1182,7 @@ namespace overcloud.Views
             }).ToList();
 
             RightFileListPanel.ItemsSource = viewModels;
+            IssueColumnPanel.ItemsSource = viewModels;
             DateColumnPanel.ItemsSource = viewModels;
             PathColumnPanel.ItemsSource = viewModels;
         }

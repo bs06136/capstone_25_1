@@ -166,9 +166,10 @@
             <Rectangle Width="1550" Height="1" Fill="lightGray" Canvas.Left="220" Canvas.Top="285"/>
 
             <!-- 파일 리스트 그리드 -->
-            <Grid Canvas.Left="240" Canvas.Top="318" Width="1500" Height="732">
+            <Grid Canvas.Left="240" Canvas.Top="318" Width="1550" Height="732">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="770"/>
+                    <ColumnDefinition Width="700"/>
+                    <ColumnDefinition Width="150"/>
                     <ColumnDefinition Width="500"/>
                     <ColumnDefinition Width="200"/>
                 </Grid.ColumnDefinitions>
@@ -181,93 +182,126 @@
                          SelectionMode="Single">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Margin="5"
-                                        MouseLeftButtonDown="RightFileItem_Click">
-                                <CheckBox IsChecked="{Binding IsChecked}" Click="CheckBox_Click"/>
-                                <TextBlock Text="{Binding IconText}" 
-                                   FontSize="18" 
-                                   Margin="5,0"
-                                   xml:space="preserve"
-                                   />
-                                <TextBlock Text="{Binding FileName}" FontSize="16" Margin="20,0,0,0"/>
-                                <!-- 여기부터 추가 -->
-                                <Border CornerRadius="10"
-                                    Padding="6,2"
-                                    Margin="10,0,0,0"
-                                    VerticalAlignment="Center">
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <!-- 기본값: 보이도록, 투명 배경 -->
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                            <Setter Property="Background" Value="Gray"/>
-                                            <Style.Triggers>
-                                                <!-- 1) IssueStatus가 null이면 숨김 -->
-                                                <DataTrigger Binding="{Binding IssueStatus}" Value="{x:Null}">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                </DataTrigger>
+                            <Border BorderBrush="LightGray" BorderThickness="0,1,0,1" Padding="0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal" Margin="5"
+                                            MouseLeftButtonDown="RightFileItem_Click">
+                                    <CheckBox IsChecked="{Binding IsChecked}" Click="CheckBox_Click"/>
+                                    <TextBlock Text="{Binding IconText}" 
+                                       FontSize="18" 
+                                       Margin="5,0"
+                                       xml:space="preserve"
+                                       />
+                                    <TextBlock Text="{Binding FileName}" FontSize="18" Margin="20,0,0,0"/>
+                                    <!-- 여기부터 추가 -->
+                                    
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
 
-                                                <!-- 2) IssueStatus가 빈 문자열이면 숨김 -->
-                                                <DataTrigger Binding="{Binding IssueStatus}" Value="">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                </DataTrigger>
+                <ListBox x:Name="IssueColumnPanel"
+Grid.Column="1"
+ItemContainerStyle="{StaticResource UnifiedListItemStyle}"
+Background="#eeeeee"
+BorderThickness="0"
+SelectionMode="Single"
+>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="LightGray" BorderThickness="0,1,0,1" Padding="0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal" Margin="5"
+                                     MouseLeftButtonDown="RightFileItem_Click">
+                                    <TextBlock Text=" " FontSize="18" Margin="2,0,0,0"/>
+                                    <Border CornerRadius="10"
+                                        Padding="6,2"
+                                        Margin="10,0,0,0"
+                                        VerticalAlignment="Center">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <!-- 기본값: 보이도록, 투명 배경 -->
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Setter Property="Background" Value="Gray"/>
+                                                <Style.Triggers>
+                                                    <!-- 1) IssueStatus가 null이면 숨김 -->
+                                                    <DataTrigger Binding="{Binding IssueStatus}" Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
 
-                                                <!-- 3) 상태별 배경색 지정 -->
-                                                <DataTrigger Binding="{Binding IssueStatus}" Value="OPEN">
-                                                    <Setter Property="Background" Value="Red"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IssueStatus}" Value="IN_PROGRESS">
-                                                    <Setter Property="Background" Value="Orange"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IssueStatus}" Value="RESOLVED">
-                                                    <Setter Property="Background" Value="Green"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IssueStatus}" Value="CLOSED">
-                                                    <Setter Property="Background" Value="Black"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
+                                                    <!-- 2) IssueStatus가 빈 문자열이면 숨김 -->
+                                                    <DataTrigger Binding="{Binding IssueStatus}" Value="">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
 
-                                    <!-- 흰 글씨 상태 텍스트 -->
-                                    <TextBlock Text="{Binding IssueStatus}"
-                                         Foreground="Gray"
+                                                    <!-- 3) 상태별 배경색 지정 -->
+                                                    <DataTrigger Binding="{Binding IssueStatus}" Value="OPEN">
+                                                        <Setter Property="Background" Value="Red"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IssueStatus}" Value="IN_PROGRESS">
+                                                        <Setter Property="Background" Value="Orange"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IssueStatus}" Value="RESOLVED">
+                                                        <Setter Property="Background" Value="Green"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IssueStatus}" Value="CLOSED">
+                                                        <Setter Property="Background" Value="Black"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+
+                                        <!-- 흰 글씨 상태 텍스트 -->
+                                        <TextBlock Text="{Binding IssueStatus}"
+                                         Foreground="White"
                                          FontSize="14"/>
-                                </Border>
-                            </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
 
                 <ListBox x:Name="PathColumnPanel"
-                    Grid.Column="1"
-                    ItemContainerStyle="{StaticResource UnifiedListItemStyle}"
-                    Background="#eeeeee"
-                    BorderThickness="0"
-                    SelectionMode="Single"
+Grid.Column="2"
+ItemContainerStyle="{StaticResource UnifiedListItemStyle}"
+Background="#eeeeee"
+BorderThickness="0"
+SelectionMode="Single"
 >
-                    <!-- 초기에는 숨김 -->
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding FullPath}"
-                                FontSize="12"
-                                Foreground="Black"
-                                TextTrimming="CharacterEllipsis"/>
+                            <Border BorderBrush="LightGray" BorderThickness="0,1,0,1" Padding="0"  VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal" Margin="5"
+                             MouseLeftButtonDown="RightFileItem_Click">
+                                    <TextBlock Text="{Binding FullPath}"
+                             FontSize="18"
+                             Foreground="Black"
+                             TextTrimming="CharacterEllipsis"
+                                    />
+                                </StackPanel>
+                            </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
 
                 <ListBox x:Name="DateColumnPanel"
-                         ItemContainerStyle="{StaticResource UnifiedListItemStyle}"
-                         Grid.Column="2"
-                         Background="#eeeeee"
-                         BorderThickness="0"
-                         SelectionMode="Single"
-                         IsHitTestVisible="False">
+              ItemContainerStyle="{StaticResource UnifiedListItemStyle}"
+              Grid.Column="3"
+              Background="#eeeeee"
+              BorderThickness="0"
+              SelectionMode="Single"
+              IsHitTestVisible="False">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding UploadedAt, StringFormat='yyyy-MM-dd HH:mm'}"
-                                       FontSize="14" Foreground="Black"
-                                       HorizontalAlignment="Right"/>
+                            <Border BorderBrush="LightGray" BorderThickness="0,1,0,1" Padding="0"  VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal" Margin="5"
+ MouseLeftButtonDown="RightFileItem_Click">
+                                    <TextBlock Text="{Binding UploadedAt, StringFormat='yyyy-MM-dd HH:mm'}"
+                            FontSize="18" Foreground="Black"
+                            HorizontalAlignment="Right"
+                                    />
+                                </StackPanel>
+                            </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
