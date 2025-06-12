@@ -1070,7 +1070,7 @@ namespace overcloud.Views
 
         private void Button_DownloadLink_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new DownloadFromLinkWindow(_user_id, _controller)
+            var dialog = new DownloadFromLinkWindow(_currentAccountId, _controller)
             {
                 Owner = Window.GetWindow(this)
             };
