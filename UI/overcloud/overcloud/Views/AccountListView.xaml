@@ -100,6 +100,7 @@
                 </DataGridTextColumn>
 
                 <DataGridTextColumn Header="ACTIVE" Binding="{Binding IsActive}" Width="100"/>
+                
 				<DataGridTextColumn Header="ID" Binding="{Binding AccountId}" Width="150"/>
 				<DataGridTemplateColumn Header="USAGE" Width="200">
 					<DataGridTemplateColumn.CellTemplate>

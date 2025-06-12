@@ -191,6 +191,8 @@ namespace OverCloud.Services.StorageManager
             {
                 try
                 {
+                    //db에서 다른건 똑같이하고 fileId랑 cloudstroagenum,cloudfile_id만 바꾸고 ,
+
                     if (file.IsDistributed)
                     {
                         bool success = await RedistributeDistributedFile(file.FileId, file.ParentFolderId, file.ID);
@@ -247,6 +249,7 @@ namespace OverCloud.Services.StorageManager
                             UpdateQuotaAfterUploadOrDelete(bestStorage.CloudStorageNum, file.FileSize / 1024, true, userId);
                             uploadSuccess = true;
                             Console.WriteLine($"✅ 파일 재분배 성공: {file.FileName} -> {bestStorage.CloudType}");
+                            await SaveDriveQuotaToDB(userId, file.CloudStorageNum);
                             break; // 반복문 종료 (업로드 성공)
                         }
 
@@ -389,6 +392,7 @@ namespace OverCloud.Services.StorageManager
                         ChunkSize = (ulong)read,
                         ID = userId
                     };
+
                     fileRepository.addfile(chunk);
                     UpdateQuotaAfterUploadOrDelete(cloud.CloudStorageNum, chunk.FileSize, true,userId);
                     uploadedChunks.Add(chunk);
