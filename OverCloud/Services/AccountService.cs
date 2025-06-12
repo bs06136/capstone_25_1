@@ -114,11 +114,16 @@ namespace OverCloud.Services
                     return false;
                 }
             }
+            else
+            {
+                System.Windows.MessageBox.Show("파일을 재분배할 수 없습니다");
+                return false;
+            }
 
-            //var deleteCloud = storageRepository.GetCloud(cloudStorageNum,userId);
+                //var deleteCloud = storageRepository.GetCloud(cloudStorageNum,userId);
 
-            //Thread.Sleep(1);
-            bool result = storageRepository.DeleteCloudStorage(cloudStorageNum, userId);
+                //Thread.Sleep(1);
+                bool result = storageRepository.DeleteCloudStorage(cloudStorageNum, userId);
             if (result)
             {
                 StorageSessionManager.RemoveQuota(target.AccountId, target.CloudType);
