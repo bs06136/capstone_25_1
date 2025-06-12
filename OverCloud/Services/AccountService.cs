@@ -109,6 +109,7 @@ namespace OverCloud.Services
                 bool redistributionResult = await quotaManager.AccountFile_Redistribution(target.CloudStorageNum, userId);
                 if (!redistributionResult)
                 {
+                    System.Windows.MessageBox.Show("계정에 존재하는 파일 재분배 실패");
                     Console.WriteLine("❌ 파일 재분배 실패로 삭제 중단");
                     return false;
                 }

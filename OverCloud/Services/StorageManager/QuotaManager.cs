@@ -191,6 +191,8 @@ namespace OverCloud.Services.StorageManager
             {
                 try
                 {
+                    //db에서 다른건 똑같이하고 fileId랑 cloudstroagenum,cloudfile_id만 바꾸고 ,
+
                     if (file.IsDistributed)
                     {
                         bool success = await RedistributeDistributedFile(file.FileId, file.ParentFolderId, file.ID);
@@ -389,6 +391,7 @@ namespace OverCloud.Services.StorageManager
                         ChunkSize = (ulong)read,
                         ID = userId
                     };
+
                     fileRepository.addfile(chunk);
                     UpdateQuotaAfterUploadOrDelete(cloud.CloudStorageNum, chunk.FileSize, true,userId);
                     uploadedChunks.Add(chunk);

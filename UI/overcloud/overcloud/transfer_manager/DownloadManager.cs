@@ -78,8 +78,7 @@ namespace overcloud.transfer_manager
                     await _fileDownloadManager.DownloadFile(file.UserId, file.CloudFileId, file.CloudStorageNum, file.LocalPath);
 
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                {
-                    
+                {  
                     item.CompleteDownload();
                     App.TransferManager.Completed.Add(item);
                 });
