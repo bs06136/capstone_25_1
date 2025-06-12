@@ -112,11 +112,7 @@
                 <DataGridTextColumn Header="CLOUD" Binding="{Binding CloudName}" Width="*">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
-                            <Setter Property="HorizontalAlignment" Value="Center"/>
-                            <!-- 셀 안 정렬 -->
                             <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="TextAlignment" Value="Center"/>
-                            <!-- 텍스트 자체 정렬 -->
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
