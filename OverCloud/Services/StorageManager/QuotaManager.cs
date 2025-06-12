@@ -249,6 +249,7 @@ namespace OverCloud.Services.StorageManager
                             UpdateQuotaAfterUploadOrDelete(bestStorage.CloudStorageNum, file.FileSize / 1024, true, userId);
                             uploadSuccess = true;
                             Console.WriteLine($"✅ 파일 재분배 성공: {file.FileName} -> {bestStorage.CloudType}");
+                            await SaveDriveQuotaToDB(userId, file.CloudStorageNum);
                             break; // 반복문 종료 (업로드 성공)
                         }
 
