@@ -31,7 +31,7 @@ namespace overcloud.Views
 
         private string _user_id;
         private string _currentAccountId; // 현재 선택된 계정 ID
-
+        private FileSearchView _fileSearchView;
 
         // 탐색기 상태
         private int currentFolderId = -1;
@@ -63,6 +63,11 @@ namespace overcloud.Views
             this.Focus();
 
             // 초기 서비스 설정
+
+            // FileSearchView 생성 및 위치 지정
+            _fileSearchView = new FileSearchView();
+            _fileSearchView.SearchSubmitted += OnSearchKeywordSubmitted;
+            SearchHost.Content = _fileSearchView;
         }
 
 
