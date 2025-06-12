@@ -1140,6 +1140,25 @@ namespace overcloud.Views
             CLOSED = 3
         }
 
+        private void OnSearchKeywordSubmitted(string keyword)
+        {
+            // 1) FindByFileName 으로 CloudFileInfo 리스트를 가져온다.
+            var results = _controller.FileRepository.FindByFileName(keyword, _currentAccountId);
+
+            // 2) 기존 ToViewModel을 써서 ViewModel을 만들고, FileName에 절대경로를 덧붙인다.
+            var viewModels = results.Select(f =>
+            {
+                var vm = ToViewModel(f);
+                // 기존 파일명 뒤에 “ /절대경로”를 하드코딩
+                vm.FileName = $"{vm.FileName} /{_controller.FileRepository.GetFullPath(vm.FileId)}";
+                return vm;
+            }).ToList();
+
+            // 3) 우측 리스트(ListBox)에 바인딩
+            RightFileListPanel.ItemsSource = viewModels;
+            DateColumnPanel.ItemsSource = viewModels;
+        }
+
     }
 
 }
