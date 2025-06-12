@@ -463,6 +463,7 @@ namespace overcloud.Views
                 .ToList();
 
             RightFileListPanel.ItemsSource = vms;
+            IssueColumnPanel.ItemsSource = vms;
             DateColumnPanel.ItemsSource = vms;
             PathColumnPanel.ItemsSource = vms;    // PathColumnPanel 이 있다면 빈 문자열만 바인딩
         }
@@ -1181,6 +1182,7 @@ namespace overcloud.Views
             }).ToList();
 
             RightFileListPanel.ItemsSource = viewModels;
+            IssueColumnPanel.ItemsSource = viewModels;
             DateColumnPanel.ItemsSource = viewModels;
             PathColumnPanel.ItemsSource = viewModels;
         }
