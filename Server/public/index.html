@@ -1,32 +1,73 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>OverCloud 링크 다운로드</title>
+  <meta charset="UTF-8">
+  <title>Over Cloud</title>
+  <style>
+    /* 페이지 전체 설정 */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+
+      /* 배경 이미지 */
+      background: url('cloud.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+
+    /* 콘텐츠 래퍼 */
+    .content {
+      text-align: center;
+    }
+
+    /* 작은 부제목 */
+    .subtitle {
+      font-size: 1rem;
+      margin-bottom: -6.5rem;
+      color: #fff;
+      opacity: 0.9;
+    }
+
+    /* 메인 타이틀 크게 조정 */
+    .content h1 {
+      font-size: 10rem;
+      margin-bottom: 10rem;
+      line-height: 1;
+      text-shadow: none;
+    }
+
+    /* 둥근 모서리 버튼 */
+    .download-btn {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      font-size: 1.25rem;
+      color: #fff;
+      background: rgba(32, 127, 228, 0.8);
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      text-decoration: none;
+      margin-bottom: 15rem;
+    }
+    .download-btn:hover {
+      background: rgba(126, 201, 241, 1);
+    }
+  </style>
 </head>
 <body>
-    <h1>OverCloud 링크 다운로드</h1>
-    <p>아래 버튼을 클릭하여 OverCloud를 실행하고 다운로드를 시작하세요.</p>
-    <button id="launchButton">OverCloud 실행하기</button>
-
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const linkData = urlParams.get('link');
-
-        if (!linkData) {
-            document.body.innerHTML = "<h1>잘못된 링크입니다.</h1>";
-        }
-
-        document.getElementById("launchButton").onclick = () => {
-            // 안전성을 위해 한번 더 인코딩 적용
-            const encodedLink = encodeURIComponent(linkData);
-            const overcloudUrl = `overcloud://?link=${encodedLink}`;
-            window.location.href = overcloudUrl;
-
-            setTimeout(() => {
-                alert("OverCloud가 실행되지 않으면 프로그램이 설치되어 있는지 확인하세요.");
-            }, 2000);
-        };
-    </script>
+  <div class="content">
+    <p class="subtitle">자유롭고 무한한 클라우드</p>
+    <h1>Over Cloud</h1>
+    <a href="/OverCloud_Installer.exe" class="download-btn" download>다운로드</a>
+  </div>
 </body>
 </html>

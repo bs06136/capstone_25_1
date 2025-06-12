@@ -92,6 +92,7 @@
         <!-- 3. DataGrid -->
         <DataGrid x:Name="AccountsGrid"
                   Grid.Row="2"
+                  FontSize="16"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   HeadersVisibility="Column"

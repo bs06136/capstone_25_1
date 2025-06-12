@@ -168,7 +168,8 @@
             <!-- 파일 리스트 그리드 -->
             <Grid Canvas.Left="240" Canvas.Top="318" Width="1500" Height="632">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="770"/>
+                    <ColumnDefinition Width="500"/>
                     <ColumnDefinition Width="200"/>
                 </Grid.ColumnDefinitions>
 
@@ -191,14 +192,14 @@
                                 <TextBlock Text="{Binding FileName}" FontSize="16" Margin="20,0,0,0"/>
                                 <!-- 여기부터 추가 -->
                                 <Border CornerRadius="10"
-        Padding="6,2"
-        Margin="10,0,0,0"
-        VerticalAlignment="Center">
+                                    Padding="6,2"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Center">
                                     <Border.Style>
                                         <Style TargetType="Border">
                                             <!-- 기본값: 보이도록, 투명 배경 -->
                                             <Setter Property="Visibility" Value="Visible"/>
-                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Setter Property="Background" Value="Gray"/>
                                             <Style.Triggers>
                                                 <!-- 1) IssueStatus가 null이면 숨김 -->
                                                 <DataTrigger Binding="{Binding IssueStatus}" Value="{x:Null}">
@@ -229,25 +230,43 @@
 
                                     <!-- 흰 글씨 상태 텍스트 -->
                                     <TextBlock Text="{Binding IssueStatus}"
-             Foreground="White"
-             FontSize="14"/>
+                                         Foreground="Gray"
+                                         FontSize="14"/>
                                 </Border>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
 
+                <ListBox x:Name="PathColumnPanel"
+                    Grid.Column="1"
+                    ItemContainerStyle="{StaticResource UnifiedListItemStyle}"
+                    Background="#eeeeee"
+                    BorderThickness="0"
+                    SelectionMode="Single"
+>
+                    <!-- 초기에는 숨김 -->
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding FullPath}"
+                                FontSize="12"
+                                Foreground="Black"
+                                TextTrimming="CharacterEllipsis"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
                 <ListBox x:Name="DateColumnPanel"
                          ItemContainerStyle="{StaticResource UnifiedListItemStyle}"
-                         Grid.Column="1"
-                         Background="Transparent"
+                         Grid.Column="2"
+                         Background="#eeeeee"
                          BorderThickness="0"
                          SelectionMode="Single"
                          IsHitTestVisible="False">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding UploadedAt, StringFormat='yyyy-MM-dd HH:mm'}"
-                                       FontSize="14" Foreground="Gray"
+                                       FontSize="14" Foreground="Black"
                                        HorizontalAlignment="Right"/>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

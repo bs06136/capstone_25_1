@@ -203,7 +203,8 @@
             <!-- 파일 리스트 그리드 -->
             <Grid Canvas.Left="240" Canvas.Top="318" Width="1500" Height="632">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="770"/>
+                    <ColumnDefinition Width="500"/>
                     <ColumnDefinition Width="200"/>
                 </Grid.ColumnDefinitions>
 
@@ -215,7 +216,7 @@
                          SelectionMode="Single">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderBrush="LightGray" BorderThickness="0,1,0,1" Padding="0">
+                            <Border BorderBrush="LightGray" BorderThickness="0,1,0,1" Padding="0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                                 <StackPanel Orientation="Horizontal" Margin="5"
                                         MouseLeftButtonDown="RightFileItem_Click">
                                 <CheckBox IsChecked="{Binding IsChecked}" Click="CheckBox_Click"/>
@@ -230,18 +231,47 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
 
+                <ListBox x:Name="PathColumnPanel"
+           Grid.Column="1"
+           ItemContainerStyle="{StaticResource UnifiedListItemStyle}"
+           Background="#eeeeee"
+           BorderThickness="0"
+           SelectionMode="Single"
+           >
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="LightGray" BorderThickness="0,1,0,1" Padding="0"  VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal" Margin="5"
+                                        MouseLeftButtonDown="RightFileItem_Click">
+                                    <TextBlock Text="{Binding FullPath}"
+                                        FontSize="18"
+                                        Foreground="Black"
+                                        TextTrimming="CharacterEllipsis"
+                                               />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
                 <ListBox x:Name="DateColumnPanel"
                          ItemContainerStyle="{StaticResource UnifiedListItemStyle}"
-                         Grid.Column="1"
-                         Background="Transparent"
+                         Grid.Column="2"
+                         Background="#eeeeee"
                          BorderThickness="0"
                          SelectionMode="Single"
                          IsHitTestVisible="False">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding UploadedAt, StringFormat='yyyy-MM-dd HH:mm'}"
-                                       FontSize="14" Foreground="Gray"
-                                       HorizontalAlignment="Right"/>
+                            <Border BorderBrush="LightGray" BorderThickness="0,1,0,1" Padding="0"  VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal" Margin="5"
+            MouseLeftButtonDown="RightFileItem_Click">
+                                    <TextBlock Text="{Binding UploadedAt, StringFormat='yyyy-MM-dd HH:mm'}"
+                                       FontSize="18" Foreground="Black"
+                                       HorizontalAlignment="Right"
+                                               />                
+                                </StackPanel>
+                            </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

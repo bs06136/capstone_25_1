@@ -94,9 +94,9 @@ namespace overcloud.Windows
                 if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
 
                 App.TransferManager.DownloadManager.EnqueueDownloads(
-                    new List<(int FileId, string FileName, string CloudFileId, int CloudStorageNum, string LocalPath, bool IsDistributed)>
+                    new List<(int FileId, string FileName, string CloudFileId, int CloudStorageNum, string LocalPath, bool IsDistributed, ulong FileSize)>
                     {
-                (file.FileId, file.FileName, file.CloudFileId, file.CloudStorageNum, localPath, file.IsDistributed)
+                (file.FileId, file.FileName, file.CloudFileId, file.CloudStorageNum, localPath, file.IsDistributed, file.FileSize)
                     },
                     _currentUserId);
             }

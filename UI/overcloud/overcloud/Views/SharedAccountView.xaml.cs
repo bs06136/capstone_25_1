@@ -41,6 +41,8 @@ namespace overcloud.Views
 
         private bool _isFolderChanging = false;
 
+        private FileSearchView _fileSearchView; // 파일 검색 뷰
+
         public SharedAccountView(LoginController controller,
             string user_id)
 
@@ -61,6 +63,10 @@ namespace overcloud.Views
             this.KeyDown += SharedAccountView_KeyDown;
             this.Focusable = true;
             this.Focus();
+
+            _fileSearchView = new FileSearchView();
+            _fileSearchView.SearchSubmitted += OnSearchKeywordSubmitted;
+            SearchHost.Content = _fileSearchView;
 
             // 초기 서비스 설정
 
@@ -140,6 +146,20 @@ namespace overcloud.Views
             public bool IsDistributed { get; set; }
 
             public string IconText => IsFolder ? "📁" : "📄";
+
+            private string _fullPath = string.Empty;
+            public string FullPath
+            {
+                get => _fullPath;
+                set
+                {
+                    if (_fullPath != value)
+                    {
+                        _fullPath = value;
+                        OnPropertyChanged(nameof(FullPath));
+                    }
+                }
+            }
         }
 
         //////변환기
@@ -411,37 +431,39 @@ namespace overcloud.Views
 
         private void LoadFolderContents(int folderId, string accountId)
         {
-            var files = _controller.FileRepository
-                          .all_file_list(folderId, accountId)
-                          .ToList();
-
-            var vms = files.Select(f =>
-            {
-                var vm = ToViewModel(f);
-
-                // 1) 이슈 조회
-                var issues = _controller.FileIssueRepository
-                               .GetIssuesByFileId(f.FileId);
-
-                if (issues != null && issues.Any())
+            var vms = _controller.FileRepository
+                .all_file_list(folderId, accountId)
+                .Select(f =>
                 {
-                    // 2) 문자열 상태를 enum으로 파싱 → 최소값 선택
-                    var lowestStatus = issues
-                        .Select(i => Enum.Parse<IssueStatusEnum>(i.Status))
-                        .Min();
+                    // 1) CloudFileInfo → VM 생성
+                    var vm = ToViewModel(f);
 
-                    vm.IssueStatus = lowestStatus.ToString();
-                }
-                else
-                {
-                    vm.IssueStatus = string.Empty;
-                }
+                    // 2) 평소에는 빈 문자열
+                    vm.FullPath = string.Empty;
 
-                return vm;
-            }).ToList();
+                    // 3) 이슈 조회 & 상태 세팅
+                    var issues = _controller.FileIssueRepository
+                                   .GetIssuesByFileId(f.FileId);
+
+                    if (issues != null && issues.Any())
+                    {
+                        var lowestStatus = issues
+                            .Select(i => Enum.Parse<IssueStatusEnum>(i.Status))
+                            .Min();
+                        vm.IssueStatus = lowestStatus.ToString();
+                    }
+                    else
+                    {
+                        vm.IssueStatus = string.Empty;
+                    }
+
+                    return vm;
+                })
+                .ToList();
 
             RightFileListPanel.ItemsSource = vms;
             DateColumnPanel.ItemsSource = vms;
+            PathColumnPanel.ItemsSource = vms;    // PathColumnPanel 이 있다면 빈 문자열만 바인딩
         }
 
 
@@ -651,7 +673,8 @@ namespace overcloud.Views
                         CloudFileId: f.cloud_file_id,
                         CloudStorageNum: f.CloudStorageNum,
                         LocalPath: Path.Combine(localBase, f.FileName),
-                        IsDistributed: f.IsDistributed
+                        IsDistributed: f.IsDistributed,
+                        FileSize: f.FileSize
                     )).ToList();
 
                 App.TransferManager.DownloadManager.EnqueueDownloads(enqueueList, _currentAccountId);
@@ -694,9 +717,9 @@ namespace overcloud.Views
                 if (!string.IsNullOrEmpty(dir))
                     Directory.CreateDirectory(dir);
 
-                App.TransferManager.DownloadManager.EnqueueDownloads(new List<(int FileId, string FileName, string CloudFileId, int CloudStorageNum, string LocalPath, bool IsDistributed)>
+                App.TransferManager.DownloadManager.EnqueueDownloads(new List<(int FileId, string FileName, string CloudFileId, int CloudStorageNum, string LocalPath, bool IsDistributed, ulong FileSize)>
                     {
-                        (fileId ,file.FileName, file.CloudFileId, file.CloudStorageNum, localPath, _IsDistributed)
+                        (fileId, file.FileName, file.CloudFileId, file.CloudStorageNum, localPath, _IsDistributed, file.FileSize)
                     }, _currentAccountId);
             }
         }
@@ -1031,7 +1054,7 @@ namespace overcloud.Views
             }
 
             string fullLink = string.Join("|", linkParts);
-            string url = $"http://ec2-54-180-122-223.ap-northeast-2.compute.amazonaws.com/?link={Uri.EscapeDataString(fullLink)}";
+            string url = $"http://http://capstonedesign.duckdns.org/download/?link={Uri.EscapeDataString(fullLink)}";
 
             System.Windows.Clipboard.SetText(url);
 
@@ -1147,21 +1170,18 @@ namespace overcloud.Views
 
         private void OnSearchKeywordSubmitted(string keyword)
         {
-            // 1) FindByFileName 으로 CloudFileInfo 리스트를 가져온다.
             var results = _controller.FileRepository.FindByFileName(keyword, _currentAccountId);
 
-            // 2) 기존 ToViewModel을 써서 ViewModel을 만들고, FileName에 절대경로를 덧붙인다.
             var viewModels = results.Select(f =>
             {
                 var vm = ToViewModel(f);
-                // 기존 파일명 뒤에 “ /절대경로”를 하드코딩
-                vm.FileName = $"{vm.FileName} /{_controller.FileRepository.GetFullPath(vm.FileId)}";
+                vm.FullPath = _controller.FileRepository.GetFullPath(f.FileId);
                 return vm;
             }).ToList();
 
-            // 3) 우측 리스트(ListBox)에 바인딩
             RightFileListPanel.ItemsSource = viewModels;
             DateColumnPanel.ItemsSource = viewModels;
+            PathColumnPanel.ItemsSource = viewModels;
         }
 
     }

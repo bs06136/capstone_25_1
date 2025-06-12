@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,7 +26,7 @@ namespace overcloud.transfer_manager
         }
 
         // ✅ 기존 EnqueueDownloads 시그니처 유지
-        public void EnqueueDownloads(List<(int FileID, string FileName, string CloudFileId, int CloudStorageNum, string LocalPath, bool IsDistributed)> files, string user_id)
+        public void EnqueueDownloads(List<(int FileID, string FileName, string CloudFileId, int CloudStorageNum, string LocalPath, bool IsDistributed, ulong FileSize)> files, string user_id)
         {
             foreach (var file in files)
             {
@@ -41,7 +42,7 @@ namespace overcloud.transfer_manager
 
                 // ✅ 내부에서 DownloadTaskInfo로 변환해서 큐에 삽입
                 var taskInfo = new DownloadTaskInfo(
-                    file.FileID, file.FileName, file.CloudFileId, file.CloudStorageNum, file.LocalPath, file.IsDistributed, user_id
+                    file.FileID, file.FileName, file.CloudFileId, file.CloudStorageNum, file.LocalPath, file.IsDistributed, user_id, file.FileSize
                 );
 
                 _queue.Add((item, taskInfo));
@@ -61,7 +62,15 @@ namespace overcloud.transfer_manager
         {
             try
             {
-                System.Windows.Application.Current.Dispatcher.Invoke(() => { item.Status = "다운로드 중"; });
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { 
+                    item.Status = "다운로드 중";
+                    // 파일 크기로 예상 업로드 시간 계산 (20MB/sec 기준)
+
+                    ulong fileSizeBytes = file.FileSize;
+                    double fileSizeMB = fileSizeBytes / (1024.0 * 1024.0);
+                    double expectedSeconds = Math.Max(3, fileSizeMB / 10.0); // 최소 3초 보장
+                    item.StartFakeProgress(expectedSeconds);
+                });
 
                 if (file.IsDistributed)
                     await _fileDownloadManager.DownloadAndMergeFile(file.FileID, file.LocalPath, file.UserId, file.CloudStorageNum);
@@ -70,8 +79,8 @@ namespace overcloud.transfer_manager
 
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    item.Status = "완료";
-                    item.Progress = 100;
+                    
+                    item.CompleteDownload();
                     App.TransferManager.Completed.Add(item);
                 });
             }
@@ -89,5 +98,5 @@ namespace overcloud.transfer_manager
     // ✅ 내부 전용 TaskInfo 정의
     public record DownloadTaskInfo(
         int FileID, string FileName, string CloudFileId, int CloudStorageNum,
-        string LocalPath, bool IsDistributed, string UserId);
+        string LocalPath, bool IsDistributed, string UserId, ulong FileSize);
 }

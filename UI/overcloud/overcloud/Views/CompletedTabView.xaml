@@ -6,11 +6,11 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="파일명" DisplayMemberBinding="{Binding FileName}" Width="300"/>
-                    <GridViewColumn Header="상태" DisplayMemberBinding="{Binding Status}" Width="100"/>
-                    <GridViewColumn Header="진행률">
+                    <GridViewColumn Header="상태" DisplayMemberBinding="{Binding Status}" Width="150"/>
+                    <GridViewColumn Header="진행률" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <ProgressBar Value="{Binding Progress}" Maximum="100" Height="10"/>
+                                <ProgressBar Value="{Binding Progress}" Maximum="100" Height="28"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
